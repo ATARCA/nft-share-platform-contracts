@@ -1,0 +1,28 @@
+{
+  "name": "nft-share-platform-contracts",
+  "version": "1.0.0",
+  "description": "ATARCA has received funding from the European Union’s Horizon 2020 research and innovation programme.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ATARCA/nft-share-platform-contracts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ATARCA/nft-share-platform-contracts/issues"
+  },
+  "homepage": "https://github.com/ATARCA/nft-share-platform-contracts#readme",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.4",
+    "@nomiclabs/hardhat-waffle": "^2.0.2",
+    "chai": "^4.3.6",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.5.4",
+    "hardhat": "^2.8.3"
+  }
+}
