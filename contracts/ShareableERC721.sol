@@ -24,7 +24,7 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
     function mint(
         address account,
         uint256 tokenId
-    ) external {
+    ) external onlyOwner {
         _mint(account, tokenId);
     }
 
@@ -48,6 +48,8 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
       //token has to exist
       require(_exists(tokenIdToBeShared), "ShareableERC721: token to be shared must exist");
       require(!_exists(newTokenId), "token with given id already exists");
+      
+      require(msg.sender == ownerOf(tokenIdToBeShared), "Method caller must be the owner of token");
 
       string memory _tokenURI = tokenURI(tokenIdToBeShared);
 

@@ -54,7 +54,7 @@ describe("Shareable ERC 721 contract", function() {
       await shareableERC721.mint(addr1.address, tokenId)
       await shareableERC721.setTokenURI(tokenId, tokenURI)
 
-      await shareableERC721.share(addr2.address, tokenId, newTokenId);
+      await shareableERC721.connect(addr1).share(addr2.address, tokenId, newTokenId);
 
       expect(await shareableERC721.ownerOf(newTokenId)).to.equal(addr2.address);
       expect(await shareableERC721.tokenURI(newTokenId)).to.equal(tokenURI);
