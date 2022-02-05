@@ -53,17 +53,13 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
 
       string memory _tokenURI = tokenURI(tokenIdToBeShared);
 
-      //append information to tokenURI ?
+      //allow appending information to tokenURI ?
 
       _mint(to, newTokenId);
       _setTokenURI(newTokenId, _tokenURI);
 
-      //fire new event ?
-
-      //
-
+      //create new share event, which token was shared by whom to whom
       //read internals if existig token, add information to new token
       //check how and where metadata is saved 
-
     }
 }
