@@ -3,6 +3,16 @@ const { Description } = require("@ethersproject/properties");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
+//Todo: check that events are fired correctly
+
+
+const logEvents = async function(calledMethod) {
+  const receipt = await calledMethod.wait()
+  for (const event of receipt.events) {
+    console.log(`Event ${event.event} with args ${event.args}`);
+  }
+}
+
 describe("Shareable ERC 721 contract", function() {
 
   let TokenContract;
@@ -42,7 +52,12 @@ describe("Shareable ERC 721 contract", function() {
 
     it("Should mint a new token and transfer it to an account", async function() {
 
-      await shareableERC721.mint(addr1.address, tokenId)
+      const minting = await shareableERC721.mint(addr1.address, tokenId)
+
+      logEvents(minting)
+
+      expect(minting).to.emit(shareableERC721, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, tokenId)
+
       await shareableERC721.setTokenURI(tokenId, tokenURI)
 
       expect(await shareableERC721.ownerOf(tokenId)).to.equal(addr1.address);
@@ -51,10 +66,15 @@ describe("Shareable ERC 721 contract", function() {
 
     it("Should mint token and should share a new token", async function() {
 
-      await shareableERC721.mint(addr1.address, tokenId)
+      const minting = await shareableERC721.mint(addr1.address, tokenId)
       await shareableERC721.setTokenURI(tokenId, tokenURI)
+      expect(minting).to.emit(shareableERC721, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, tokenId)
 
-      await shareableERC721.connect(addr1).share(addr2.address, tokenId, newTokenId);
+      const share = await shareableERC721.connect(addr1).share(addr2.address, tokenId, newTokenId);
+      logEvents(share)
+      expect(share).to.emit(shareableERC721, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr2.address, newTokenId)
+      expect(share).to.emit(shareableERC721, "Share").withArgs(addr1.address, addr2.address, newTokenId)
+      //new event required 'share' to denote reminting from A to B
 
       expect(await shareableERC721.ownerOf(newTokenId)).to.equal(addr2.address);
       expect(await shareableERC721.tokenURI(newTokenId)).to.equal(tokenURI);

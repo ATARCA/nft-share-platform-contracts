@@ -24,6 +24,9 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
     
     constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {}
 
+    //Consider moving event definition to new Interfaces class with Share method
+    event Share(address indexed from, address indexed to, uint256 indexed tokenId);
+
     function mint(
         address account,
         uint256 tokenId
@@ -56,10 +59,12 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
 
       string memory _tokenURI = tokenURI(tokenIdToBeShared);
 
-      //allow appending information to tokenURI ?
+      //allow appending appending information to tokenURI ?
 
       _mint(to, newTokenId);
       _setTokenURI(newTokenId, _tokenURI);
+
+      emit Share(msg.sender, to, newTokenId);
 
       //create new share event, which token was shared by whom to whom
       //read internals if existig token, add information to new token
@@ -86,4 +91,5 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
     //secure minting
     //override functions
 
+    //disable approve (delegated permissions to transfer)
 }
