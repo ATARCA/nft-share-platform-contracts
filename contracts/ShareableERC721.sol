@@ -71,6 +71,9 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
       //check how and where metadata is saved 
     }
 
+    //Todo: safeShare, similar to safe transfer, check that contract recipient is aware of ERC721 protocol
+    //Todo: do we want to enable sharing to contracts 
+
     function transferFrom(
         address from,
         address to,

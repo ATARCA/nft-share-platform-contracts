@@ -1,0 +1,29 @@
+name: Compile & test contracts
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - "*"
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      strategy:
+          matrix:
+            node-version: [14.x]
+      steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Compile contracts
+        run: npx hardhat compile
+      - name: Test contracts
+        run: npx hardhat test
+      #npx hardhat compile
+      #npx hardhat test
