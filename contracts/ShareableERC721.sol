@@ -14,6 +14,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 //Todo: instead of transferring a token from a wallet to wallet, remint it to new wallet and keep 'original' in wallet
 //Todo: only allow sharing if the requester has the nft
 //Todo: only allow minting by a specific party
+//Todo: secure minting
+//Todo: secure transfer
+//Todo: override inherited mint, transfer contracts
 
 contract ShareableERC721 is ERC721URIStorage, Ownable {
 
@@ -62,4 +65,25 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
       //read internals if existig token, add information to new token
       //check how and where metadata is saved 
     }
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual override {
+        revert('Tokens are not transferrable');
+    }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual override {
+        revert('Tokens are not transferrable');
+    }
+
+    //disable transfers 
+    //secure minting
+    //override functions
+
 }

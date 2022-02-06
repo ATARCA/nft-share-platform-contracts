@@ -69,5 +69,16 @@ describe("Shareable ERC 721 contract", function() {
       //Attempt to share as contract creator
       await expect(shareableERC721.share(addr2.address, tokenId, newTokenId)).to.be.revertedWith("Method caller must be the owner of token")
     });
+
+    it("Tokens should not be mintable by other users except contract owner", async function() {
+      await expect(shareableERC721.connect(addr1).mint(addr1.address, tokenId)).to.be.revertedWith("Ownable: caller is not the owner")
+    });
+
+    it("Tokens should not be transferrable by anyone, unless being minted or shared", async function() {
+      await shareableERC721.mint(addr1.address, tokenId)
+      await shareableERC721.setTokenURI(tokenId, tokenURI)
+
+      await expect(shareableERC721.connect(addr1).transferFrom(addr1.address, addr2.address, tokenId)).to.be.reverted
+    });
   });
 })
