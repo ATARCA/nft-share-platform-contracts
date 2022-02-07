@@ -26,7 +26,6 @@ jobs:
       env:
         ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
         ROPSTEN_PRIVATE_KEY: ${{ secrets.ROPSTEN_PRIVATE_KEY }}
-
     - name: Test contracts
       run: npx hardhat test
       env:

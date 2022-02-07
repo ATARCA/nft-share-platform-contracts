@@ -1,5 +1,6 @@
-require("@nomiclabs/hardhat-waffle");
 require("dotenv").config();
+require("@nomiclabs/hardhat-waffle");
+require("hardhat-gas-reporter");
 
 // Go to https://www.alchemyapi.io, sign up, create
 // a new App in its dashboard, and replace "KEY" with its key
@@ -21,5 +22,11 @@ module.exports = {
       url: `https://eth-ropsten.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
       accounts: [`${ROPSTEN_PRIVATE_KEY}`]
     }
+  },
+  gasReporter: {
+    currency: 'EUR',
+    gasPrice: 3,
+    coinmarketcap: process.env.COINMARKETCAP_KEY,
+    token: 'XDAI'
   }
 };
