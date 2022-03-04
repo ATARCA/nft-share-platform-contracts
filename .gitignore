@@ -3,4 +3,5 @@
 .DS_Store
 cache/
 artifacts/
+typechain-types/
 .env
