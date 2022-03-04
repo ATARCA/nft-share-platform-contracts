@@ -1,6 +1,9 @@
 require("dotenv").config();
 require("@nomiclabs/hardhat-waffle");
 require("hardhat-gas-reporter");
+require('@typechain/hardhat')
+require('@nomiclabs/hardhat-ethers')
+require('@nomiclabs/hardhat-waffle')
 
 // Go to https://www.alchemyapi.io, sign up, create
 // a new App in its dashboard, and replace "KEY" with its key
