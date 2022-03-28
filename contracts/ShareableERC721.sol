@@ -21,19 +21,24 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract ShareableERC721 is ERC721URIStorage, Ownable {
 
     string baseURI;
+
+    uint256 internal _currentIndex;
     
-    constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {}
+    constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
+        _currentIndex = uint256(0);
+    }
 
     //Consider moving event definition to new Interfaces class with Share method
     event Share(address indexed from, address indexed to, uint256 indexed tokenId);
 
     function mint(
-        address account,
-        uint256 tokenId
+        address account
     ) external onlyOwner {
-        _mint(account, tokenId);
+        _mint(account, _currentIndex);
+        _currentIndex++;
     }
 
+    //Todo: rework to setTokenURI (use convenience method to formulate the string)
     function setTokenURI(
         uint256 tokenId, 
         string memory tokenURI
@@ -49,11 +54,11 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
         return baseURI;
     }
 
-    function share(address to, uint256 tokenIdToBeShared, uint256 newTokenId) external virtual {
+    //Todo: rework to take into account latest development of nature of content on reshared tokens
+    function share(address to, uint256 tokenIdToBeShared) external virtual {
       require(to != address(0), "ERC721: mint to the zero address");
       //token has to exist
       require(_exists(tokenIdToBeShared), "ShareableERC721: token to be shared must exist");
-      require(!_exists(newTokenId), "token with given id already exists");
       
       require(msg.sender == ownerOf(tokenIdToBeShared), "Method caller must be the owner of token");
 
@@ -61,18 +66,19 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
 
       //allow appending appending information to tokenURI ?
 
-      _mint(to, newTokenId);
-      _setTokenURI(newTokenId, _tokenURI);
+      _mint(to, _currentIndex);
+      _setTokenURI(_currentIndex, _tokenURI);
 
-      emit Share(msg.sender, to, newTokenId);
-
+      emit Share(msg.sender, to, _currentIndex);
+      
+      _currentIndex++;
       //create new share event, which token was shared by whom to whom
       //read internals if existig token, add information to new token
       //check how and where metadata is saved 
     }
 
     //Todo: safeShare, similar to safe transfer, check that contract recipient is aware of ERC721 protocol
-    //Todo: do we want to enable sharing to contracts 
+    //Todo: do we want to enable sharing to contracts
 
     function transferFrom(
         address from,
