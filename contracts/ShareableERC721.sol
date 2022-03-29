@@ -11,8 +11,6 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "hardhat/console.sol";
-
 contract ShareableERC721 is ERC721URIStorage, Ownable {
 
     string baseURI;
@@ -36,7 +34,6 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
     }
 
     function setBaseURI(string memory baseURI_) external onlyOwner {
-        console.log("base uri set to be", baseURI_);
         baseURI = baseURI_;
     }
     
@@ -51,23 +48,12 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
       require(_exists(tokenIdToBeShared), "ShareableERC721: token to be shared must exist");
       
       require(msg.sender == ownerOf(tokenIdToBeShared), "Method caller must be the owner of token");
-      
-      console.log('Share: index of token', _currentIndex);
-      //string memory _tokenURI = tokenURI(_currentIndex);
-
-      //allow appending appending information to tokenURI ?
 
       _mint(to, _currentIndex);
-      //setTokenURI(_currentIndex);
-      //_setTokenURI(_currentIndex, tokenURI(_currentIndex));
-      //_setTokenURI(_currentIndex, _tokenURI);
 
       emit Share(msg.sender, to, _currentIndex, tokenIdToBeShared);
       
       _currentIndex++;
-      //create new share event, which token was shared by whom to whom
-      //read internals if existig token, add information to new token
-      //check how and where metadata is saved 
     }
 
     //Todo: safeShare, similar to safe transfer, check that contract recipient is aware of ERC721 protocol
