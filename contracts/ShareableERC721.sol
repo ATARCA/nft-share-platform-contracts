@@ -11,12 +11,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-//Todo: instead of transferring a token from a wallet to wallet, remint it to new wallet and keep 'original' in wallet
-//Todo: only allow sharing if the requester has the nft
-//Todo: only allow minting by a specific party
-//Todo: secure minting
-//Todo: secure transfer
-//Todo: override inherited mint, transfer contracts
+import "hardhat/console.sol";
 
 contract ShareableERC721 is ERC721URIStorage, Ownable {
 
@@ -29,7 +24,9 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
     }
 
     //Consider moving event definition to new Interfaces class with Share method
-    event Share(address indexed from, address indexed to, uint256 indexed tokenId);
+    //What got shared from whom, and from what was it derived from
+    //Bob shares Token 1 to Alice which is derived from Token 0
+    event Share(address indexed from, address indexed to, uint256 indexed tokenId, uint256 derivedFromTokenId);
 
     function mint(
         address account
@@ -38,15 +35,8 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
         _currentIndex++;
     }
 
-    //Todo: rework to setTokenURI (use convenience method to formulate the string)
-    function setTokenURI(
-        uint256 tokenId, 
-        string memory tokenURI
-    ) external {
-        _setTokenURI(tokenId, tokenURI);
-    }
-
-    function setBaseURI(string memory baseURI_) external {
+    function setBaseURI(string memory baseURI_) external onlyOwner {
+        console.log("base uri set to be", baseURI_);
         baseURI = baseURI_;
     }
     
@@ -61,15 +51,18 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
       require(_exists(tokenIdToBeShared), "ShareableERC721: token to be shared must exist");
       
       require(msg.sender == ownerOf(tokenIdToBeShared), "Method caller must be the owner of token");
-
-      string memory _tokenURI = tokenURI(tokenIdToBeShared);
+      
+      console.log('Share: index of token', _currentIndex);
+      //string memory _tokenURI = tokenURI(_currentIndex);
 
       //allow appending appending information to tokenURI ?
 
       _mint(to, _currentIndex);
-      _setTokenURI(_currentIndex, _tokenURI);
+      //setTokenURI(_currentIndex);
+      //_setTokenURI(_currentIndex, tokenURI(_currentIndex));
+      //_setTokenURI(_currentIndex, _tokenURI);
 
-      emit Share(msg.sender, to, _currentIndex);
+      emit Share(msg.sender, to, _currentIndex, tokenIdToBeShared);
       
       _currentIndex++;
       //create new share event, which token was shared by whom to whom

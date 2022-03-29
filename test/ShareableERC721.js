@@ -29,6 +29,9 @@ describe("Shareable ERC 721 contract", function() {
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
     shareableERC721 = await TokenContract.deploy("ShareableToken","ST");
+
+    let tokenURIBase = 'http://example.com/tokens/';
+    shareableERC721.setBaseURI(tokenURIBase);
   }); 
 
   describe("Deployment", function() {
@@ -46,49 +49,34 @@ describe("Shareable ERC 721 contract", function() {
     //mint token, set URIcontent
     //check that receiver gets it and uri content is what was expected
     let baseAddress = "0x0000000000000000000000000000000000000000";
-    let tokenId     = "0x0000000000000000000000000000000000000000";
-
-    
+    let tokenId     = "0x0000000000000000000000000000000000000000";    
     let newTokenId  = "0x0000000000000000000000000000000000000001";
-    let tokenURI    = 'http://example.com/tokens/001';
-    let tokenURIBase = 'http://examaple.com/tokens/';
-    //share token, check that it is sent to correct receiver, check that URI is what was expected
+    let tokenURI    = 'http://example.com/tokens/0';
+    let newTokenURI = 'http://example.com/tokens/1';
 
     it("Should mint a new token and transfer it to an account", async function() {
-
       const minting = await shareableERC721.mint(addr1.address)
-
       logEvents(minting)
-
       expect(minting).to.emit(shareableERC721, "Transfer").withArgs(baseAddress, addr1.address, tokenId)
-
-      await shareableERC721.setTokenURI(tokenId, tokenURI)
-
       expect(await shareableERC721.ownerOf(tokenId)).to.equal(addr1.address);
       expect(await shareableERC721.tokenURI(tokenId)).to.equal(tokenURI);
     });
 
     it("Should mint token and should share a new token", async function() {
-
       const minting = await shareableERC721.mint(addr1.address)
       logEvents(minting)
       expect(minting).to.emit(shareableERC721, "Transfer").withArgs(baseAddress, addr1.address, tokenId)
-
-      await shareableERC721.setTokenURI(tokenId, tokenURI)
+      
       const share = await shareableERC721.connect(addr1).share(addr2.address, tokenId);
       logEvents(share)
       expect(share).to.emit(shareableERC721, "Transfer").withArgs(tokenId, addr2.address, newTokenId)
-      expect(share).to.emit(shareableERC721, "Share").withArgs(addr1.address, addr2.address, newTokenId)
-      //new event required 'share' to denote reminting from A to B
-
+      expect(share).to.emit(shareableERC721, "Share").withArgs(addr1.address, addr2.address, newTokenId, tokenId)
       expect(await shareableERC721.ownerOf(newTokenId)).to.equal(addr2.address);
-      expect(await shareableERC721.tokenURI(newTokenId)).to.equal(tokenURI);
+      expect(await shareableERC721.tokenURI(newTokenId)).to.equal(newTokenURI);
     });
 
     it("Should mint token, should not be shareable by others", async function() {
       await shareableERC721.mint(addr1.address)
-      await shareableERC721.setTokenURI(tokenId, tokenURI)
-
       //Attempt to as any other wallet than the token receiver but not contract creator
       await expect(shareableERC721.connect(addr2).share(addr2.address, tokenId)).to.be.revertedWith("Method caller must be the owner of token")
       //Attempt to share as contract creator
@@ -101,9 +89,7 @@ describe("Shareable ERC 721 contract", function() {
 
     it("Tokens should not be transferrable by anyone, unless being minted or shared", async function() {
       await shareableERC721.mint(addr1.address)
-      await shareableERC721.setTokenURI(tokenId, tokenURI)
-
       await expect(shareableERC721.connect(addr1).transferFrom(addr1.address, addr2.address, tokenId)).to.be.reverted
-    });
+    }); 
   });
 })
