@@ -49,6 +49,10 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
         return baseURI;
     }
 
+    function tokenExists(uint256 tokenId) external view returns (bool){
+        return _exists(tokenId);
+    }
+
     function share(address to, uint256 tokenIdToBeShared, uint256 newTokenId) external virtual {
       require(to != address(0), "ERC721: mint to the zero address");
       //token has to exist
