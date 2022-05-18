@@ -23,6 +23,7 @@ interface streamr_contributions {
   function tokenExists(uint256 tokenId) external view returns(bool);
   function tokenURI(uint256 tokenId) external view returns (string memory);
   function symbol() external view returns(string memory);
+  function ownerOf(uint256 tokenId) external view returns(address);
 }
 
 //Todo: token should associate to other contracts contribution token
@@ -35,8 +36,9 @@ contract EndorsableERC721 is ERC721, Ownable {
 
   //Endorse from wallet, to wallet ? and which token was endorsed ?
   //Todo: minting an endorsement token should fire an endorse event
-  // Who endorsed, with what token, whos token, in whos wallet
-  event Endorse(address indexed from, address indexed to, uint256 indexed tokenId);
+  // Who endorsed whom, with what token and which contribution
+  //Todo: check who is owner of the contributionTokenId from interfaced contract
+  event Endorse(address indexed endorser, address indexed endorsee, uint256 indexed endorsementTokenId, uint256 contributionTokenId);
 
   uint256 internal _currentIndex;
   //Todo: consider upgradeable contracs, non-immutable address
@@ -64,6 +66,9 @@ contract EndorsableERC721 is ERC721, Ownable {
     //Todo: make incrementable token id
     _mint(msg.sender, _currentIndex);
     _contributionEndorsements[contributionTokenId][msg.sender] = true;
+
+    address _endorsee = sc.ownerOf(contributionTokenId);
+    emit Endorse(msg.sender, _endorsee, _currentIndex, contributionTokenId);
     _currentIndex++; 
   }
 }
