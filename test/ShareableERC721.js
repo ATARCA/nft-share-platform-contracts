@@ -5,7 +5,7 @@ const { ethers } = require("hardhat");
 
 //Todo: check that events are fired correctly
 
-
+//Todo: abstract to a helper library
 const logEvents = async function(calledMethod) {
   const receipt = await calledMethod.wait()
   for (const event of receipt.events) {
@@ -29,6 +29,7 @@ describe("Shareable ERC 721 contract", function() {
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
     shareableERC721 = await TokenContract.deploy("ShareableToken","ST");
+    console.log('contract deployed to', shareableERC721.address);
   }); 
 
   describe("Deployment", function() {

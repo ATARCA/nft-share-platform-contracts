@@ -11,19 +11,18 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-//Todo: allow minting to own wallet
 //Todo: disable transfers
-//Todo: check that token exists before minting
 //Todo: 'link' tokens e.g. store reference, fire event for endorsement
-//Todo: only one endorsement allowed per wallet per endorsable NFT
 //Todo: add deployed shareable contract address to variable
 
+//Todo: allow endorsing with 'weight' if address has contribution tokens
+//Todo: add check if wallet has any contribution tokens to interface
+
 interface streamr_contributions {
-  //Todo token exists
-  //Todo consider a helper function to check if token exists
   //Todo get metadata url of contribution token 
   function tokenExists(uint256 tokenId) external view returns(bool);
   function tokenURI(uint256 tokenId) external view returns (string memory);
+  function symbol() external view returns(string memory);
 }
 
 //Todo: token should associate to other contracts contribution token
@@ -35,26 +34,19 @@ interface streamr_contributions {
 contract EndorsableERC721 is ERC721, Ownable {
 
   //Endorse from wallet, to wallet ? and which token was endorsed ?
+  //Todo: minting an endorsement token should fire an endorse event
+  // Who endorsed, with what token, whos token, in whos wallet
   event Endorse(address indexed from, address indexed to, uint256 indexed tokenId);
 
-  //Todo: check if necessary, already defined on constructor
-  uint256 internal contributionContract;
   uint256 internal _currentIndex;
   //Todo: consider upgradeable contracs, non-immutable address
   streamr_contributions immutable sc;
 
-  mapping(uint256 => mapping(address => uint256)) private _contributionEndorsements;
-
-  //Use for fetching metadata url
-  mapping(uint256 => uint256) private _endorsementTokenToContributionToken;
+  mapping(uint256 => mapping(address => bool)) private _contributionEndorsements;
 
   constructor(string memory _name, string memory _symbol, streamr_contributions _streamr_contributions) ERC721(_name, _symbol) {
     sc = _streamr_contributions;
     _currentIndex = uint256(0);
-  }
-
-  function setContributionContract(uint256 contractAddress) external onlyOwner {
-    contributionContract = contractAddress;
   }
 
   //Todo: get metadata url from other contract
@@ -63,14 +55,15 @@ contract EndorsableERC721 is ERC721, Ownable {
     uint256 contributionTokenId
   ) external {
     //Check that contribution token exists
-    require(sc.tokenExists(contributionTokenId));
+    require(sc.tokenExists(contributionTokenId),"Contribution token must exist");
 
     //Todo: check that wallet haven't already minted an endorsement token for given contribution token
     //Todo: uncertain if this key check works!
-    require(_contributionEndorsements[contributionTokenId][msg.sender] == 0);
+    require(_contributionEndorsements[contributionTokenId][msg.sender] == false, "Contributions cannot be endorsed twice");
     //msg.sender (address of method caller)
     //Todo: make incrementable token id
     _mint(msg.sender, _currentIndex);
+    _contributionEndorsements[contributionTokenId][msg.sender] = true;
     _currentIndex++; 
   }
 }
