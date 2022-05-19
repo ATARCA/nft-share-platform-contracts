@@ -91,6 +91,11 @@ describe("Endorsable ERC721 contract", function() {
       expect(e_minting_w2).to.emit(instanceEncordsableTokenContract, "Endorse").withArgs(addr2.address, addr1.address, 1, s_tokenId)
     })
 
-  })
+    it("Tokens should not be transferrable", async function() {
+      const minting = await instanceShareableTokenContract.mint(addr1.address, s_tokenId)
 
+      await instanceEncordsableTokenContract.mint(s_tokenId)
+      await expect(instanceEncordsableTokenContract.transferFrom(owner.address, addr1.address, 0)).to.be.reverted
+    });
+  })
 })

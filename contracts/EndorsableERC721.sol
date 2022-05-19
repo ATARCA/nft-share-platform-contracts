@@ -71,4 +71,20 @@ contract EndorsableERC721 is ERC721, Ownable {
     emit Endorse(msg.sender, _endorsee, _currentIndex, contributionTokenId);
     _currentIndex++; 
   }
+
+  function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual override {
+        revert('Tokens are not transferrable');
+    }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual override {
+        revert('Tokens are not transferrable');
+    }
 }
