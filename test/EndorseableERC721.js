@@ -93,9 +93,11 @@ describe("Endorsable ERC721 contract", function() {
 
     it("Tokens should not be transferrable", async function() {
       const minting = await instanceShareableTokenContract.mint(addr1.address, s_tokenId)
-
+      
       await instanceEncordsableTokenContract.mint(s_tokenId)
       await expect(instanceEncordsableTokenContract.transferFrom(owner.address, addr1.address, 0)).to.be.reverted
+      await expect(instanceEncordsableTokenContract["safeTransferFrom(address,address,uint256)"](owner.address, addr1.address, 0)).to.be.revertedWith('Tokens are not transferrable')
+      await expect(instanceEncordsableTokenContract["safeTransferFrom(address,address,uint256,bytes)"](owner.address, addr1.address, 0, [])).to.be.revertedWith('Tokens are not transferrable')
     });
   })
 })

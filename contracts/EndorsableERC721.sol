@@ -76,15 +76,24 @@ contract EndorsableERC721 is ERC721, Ownable {
         address from,
         address to,
         uint256 tokenId
-    ) public virtual override {
+    ) public override pure {
         revert('Tokens are not transferrable');
-    }
+  }
 
-    function safeTransferFrom(
+  function safeTransferFrom(
         address from,
         address to,
         uint256 tokenId
-    ) public virtual override {
+    ) public override pure {
         revert('Tokens are not transferrable');
-    }
+  }
+
+  function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+  ) public override pure {
+        revert('Tokens are not transferrable');
+  }
 }
