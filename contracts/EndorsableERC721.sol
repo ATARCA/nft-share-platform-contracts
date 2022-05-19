@@ -11,32 +11,20 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-//Todo: 'link' tokens e.g. store reference, fire event for endorsement
-//Todo: add deployed shareable contract address to variable
-
-//Todo: allow endorsing with 'weight' if address has contribution tokens
-//Todo: add check if wallet has any contribution tokens to interface
+//Todo: add deployed shareable contract address to variable, related to making contract upgradeable
+//Todo: allow endorsing with 'weight' if address has contribution tokens, 2nd version of endorsement contract
+//Todo: allow revoking endorsements
 
 interface streamr_contributions {
-  //Todo get metadata url of contribution token 
   function tokenExists(uint256 tokenId) external view returns(bool);
   function tokenURI(uint256 tokenId) external view returns (string memory);
   function symbol() external view returns(string memory);
   function ownerOf(uint256 tokenId) external view returns(address);
 }
 
-//Todo: token should associate to other contracts contribution token
-//Todo: add mapping, address -> uint256, other contracts token
-//Todo: add mapping, address => mapping(uint256 => uint256)?
-//Todo: which contribution token has been endorsed by which endorsement token
-//Todo: uint256 <contributionToken> => mapping(address => uint256 <endorsementToken> )
-
 contract EndorsableERC721 is ERC721, Ownable {
 
-  //Endorse from wallet, to wallet ? and which token was endorsed ?
-  //Todo: minting an endorsement token should fire an endorse event
   // Who endorsed whom, with what token and which contribution
-  //Todo: check who is owner of the contributionTokenId from interfaced contract
   event Endorse(address indexed endorser, address indexed endorsee, uint256 indexed endorsementTokenId, uint256 contributionTokenId);
 
   uint256 internal _currentIndex;
@@ -49,8 +37,6 @@ contract EndorsableERC721 is ERC721, Ownable {
     sc = _streamr_contributions;
     _currentIndex = uint256(0);
   }
-
-  //Todo: get metadata url from other contract
 
   function mint(
     uint256 contributionTokenId
