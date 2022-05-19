@@ -11,7 +11,6 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-//Todo: disable transfers
 //Todo: 'link' tokens e.g. store reference, fire event for endorsement
 //Todo: add deployed shareable contract address to variable
 
