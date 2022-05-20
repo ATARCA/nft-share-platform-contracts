@@ -89,7 +89,9 @@ describe("Shareable ERC 721 contract", function() {
 
     it("Tokens should not be transferrable by anyone, unless being minted or shared", async function() {
       await shareableERC721.mint(addr1.address)
-      await expect(shareableERC721.connect(addr1).transferFrom(addr1.address, addr2.address, tokenId)).to.be.reverted
+      await expect(shareableERC721.connect(addr1).transferFrom(addr1.address, addr2.address, tokenId)).to.be.revertedWith('Tokens are not transferrable')
+      await expect(shareableERC721["safeTransferFrom(address,address,uint256)"](owner.address, addr1.address, 0)).to.be.revertedWith('Tokens are not transferrable')
+      await expect(shareableERC721["safeTransferFrom(address,address,uint256,bytes)"](owner.address, addr1.address, 0, [])).to.be.revertedWith('Tokens are not transferrable')
     }); 
   });
 })
