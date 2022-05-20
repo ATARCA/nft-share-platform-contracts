@@ -46,27 +46,26 @@ describe("Endorsable ERC721 contract", function() {
   })
 
   describe("Token minting (endorsing)", function() {
-    let s_tokenId = 001;
-    let s_tokenURI = 'http://example.com/tokens/001';
+    let s_tokenId = "0x0000000000000000000000000000000000000000";
+    let s_tokenURI = 'http://example.com/tokens/000';
 
     it("Should be able to endorse existing contribution", async function() {
-      const minting = await instanceShareableTokenContract.mint(addr1.address, s_tokenId)
+      const minting = await instanceShareableTokenContract.mint(addr1.address)
       expect(minting).to.emit(instanceShareableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, s_tokenId)
 
       const e_minting = await instanceEncordsableTokenContract.mint(s_tokenId)
-      logEvents(e_minting)
-      expect(e_minting).to.emit(instanceEncordsableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", owner.address, 0)
+      expect(e_minting).to.emit(instanceEncordsableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", owner.address, s_tokenId)
       expect(e_minting).to.emit(instanceEncordsableTokenContract, "Endorse").withArgs(owner.address, addr1.address, 0, s_tokenId)
     })
 
     it("Should not be able to endorse token that doesn't exist", async function() {
-      const minting = await instanceShareableTokenContract.mint(addr1.address, s_tokenId)
+      const minting = await instanceShareableTokenContract.mint(addr1.address)
       expect(minting).to.emit(instanceShareableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, s_tokenId)
       await expect(instanceEncordsableTokenContract.mint(002)).to.be.revertedWith("Contribution token must exist")
     })
 
     it("Should not be able to endorse same contribution twice from same wallet", async function() {
-      const minting = await instanceShareableTokenContract.mint(addr1.address, s_tokenId)
+      const minting = await instanceShareableTokenContract.mint(addr1.address)
       expect(minting).to.emit(instanceShareableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, s_tokenId)
       //Endorse once
       const e_minting = await instanceEncordsableTokenContract.mint(s_tokenId)
@@ -77,7 +76,7 @@ describe("Endorsable ERC721 contract", function() {
     })
 
     it("Should be able to endorse same contribution from different wallets", async function() {
-      const minting = await instanceShareableTokenContract.mint(addr1.address, s_tokenId)
+      const minting = await instanceShareableTokenContract.mint(addr1.address)
       expect(minting).to.emit(instanceShareableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, s_tokenId)
       
       //Endorse once
@@ -92,14 +91,12 @@ describe("Endorsable ERC721 contract", function() {
     })
 
     it("Tokens should not be transferrable", async function() {
-      const minting = await instanceShareableTokenContract.mint(addr1.address, s_tokenId)
+      const minting = await instanceShareableTokenContract.mint(addr1.address)
       
       await instanceEncordsableTokenContract.mint(s_tokenId)
       await expect(instanceEncordsableTokenContract.transferFrom(owner.address, addr1.address, 0)).to.be.revertedWith('Tokens are not transferrable')
       await expect(instanceEncordsableTokenContract["safeTransferFrom(address,address,uint256)"](owner.address, addr1.address, 0)).to.be.revertedWith('Tokens are not transferrable')
       await expect(instanceEncordsableTokenContract["safeTransferFrom(address,address,uint256,bytes)"](owner.address, addr1.address, 0, [])).to.be.revertedWith('Tokens are not transferrable')
     });
-
-
   })
 })
