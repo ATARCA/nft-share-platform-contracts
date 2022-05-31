@@ -63,7 +63,7 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
         address from,
         address to,
         uint256 tokenId
-    ) public virtual override {
+    ) public override pure {
         revert('Tokens are not transferrable');
     }
 
@@ -71,9 +71,25 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
         address from,
         address to,
         uint256 tokenId
-    ) public virtual override {
+    ) public override pure {
         revert('Tokens are not transferrable');
     }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) public override pure {
+        revert('Tokens are not transferrable');
+    }
+
+    function tokenExists(uint256 tokenId) external view returns (bool){
+        return _exists(tokenId);
+    }
+
+
+
 
     //disable transfers 
     //secure minting

@@ -30,6 +30,6 @@ module.exports = {
     currency: 'EUR',
     gasPrice: 3,
     coinmarketcap: process.env.COINMARKETCAP_KEY,
-    token: 'XDAI'
+    token: 'MATIC'
   }
 };
