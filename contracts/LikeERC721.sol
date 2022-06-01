@@ -14,8 +14,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 //Todo: add deployed shareable contract address to variable, related to making contract upgradeable
 //Todo: allow endorsing with 'weight' if address has contribution tokens, 2nd version of endorsement contract
 //Todo: allow revoking endorsements
+//Todo: rename contracts
+//Todo: allow adding a group of owners to the contract (check openzeppelin for available governance contracts)
+//Todo: allow only one like from wallet to a contribution
+//Todo: remove requirement to have contribtion tokens in users wallet to be able to like
+//Todo: don't allow users to like if they have already endorsed and vice versa
 
-//Todo: allow endorsing only if user has any contribution tokens
+//Todo: if token is burned reset users contribution endorsement related to that contribution
+//Todo: let addresses to interfaces be changeable
 
 interface project_contributions {
   function tokenExists(uint256 tokenId) external view returns(bool);
@@ -24,23 +30,27 @@ interface project_contributions {
   function ownerOf(uint256 tokenId) external view returns(address);
 }
 
-interface likes {
+interface endorsements {
+  // has endorsed method required, user has any balance on other contract, means he has endorsed
   function balanceOf(address owner) external view returns(uint256);
 }
 
-contract EndorseERC721 is ERC721, Ownable {
+contract LikeERC721 is ERC721, Ownable {
 
   // Who endorsed whom, with what token and which contribution
-  event Endorse(address indexed endorser, address indexed endorsee, uint256 indexed endorsementTokenId, uint256 contributionTokenId);
+  //Todo: consider removing liker address from event (obfuscate whom has liked, allow people to voice opinion without explicitly telling whom liked what)
+  event Like(address indexed liker, address indexed likee, uint256 indexed likeTokenId, uint256 contributionTokenId);
 
   uint256 internal _currentIndex;
   //Todo: consider upgradeable contracs, non-immutable address
   project_contributions immutable sc;
+  endorsements immutable pe;
 
   mapping(uint256 => mapping(address => bool)) private _contributionEndorsements;
 
-  constructor(string memory _name, string memory _symbol, project_contributions _project_contributions) ERC721(_name, _symbol) {
+  constructor(string memory _name, string memory _symbol, project_contributions _project_contributions, endorsements _project_endorsements) ERC721(_name, _symbol) {
     sc = _project_contributions;
+    pe = _project_endorsements;
     _currentIndex = uint256(0);
   }
 
@@ -59,7 +69,7 @@ contract EndorseERC721 is ERC721, Ownable {
     _contributionEndorsements[contributionTokenId][msg.sender] = true;
 
     address _endorsee = sc.ownerOf(contributionTokenId);
-    emit Endorse(msg.sender, _endorsee, _currentIndex, contributionTokenId);
+    emit Like(msg.sender, _endorsee, _currentIndex, contributionTokenId);
     _currentIndex++; 
   }
 

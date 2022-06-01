@@ -60,26 +60,26 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
     //Todo: do we want to enable sharing to contracts
 
     function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
+        address,
+        address,
+        uint256
     ) public override pure {
         revert('Tokens are not transferrable');
     }
 
     function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
+        address,
+        address,
+        uint256
     ) public override pure {
         revert('Tokens are not transferrable');
     }
 
     function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory _data
+        address,
+        address,
+        uint256,
+        bytes memory
     ) public override pure {
         revert('Tokens are not transferrable');
     }

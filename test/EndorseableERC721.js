@@ -33,8 +33,8 @@ describe("Endorsable ERC721 contract", function() {
 
     instanceShareableTokenContract = await ShareableTokenContract.deploy("ShareableToken", "ST")
 
-    EndorsableTokenContract = await ethers.getContractFactory("EndorsableERC721");
-    instanceEncordsableTokenContract = await EndorsableTokenContract.deploy("EndorsableERC721", "ET", instanceShareableTokenContract.address)
+    EndorsableTokenContract = await ethers.getContractFactory("EndorseERC721");
+    instanceEncordsableTokenContract = await EndorsableTokenContract.deploy("EndorseERC721", "ET", instanceShareableTokenContract.address)
   })
   
   describe("Deployment", function() {
