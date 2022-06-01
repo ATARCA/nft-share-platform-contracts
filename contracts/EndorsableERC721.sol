@@ -15,7 +15,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 //Todo: allow endorsing with 'weight' if address has contribution tokens, 2nd version of endorsement contract
 //Todo: allow revoking endorsements
 
-//Todo: allow endorsing only if user has any contribution tokens
+//Todo: allow endorsing only if user has any contribution token
+//Todo: metadata uri should point to contribution token, or should be the same as the contribution token
+//Todo: rename contracts
+//Todo: make contract pausable
 
 interface project_contributions {
   function tokenExists(uint256 tokenId) external view returns(bool);
@@ -35,13 +38,31 @@ contract EndorseERC721 is ERC721, Ownable {
 
   uint256 internal _currentIndex;
   //Todo: consider upgradeable contracs, non-immutable address
-  project_contributions immutable sc;
+  project_contributions private sc;
+  likes private lc;
 
   mapping(uint256 => mapping(address => bool)) private _contributionEndorsements;
 
-  constructor(string memory _name, string memory _symbol, project_contributions _project_contributions) ERC721(_name, _symbol) {
-    sc = _project_contributions;
+  constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
     _currentIndex = uint256(0);
+  }
+
+  function setProjectAddress(project_contributions _project_contributions) public onlyOwner returns (address) {
+    sc = _project_contributions;
+    return address(sc);
+  }
+
+  function getProjectAddress() public view returns (address) {
+    return address(sc);
+  }
+
+  function setLikesAddress(likes _likes) public onlyOwner returns (address) {
+    lc = _likes;
+    return address(lc);
+  }
+
+  function getLikesAddress() public view returns (address) {
+    return address(lc);
   }
 
   function mint(

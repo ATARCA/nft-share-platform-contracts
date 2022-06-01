@@ -14,14 +14,15 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 //Todo: add deployed shareable contract address to variable, related to making contract upgradeable
 //Todo: allow endorsing with 'weight' if address has contribution tokens, 2nd version of endorsement contract
 //Todo: allow revoking endorsements
-//Todo: rename contracts
 //Todo: allow adding a group of owners to the contract (check openzeppelin for available governance contracts)
 //Todo: allow only one like from wallet to a contribution
 //Todo: remove requirement to have contribtion tokens in users wallet to be able to like
 //Todo: don't allow users to like if they have already endorsed and vice versa
 
 //Todo: if token is burned reset users contribution endorsement related to that contribution
-//Todo: let addresses to interfaces be changeable
+//Todo: interface addresses should be changeable by the owners of contract
+//Todo: metadata uri should point to contribution token, or should be the same as the contribution token
+//Todo: make contract pausable
 
 interface project_contributions {
   function tokenExists(uint256 tokenId) external view returns(bool);
@@ -43,8 +44,8 @@ contract LikeERC721 is ERC721, Ownable {
 
   uint256 internal _currentIndex;
   //Todo: consider upgradeable contracs, non-immutable address
-  project_contributions immutable sc;
-  endorsements immutable pe;
+  project_contributions private sc;
+  endorsements private pe;
 
   mapping(uint256 => mapping(address => bool)) private _contributionEndorsements;
 

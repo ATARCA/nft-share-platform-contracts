@@ -11,6 +11,9 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+//Todo: make contract pausable
+//Todo: add more complex governance tools than ownable
+
 contract ShareableERC721 is ERC721URIStorage, Ownable {
 
     string baseURI;

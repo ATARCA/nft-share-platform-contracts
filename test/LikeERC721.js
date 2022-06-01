@@ -37,7 +37,7 @@ describe("Likeable ERC721 contract", function() {
     instanceContributionTokenContract = await ContributionTokenContract.deploy("ShareableToken", "ST")
 
     EndorseTokenContract = await ethers.getContractFactory("EndorseERC721");
-    instanceEndorseTokenContract = await EndorseTokenContract.deploy("EndorseERC721", "ET", instanceContributionTokenContract.address)
+    instanceEndorseTokenContract = await EndorseTokenContract.deploy("EndorseERC721", "ET")
 
     LikeTokenContract = await ethers.getContractFactory("LikeERC721");
     instanceLikeTokenContract = await LikeTokenContract.deploy("LikeERC721", "LT", instanceContributionTokenContract.address, instanceEndorseTokenContract.address)
