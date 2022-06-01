@@ -40,7 +40,10 @@ describe("Likeable ERC721 contract", function() {
     instanceEndorseTokenContract = await EndorseTokenContract.deploy("EndorseERC721", "ET")
 
     LikeTokenContract = await ethers.getContractFactory("LikeERC721");
-    instanceLikeTokenContract = await LikeTokenContract.deploy("LikeERC721", "LT", instanceContributionTokenContract.address, instanceEndorseTokenContract.address)
+    instanceLikeTokenContract = await LikeTokenContract.deploy("LikeERC721", "LT")
+
+    await instanceLikeTokenContract.setProjectAddress(instanceContributionTokenContract.address)
+    await instanceLikeTokenContract.setEndorsesAddress(instanceEndorseTokenContract.address)
   })
 
   describe("Deployment", function() {
@@ -48,6 +51,9 @@ describe("Likeable ERC721 contract", function() {
     it("Contracts should deploy succesfully and have right symbols", async function() {
       expect(await instanceContributionTokenContract.symbol()).to.equal("ST")
       expect(await instanceEndorseTokenContract.symbol()).to.equal("ET")
+      expect(await instanceLikeTokenContract.symbol()).to.equal("LT")
+      expect(await instanceLikeTokenContract.getProjectAddress()).to.equal(instanceContributionTokenContract.address)
+      expect(await instanceLikeTokenContract.getEndorsesAddress()).to.equal(instanceEndorseTokenContract.address)
       
     })
   })

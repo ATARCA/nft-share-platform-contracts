@@ -49,10 +49,26 @@ contract LikeERC721 is ERC721, Ownable {
 
   mapping(uint256 => mapping(address => bool)) private _contributionEndorsements;
 
-  constructor(string memory _name, string memory _symbol, project_contributions _project_contributions, endorsements _project_endorsements) ERC721(_name, _symbol) {
-    sc = _project_contributions;
-    pe = _project_endorsements;
+  constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
     _currentIndex = uint256(0);
+  }
+
+  function setProjectAddress(project_contributions _project_contributions) public onlyOwner returns (address) {
+    sc = _project_contributions;
+    return address(sc);
+  }
+
+  function getProjectAddress() public view returns (address) {
+    return address(sc);
+  }
+
+  function setEndorsesAddress(endorsements _endorsements) public onlyOwner returns (address) {
+    pe = _endorsements;
+    return address(pe);
+  }
+
+  function getEndorsesAddress() public view returns (address) {
+    return address(pe);
   }
 
   function mint(

@@ -36,12 +36,11 @@ describe("Endorsable ERC721 contract", function() {
     EndorsableTokenContract = await ethers.getContractFactory("EndorseERC721");
     instanceEncordsableTokenContract = await EndorsableTokenContract.deploy("EndorseERC721", "ET")
 
+    LikeTokenContract = await ethers.getContractFactory("LikeERC721");
+    instanceLikeTokenContract = await LikeTokenContract.deploy("LikeERC721", "LT")
+
     await instanceEncordsableTokenContract.setProjectAddress(instanceShareableTokenContract.address)
-    //await instanceEncordsableTokenContract["setProjectAddress(project_contributions)"](instanceShareableTokenContract.address)
-    //Todo: call function to set instanceShareableTokenContract.address
-
-    //await expect(instanceEncordsableTokenContract["safeTransferFrom(address,address,uint256,bytes)"](owner.address, addr1.address, 0, [])).to.be.revertedWith('Tokens are not transferrable')
-
+    await instanceEncordsableTokenContract.setLikesAddress(instanceLikeTokenContract.address)
   })
   
   describe("Deployment", function() {
@@ -49,8 +48,10 @@ describe("Endorsable ERC721 contract", function() {
     it("Contracts should deploy succesfully and have right symbols, interfaces should be set to correct addresses", async function() {
       expect(await instanceShareableTokenContract.symbol()).to.equal("ST")
       expect(await instanceEncordsableTokenContract.symbol()).to.equal("ET")
+      expect(await instanceLikeTokenContract.symbol()).to.equal("LT")
+      
       expect(await instanceEncordsableTokenContract.getProjectAddress()).to.equal(instanceShareableTokenContract.address)
-      //expect(await instanceEncordsableTokenContract.getLikesAddress()).to.equal
+      expect(await instanceEncordsableTokenContract.getLikesAddress()).to.equal(instanceLikeTokenContract.address)
     })
   })
 
