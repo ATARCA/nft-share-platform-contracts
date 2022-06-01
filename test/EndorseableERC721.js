@@ -14,7 +14,7 @@ const logEvents = async function(calledMethod) {
 describe("Endorsable ERC721 contract", function() {
 
   let EndorsableTokenContract;
-  let instanceEncordsableTokenContract;
+  let instanceEndorsableTokenContract;
 
   let ShareableTokenContract;
   let instanceShareableTokenContract;
@@ -34,24 +34,32 @@ describe("Endorsable ERC721 contract", function() {
     instanceShareableTokenContract = await ShareableTokenContract.deploy("ShareableToken", "ST")
 
     EndorsableTokenContract = await ethers.getContractFactory("EndorseERC721");
-    instanceEncordsableTokenContract = await EndorsableTokenContract.deploy("EndorseERC721", "ET")
+    instanceEndorsableTokenContract = await EndorsableTokenContract.deploy("EndorseERC721", "ET")
 
     LikeTokenContract = await ethers.getContractFactory("LikeERC721");
     instanceLikeTokenContract = await LikeTokenContract.deploy("LikeERC721", "LT")
 
-    await instanceEncordsableTokenContract.setProjectAddress(instanceShareableTokenContract.address)
-    await instanceEncordsableTokenContract.setLikesAddress(instanceLikeTokenContract.address)
+    await instanceEndorsableTokenContract.setProjectAddress(instanceShareableTokenContract.address)
+    await instanceEndorsableTokenContract.setLikesAddress(instanceLikeTokenContract.address)
+
+    await instanceShareableTokenContract.mint(addr1.address)
+    await instanceShareableTokenContract.mint(addr2.address)
+    //let foo = await instanceShareableTokenContract.balanceOf(owner.address)
+    //console.log(foo)
+
+    //Todo: mint a contribution token for the contract owner
+
   })
   
   describe("Deployment", function() {
 
     it("Contracts should deploy succesfully and have right symbols, interfaces should be set to correct addresses", async function() {
       expect(await instanceShareableTokenContract.symbol()).to.equal("ST")
-      expect(await instanceEncordsableTokenContract.symbol()).to.equal("ET")
+      expect(await instanceEndorsableTokenContract.symbol()).to.equal("ET")
       expect(await instanceLikeTokenContract.symbol()).to.equal("LT")
-      
-      expect(await instanceEncordsableTokenContract.getProjectAddress()).to.equal(instanceShareableTokenContract.address)
-      expect(await instanceEncordsableTokenContract.getLikesAddress()).to.equal(instanceLikeTokenContract.address)
+
+      expect(await instanceEndorsableTokenContract.getProjectAddress()).to.equal(instanceShareableTokenContract.address)
+      expect(await instanceEndorsableTokenContract.getLikesAddress()).to.equal(instanceLikeTokenContract.address)
     })
   })
 
@@ -60,53 +68,58 @@ describe("Endorsable ERC721 contract", function() {
     let s_tokenURI = 'http://example.com/tokens/000';
 
     it("Should be able to endorse existing contribution", async function() {
-      const minting = await instanceShareableTokenContract.mint(addr1.address)
-      expect(minting).to.emit(instanceShareableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, s_tokenId)
+      //const minting = await instanceShareableTokenContract.mint(addr1.address)
+      //expect(minting).to.emit(instanceShareableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000001", addr1.address, s_tokenId)
 
-      const e_minting = await instanceEncordsableTokenContract.mint(s_tokenId)
-      expect(e_minting).to.emit(instanceEncordsableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", owner.address, s_tokenId)
-      expect(e_minting).to.emit(instanceEncordsableTokenContract, "Endorse").withArgs(owner.address, addr1.address, 0, s_tokenId)
+      const e_minting = await instanceEndorsableTokenContract.connect(addr2).mint(s_tokenId)
+      expect(e_minting).to.emit(instanceEndorsableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr2.address, s_tokenId)
+      expect(e_minting).to.emit(instanceEndorsableTokenContract, "Endorse").withArgs(addr2.address, addr1.address, 0, s_tokenId)
     })
 
     it("Should not be able to endorse token that doesn't exist", async function() {
-      const minting = await instanceShareableTokenContract.mint(addr1.address)
-      expect(minting).to.emit(instanceShareableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, s_tokenId)
-      await expect(instanceEncordsableTokenContract.mint(002)).to.be.revertedWith("Contribution token must exist")
+      //const minting = await instanceShareableTokenContract.mint(addr1.address)
+      //expect(minting).to.emit(instanceShareableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, s_tokenId)
+      await expect(instanceEndorsableTokenContract.mint(002)).to.be.revertedWith("Contribution token must exist")
     })
 
     it("Should not be able to endorse same contribution twice from same wallet", async function() {
-      const minting = await instanceShareableTokenContract.mint(addr1.address)
-      expect(minting).to.emit(instanceShareableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, s_tokenId)
+      //const minting = await instanceShareableTokenContract.mint(addr1.address)
+      //expect(minting).to.emit(instanceShareableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, s_tokenId)
       //Endorse once
-      const e_minting = await instanceEncordsableTokenContract.mint(s_tokenId)
-      expect(e_minting).to.emit(instanceEncordsableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", owner.address, 0)
-      expect(e_minting).to.emit(instanceEncordsableTokenContract, "Endorse").withArgs(owner.address, addr1.address, 0, s_tokenId)
+      const e_minting = await instanceEndorsableTokenContract.connect(addr1).mint(s_tokenId)
+      expect(e_minting).to.emit(instanceEndorsableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, 0)
+      expect(e_minting).to.emit(instanceEndorsableTokenContract, "Endorse").withArgs(addr1.address, addr1.address, 0, s_tokenId)
       //Try to endorse again
-      await expect(instanceEncordsableTokenContract.mint(s_tokenId)).to.be.revertedWith("Contributions cannot be endorsed twice")
+      await expect(instanceEndorsableTokenContract.connect(addr1).mint(s_tokenId)).to.be.revertedWith("Contributions cannot be endorsed twice")
     })
 
     it("Should be able to endorse same contribution from different wallets", async function() {
-      const minting = await instanceShareableTokenContract.mint(addr1.address)
-      expect(minting).to.emit(instanceShareableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, s_tokenId)
+      //const minting = await instanceShareableTokenContract.mint(addr1.address)
+      //expect(minting).to.emit(instanceShareableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, s_tokenId)
       
       //Endorse once
-      const e_minting = await instanceEncordsableTokenContract.mint(s_tokenId)
-      expect(e_minting).to.emit(instanceEncordsableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", owner.address, 0)
-      expect(e_minting).to.emit(instanceEncordsableTokenContract, "Endorse").withArgs(owner.address, addr1.address, 0, s_tokenId)
+      const e_minting = await instanceEndorsableTokenContract.connect(addr1).mint(s_tokenId)
+      expect(e_minting).to.emit(instanceEndorsableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, 0)
+      expect(e_minting).to.emit(instanceEndorsableTokenContract, "Endorse").withArgs(addr1.address, addr1.address, 0, s_tokenId)
 
       //Endorse again
-      const e_minting_w2 = await instanceEncordsableTokenContract.connect(addr2).mint(s_tokenId)
-      expect(e_minting_w2).to.emit(instanceEncordsableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr2.address, 1)
-      expect(e_minting_w2).to.emit(instanceEncordsableTokenContract, "Endorse").withArgs(addr2.address, addr1.address, 1, s_tokenId)
+      const e_minting_w2 = await instanceEndorsableTokenContract.connect(addr2).mint(s_tokenId)
+      expect(e_minting_w2).to.emit(instanceEndorsableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr2.address, 1)
+      expect(e_minting_w2).to.emit(instanceEndorsableTokenContract, "Endorse").withArgs(addr2.address, addr1.address, 1, s_tokenId)
     })
 
     it("Tokens should not be transferrable", async function() {
-      const minting = await instanceShareableTokenContract.mint(addr1.address)
+      //const minting = await instanceShareableTokenContract.mint(addr1.address)
       
-      await instanceEncordsableTokenContract.mint(s_tokenId)
-      await expect(instanceEncordsableTokenContract.transferFrom(owner.address, addr1.address, 0)).to.be.revertedWith('Tokens are not transferrable')
-      await expect(instanceEncordsableTokenContract["safeTransferFrom(address,address,uint256)"](owner.address, addr1.address, 0)).to.be.revertedWith('Tokens are not transferrable')
-      await expect(instanceEncordsableTokenContract["safeTransferFrom(address,address,uint256,bytes)"](owner.address, addr1.address, 0, [])).to.be.revertedWith('Tokens are not transferrable')
+      await instanceEndorsableTokenContract.connect(addr1).mint(s_tokenId)
+      await expect(instanceEndorsableTokenContract.connect(addr1).transferFrom(addr1.address, addr2.address, 0)).to.be.revertedWith('Tokens are not transferrable')
+      await expect(instanceEndorsableTokenContract.connect(addr1)["safeTransferFrom(address,address,uint256)"](addr1.address, addr2.address, 0)).to.be.revertedWith('Tokens are not transferrable')
+      await expect(instanceEndorsableTokenContract.connect(addr1)["safeTransferFrom(address,address,uint256,bytes)"](addr1.address, addr2.address, 0, [])).to.be.revertedWith('Tokens are not transferrable')
     });
+
+    it("Only owner should be able to update interface addrersses", async function() {
+      await expect(instanceEndorsableTokenContract.connect(addr1).setProjectAddress(instanceShareableTokenContract.address)).to.be.revertedWith('Ownable: caller is not the owner')
+      await expect(instanceEndorsableTokenContract.connect(addr1).setLikesAddress(instanceLikeTokenContract.address)).to.be.revertedWith('Ownable: caller is not the owner')
+    })
   })
 })

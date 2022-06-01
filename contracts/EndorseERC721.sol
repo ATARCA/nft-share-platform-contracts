@@ -11,7 +11,6 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-//Todo: add deployed shareable contract address to variable, related to making contract upgradeable
 //Todo: allow endorsing with 'weight' if address has contribution tokens, 2nd version of endorsement contract
 //Todo: allow revoking endorsements
 
@@ -25,6 +24,7 @@ interface project_contributions {
   function tokenURI(uint256 tokenId) external view returns (string memory);
   function symbol() external view returns(string memory);
   function ownerOf(uint256 tokenId) external view returns(address);
+  function balanceOf(address owner) external view returns(uint256);
 }
 
 interface likes {
@@ -70,6 +70,9 @@ contract EndorseERC721 is ERC721, Ownable {
   ) external {
     //Check that contribution token exists
     require(sc.tokenExists(contributionTokenId),"Contribution token must exist");
+
+    //Todo: require that minter has a balance of contribution tokens
+    require(sc.balanceOf(msg.sender) > 0, "Cannot endorse without any contributions awarded for this account.");
 
     //Todo: check that wallet haven't already minted an endorsement token for given contribution token
     //Todo: uncertain if this key check works!
