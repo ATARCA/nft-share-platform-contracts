@@ -58,4 +58,19 @@ describe("Likeable ERC721 contract", function() {
     })
   })
 
+
+  // should be able to mint
+
+  // shouldn't be able to like if no contribution token
+
+  // shouldn't be able to like twice
+
+  // should not be transferable
+
+  // should no be able to like if already has endorsed
+
+  // should be able to burn the token and after burning token should not be liked anymore by the user
+
+  // should be able to get metadata of liked contribution from the like token
+
 })

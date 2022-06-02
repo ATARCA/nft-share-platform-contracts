@@ -14,10 +14,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 //Todo: allow endorsing with 'weight' if address has contribution tokens, 2nd version of endorsement contract
 //Todo: allow revoking endorsements
 
-//Todo: allow endorsing only if user has any contribution token
 //Todo: metadata uri should point to contribution token, or should be the same as the contribution token
 //Todo: rename contracts
 //Todo: make contract pausable
+//Todo: don't allow endorsing if user address has already liked the contribution
 
 interface project_contributions {
   function tokenExists(uint256 tokenId) external view returns(bool);
@@ -29,6 +29,8 @@ interface project_contributions {
 
 interface likes {
   function balanceOf(address owner) external view returns(uint256);
+  function hasLikedContribution(address endorser, uint256 contributionTokenId) external view returns (bool);
+  //Todo: check if msg sender has a already liked a specific contribution, a like token for the sender for a specific contribution has been minted
 }
 
 contract EndorseERC721 is ERC721, Ownable {
@@ -45,6 +47,10 @@ contract EndorseERC721 is ERC721, Ownable {
 
   constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
     _currentIndex = uint256(0);
+  }
+
+  function burn(uint256 tokenId) public {
+    _burn(tokenId);
   }
 
   function setProjectAddress(project_contributions _project_contributions) public onlyOwner returns (address) {
@@ -65,11 +71,17 @@ contract EndorseERC721 is ERC721, Ownable {
     return address(lc);
   }
 
+  function hasEndorsedContribution(address endorser, uint256 contributionTokenId) public view returns (bool) {
+    return _contributionEndorsements[contributionTokenId][endorser] == true;
+  }
+
   function mint(
     uint256 contributionTokenId
   ) external {
     //Check that contribution token exists
     require(sc.tokenExists(contributionTokenId),"Contribution token must exist");
+
+    require(lc.hasLikedContribution(msg.sender, contributionTokenId) == false, "Cannot endorse if already liked");
 
     //Todo: require that minter has a balance of contribution tokens
     require(sc.balanceOf(msg.sender) > 0, "Cannot endorse without any contributions awarded for this account.");

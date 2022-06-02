@@ -12,17 +12,17 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 //Todo: add deployed shareable contract address to variable, related to making contract upgradeable
-//Todo: allow endorsing with 'weight' if address has contribution tokens, 2nd version of endorsement contract
 //Todo: allow revoking endorsements
 //Todo: allow adding a group of owners to the contract (check openzeppelin for available governance contracts)
 //Todo: allow only one like from wallet to a contribution
-//Todo: remove requirement to have contribtion tokens in users wallet to be able to like
 //Todo: don't allow users to like if they have already endorsed and vice versa
 
 //Todo: if token is burned reset users contribution endorsement related to that contribution
 //Todo: interface addresses should be changeable by the owners of contract
 //Todo: metadata uri should point to contribution token, or should be the same as the contribution token
 //Todo: make contract pausable
+
+//Todo: don't allow liking of address has already endorsed the contribution
 
 interface project_contributions {
   function tokenExists(uint256 tokenId) external view returns(bool);
@@ -34,6 +34,7 @@ interface project_contributions {
 interface endorsements {
   // has endorsed method required, user has any balance on other contract, means he has endorsed
   function balanceOf(address owner) external view returns(uint256);
+  function hasEndorsedContribution(address endorser, uint256 contributionTokenId) external view returns (bool);
 }
 
 contract LikeERC721 is ERC721, Ownable {
@@ -47,7 +48,8 @@ contract LikeERC721 is ERC721, Ownable {
   project_contributions private sc;
   endorsements private pe;
 
-  mapping(uint256 => mapping(address => bool)) private _contributionEndorsements;
+  //Token -> wallet adderss -> boolean
+  mapping(uint256 => mapping(address => bool)) private _contributionLikes;
 
   constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
     _currentIndex = uint256(0);
@@ -71,6 +73,10 @@ contract LikeERC721 is ERC721, Ownable {
     return address(pe);
   }
 
+  function hasLikedContribution(address endorser, uint256 contributionTokenId) public view returns (bool) {
+    return _contributionLikes[contributionTokenId][endorser];
+  }
+
   function mint(
     uint256 contributionTokenId
   ) external {
@@ -79,11 +85,11 @@ contract LikeERC721 is ERC721, Ownable {
 
     //Todo: check that wallet haven't already minted an endorsement token for given contribution token
     //Todo: uncertain if this key check works!
-    require(_contributionEndorsements[contributionTokenId][msg.sender] == false, "Contributions cannot be endorsed twice");
+    require(_contributionLikes[contributionTokenId][msg.sender] == false, "Contributions cannot be endorsed twice");
     //msg.sender (address of method caller)
     //Todo: make incrementable token id
     _mint(msg.sender, _currentIndex);
-    _contributionEndorsements[contributionTokenId][msg.sender] = true;
+    _contributionLikes[contributionTokenId][msg.sender] = true;
 
     address _endorsee = sc.ownerOf(contributionTokenId);
     emit Like(msg.sender, _endorsee, _currentIndex, contributionTokenId);

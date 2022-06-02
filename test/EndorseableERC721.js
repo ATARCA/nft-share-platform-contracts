@@ -39,9 +39,15 @@ describe("Endorsable ERC721 contract", function() {
     LikeTokenContract = await ethers.getContractFactory("LikeERC721");
     instanceLikeTokenContract = await LikeTokenContract.deploy("LikeERC721", "LT")
 
+    //Set endorse contract interface addresses
     await instanceEndorsableTokenContract.setProjectAddress(instanceShareableTokenContract.address)
     await instanceEndorsableTokenContract.setLikesAddress(instanceLikeTokenContract.address)
 
+    //Set like contract interface addresses
+    await instanceLikeTokenContract.setProjectAddress(instanceShareableTokenContract.address)
+    await instanceLikeTokenContract.setEndorsesAddress(instanceEndorsableTokenContract.address)
+
+    //Mint a couple of contributions as contract author
     await instanceShareableTokenContract.mint(addr1.address)
     await instanceShareableTokenContract.mint(addr2.address)
   })
@@ -104,5 +110,24 @@ describe("Endorsable ERC721 contract", function() {
       await expect(instanceEndorsableTokenContract.connect(addr1).setProjectAddress(instanceShareableTokenContract.address)).to.be.revertedWith('Ownable: caller is not the owner')
       await expect(instanceEndorsableTokenContract.connect(addr1).setLikesAddress(instanceLikeTokenContract.address)).to.be.revertedWith('Ownable: caller is not the owner')
     })
+
+    // should not be able to endorse if already has liked
+    it("should not be able to endorse if already has liked a contribution", async function() {
+      //Todo: like a contribution
+      //Todo: try to endorse the same contribution
+      //Like token #0 as addr1
+      await instanceLikeTokenContract.connect(addr1).mint(s_tokenId)
+      //Attempt to endrose the same token as addr1
+      await expect(instanceEndorsableTokenContract.connect(addr1).mint(s_tokenId)).to.be.reverted
+
+    })
+
+    // only owner should be able to burn the token
+
+    // should be able to burn the token and after burning token should not be liked anymore by the user
+
+    // should be able to get metadata of endorsed contribution from the endorse token
+
+
   })
 })
