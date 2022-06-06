@@ -13,14 +13,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "hardhat/console.sol";
 
-
-//Todo: allow endorsing with 'weight' if address has contribution tokens, 2nd version of endorsement contract
-//Todo: allow revoking endorsements
-
-//Todo: metadata uri should point to contribution token, or should be the same as the contribution token
 //Todo: rename contracts
 //Todo: make contract pausable
-//Todo: don't allow endorsing if user address has already liked the contribution
 
 interface project_contributions {
   function tokenExists(uint256 tokenId) external view returns(bool);

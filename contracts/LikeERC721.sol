@@ -11,18 +11,10 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-//Todo: add deployed shareable contract address to variable, related to making contract upgradeable
-//Todo: allow revoking endorsements
 //Todo: allow adding a group of owners to the contract (check openzeppelin for available governance contracts)
-//Todo: allow only one like from wallet to a contribution
-//Todo: don't allow users to like if they have already endorsed and vice versa
 
 //Todo: if token is burned reset users contribution endorsement related to that contribution
-//Todo: interface addresses should be changeable by the owners of contract
-//Todo: metadata uri should point to contribution token, or should be the same as the contribution token
 //Todo: make contract pausable
-
-//Todo: don't allow liking of address has already endorsed the contribution
 
 interface project_contributions {
   function tokenExists(uint256 tokenId) external view returns(bool);
