@@ -29,6 +29,7 @@ interface project_contributions {
   function tokenURI(uint256 tokenId) external view returns (string memory);
   function symbol() external view returns(string memory);
   function ownerOf(uint256 tokenId) external view returns(address);
+  function burn(uint256 tokenId) external view;
 }
 
 interface endorsements {

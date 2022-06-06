@@ -3,6 +3,7 @@ const { Description } = require("@ethersproject/properties");
 const { expect } = require("chai");
 const exp = require("constants");
 const { ethers } = require("hardhat");
+const hre = require("hardhat");
 
 const logEvents = async function(calledMethod) {
   const receipt = await calledMethod.wait()
@@ -27,11 +28,14 @@ describe("Likeable ERC721 contract", function() {
   let addr2;
   let addrs;
 
-  beforeEach(async function() {
+  let s_tokenId = "0x0000000000000000000000000000000000000000";
 
+  beforeEach(async function() {
+    
+    await hre.network.provider.send("hardhat_reset");
     //Todo: deploy contracts
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
-    console.log('owner', owner.address)
+    //console.log('owner', owner.address)
 
     ContributionTokenContract = await ethers.getContractFactory("ShareableERC721");
     instanceContributionTokenContract = await ContributionTokenContract.deploy("ShareableToken", "ST")
@@ -44,6 +48,10 @@ describe("Likeable ERC721 contract", function() {
 
     await instanceLikeTokenContract.setProjectAddress(instanceContributionTokenContract.address)
     await instanceLikeTokenContract.setEndorsesAddress(instanceEndorseTokenContract.address)
+
+    //Mint a couple of contributions as contract author
+    await instanceContributionTokenContract.mint(addr1.address)
+    await instanceContributionTokenContract.mint(addr2.address)
   })
 
   describe("Deployment", function() {
@@ -58,8 +66,11 @@ describe("Likeable ERC721 contract", function() {
     })
   })
 
-
-  // should be able to mint
+  it("Should be able to like an existing contribution", async function() {
+    const e_minting = await instanceLikeTokenContract.connect(addr2).mint(s_tokenId)
+    expect(e_minting).to.emit(instanceLikeTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr2.address, s_tokenId)
+    expect(e_minting).to.emit(instanceLikeTokenContract, "Like").withArgs(addr2.address, addr1.address, 0, s_tokenId)
+  })
 
   // shouldn't be able to like if no contribution token
 
@@ -72,5 +83,8 @@ describe("Likeable ERC721 contract", function() {
   // should be able to burn the token and after burning token should not be liked anymore by the user
 
   // should be able to get metadata of liked contribution from the like token
+
+  // should be able to burn the token and after burning token should not be liked anymore by the user
+
 
 })

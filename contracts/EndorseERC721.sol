@@ -11,6 +11,9 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+import "hardhat/console.sol";
+
+
 //Todo: allow endorsing with 'weight' if address has contribution tokens, 2nd version of endorsement contract
 //Todo: allow revoking endorsements
 
@@ -50,7 +53,9 @@ contract EndorseERC721 is ERC721, Ownable {
   }
 
   function burn(uint256 tokenId) public {
+    require(msg.sender == ownerOf(tokenId), "Must be owner of token to be able to burn it");
     _burn(tokenId);
+    _contributionEndorsements[tokenId][msg.sender] = false;
   }
 
   function setProjectAddress(project_contributions _project_contributions) public onlyOwner returns (address) {
@@ -97,6 +102,10 @@ contract EndorseERC721 is ERC721, Ownable {
     address _endorsee = sc.ownerOf(contributionTokenId);
     emit Endorse(msg.sender, _endorsee, _currentIndex, contributionTokenId);
     _currentIndex++; 
+  }
+
+  function tokenURI(uint256 tokenId) public view override returns (string memory) {
+    return sc.tokenURI(tokenId);
   }
 
   function transferFrom(

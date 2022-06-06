@@ -3,6 +3,7 @@ const { Description } = require("@ethersproject/properties");
 const { expect } = require("chai");
 const exp = require("constants");
 const { ethers } = require("hardhat");
+const hre = require("hardhat");
 
 const logEvents = async function(calledMethod) {
   const receipt = await calledMethod.wait()
@@ -24,14 +25,18 @@ describe("Endorsable ERC721 contract", function() {
   let addr2;
   let addrs;
 
+  let tokenURIBase = 'http://example.com/tokens/';
+
   beforeEach(async function() {
 
+    await hre.network.provider.send("hardhat_reset")
     //Todo: deploy contracts
     ShareableTokenContract = await ethers.getContractFactory("ShareableERC721");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
-    console.log('owner', owner.address)
+    //console.log('owner', owner.address)
 
     instanceShareableTokenContract = await ShareableTokenContract.deploy("ShareableToken", "ST")
+    instanceShareableTokenContract.setBaseURI(tokenURIBase);
 
     EndorsableTokenContract = await ethers.getContractFactory("EndorseERC721");
     instanceEndorsableTokenContract = await EndorsableTokenContract.deploy("EndorseERC721", "ET")
@@ -111,23 +116,34 @@ describe("Endorsable ERC721 contract", function() {
       await expect(instanceEndorsableTokenContract.connect(addr1).setLikesAddress(instanceLikeTokenContract.address)).to.be.revertedWith('Ownable: caller is not the owner')
     })
 
-    // should not be able to endorse if already has liked
     it("should not be able to endorse if already has liked a contribution", async function() {
-      //Todo: like a contribution
-      //Todo: try to endorse the same contribution
       //Like token #0 as addr1
       await instanceLikeTokenContract.connect(addr1).mint(s_tokenId)
       //Attempt to endrose the same token as addr1
       await expect(instanceEndorsableTokenContract.connect(addr1).mint(s_tokenId)).to.be.reverted
-
     })
 
-    // only owner should be able to burn the token
+    it("should be able to burn the token and after burning token should not be endorsed by user", async function() {
+      const e_minting = await instanceEndorsableTokenContract.connect(addr2).mint(s_tokenId)
+      expect(await instanceEndorsableTokenContract.connect(addr1).hasEndorsedContribution(addr2.address,s_tokenId)).to.equal(true)
+      await instanceEndorsableTokenContract.connect(addr2).burn(0)
+      
+      expect(await instanceEndorsableTokenContract.connect(addr1).hasEndorsedContribution(addr2.address,s_tokenId)).to.equal(false)
+      // count of tokens should be now decreased by one, user shouldn't be the owner of the token
+    })
 
-    // should be able to burn the token and after burning token should not be liked anymore by the user
+    it("only owner should be able to burn his token", async function() {
+      const e_minting = await instanceEndorsableTokenContract.connect(addr2).mint(s_tokenId)
+      expect(await instanceEndorsableTokenContract.connect(addr1).hasEndorsedContribution(addr2.address,s_tokenId)).to.equal(true)
+      await expect(instanceEndorsableTokenContract.connect(addr1).burn(0)).to.be.revertedWith("Must be owner of token to be able to burn it")
+    })
 
     // should be able to get metadata of endorsed contribution from the endorse token
 
+    it("should be able to get metadata of endorsed contribution from the endorse token", async function() {
+      const e_minting = await instanceEndorsableTokenContract.connect(addr2).mint(s_tokenId)
+      expect(await instanceEndorsableTokenContract.tokenURI(0)).to.equal("http://example.com/tokens/0")
+    })
 
   })
 })

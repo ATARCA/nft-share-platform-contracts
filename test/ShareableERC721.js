@@ -2,6 +2,7 @@ const { inputToConfig } = require("@ethereum-waffle/compiler");
 const { Description } = require("@ethersproject/properties");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const hre = require("hardhat");
 
 //Todo: check that events are fired correctly
 
@@ -25,6 +26,7 @@ describe("Shareable ERC 721 contract", function() {
 
   beforeEach(async function() {
 
+    await hre.network.provider.send("hardhat_reset")
     TokenContract = await ethers.getContractFactory("ShareableERC721");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
@@ -56,7 +58,7 @@ describe("Shareable ERC 721 contract", function() {
 
     it("Should mint a new token and transfer it to an account", async function() {
       const minting = await shareableERC721.mint(addr1.address)
-      logEvents(minting)
+      //logEvents(minting)
       expect(minting).to.emit(shareableERC721, "Transfer").withArgs(baseAddress, addr1.address, tokenId)
       expect(await shareableERC721.ownerOf(tokenId)).to.equal(addr1.address);
       expect(await shareableERC721.tokenURI(tokenId)).to.equal(tokenURI);
@@ -64,11 +66,11 @@ describe("Shareable ERC 721 contract", function() {
 
     it("Should mint token and should share a new token", async function() {
       const minting = await shareableERC721.mint(addr1.address)
-      logEvents(minting)
+      //logEvents(minting)
       expect(minting).to.emit(shareableERC721, "Transfer").withArgs(baseAddress, addr1.address, tokenId)
       
       const share = await shareableERC721.connect(addr1).share(addr2.address, tokenId);
-      logEvents(share)
+      //logEvents(share)
       expect(share).to.emit(shareableERC721, "Transfer").withArgs(tokenId, addr2.address, newTokenId)
       expect(share).to.emit(shareableERC721, "Share").withArgs(addr1.address, addr2.address, newTokenId, tokenId)
       expect(await shareableERC721.ownerOf(newTokenId)).to.equal(addr2.address);
