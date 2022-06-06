@@ -28,6 +28,8 @@ describe("Likeable ERC721 contract", function() {
   let addr2;
   let addrs;
 
+  let tokenURIBase = 'http://example.com/tokens/';
+
   let s_tokenId = "0x0000000000000000000000000000000000000000";
 
   beforeEach(async function() {
@@ -39,6 +41,7 @@ describe("Likeable ERC721 contract", function() {
 
     ContributionTokenContract = await ethers.getContractFactory("ShareableERC721");
     instanceContributionTokenContract = await ContributionTokenContract.deploy("ShareableToken", "ST")
+    instanceContributionTokenContract.setBaseURI(tokenURIBase);
 
     EndorseTokenContract = await ethers.getContractFactory("EndorseERC721");
     instanceEndorseTokenContract = await EndorseTokenContract.deploy("EndorseERC721", "ET")
@@ -48,6 +51,9 @@ describe("Likeable ERC721 contract", function() {
 
     await instanceLikeTokenContract.setProjectAddress(instanceContributionTokenContract.address)
     await instanceLikeTokenContract.setEndorsesAddress(instanceEndorseTokenContract.address)
+
+    await instanceEndorseTokenContract.setProjectAddress(instanceContributionTokenContract.address)
+    await instanceEndorseTokenContract.setLikesAddress(instanceLikeTokenContract.address)
 
     //Mint a couple of contributions as contract author
     await instanceContributionTokenContract.mint(addr1.address)
@@ -72,19 +78,70 @@ describe("Likeable ERC721 contract", function() {
     expect(e_minting).to.emit(instanceLikeTokenContract, "Like").withArgs(addr2.address, addr1.address, 0, s_tokenId)
   })
 
-  // shouldn't be able to like if no contribution token
+  it("Should not be able to like token that doesn't exist", async function() {
+    await expect(instanceLikeTokenContract.mint(002)).to.be.revertedWith("Contribution token must exist")
+  })
 
-  // shouldn't be able to like twice
+  it("Should not be able to like same contribution twice from same address", async function() {
+    //Endorse once
+    const e_minting = await instanceLikeTokenContract.connect(addr1).mint(s_tokenId)
+    expect(e_minting).to.emit(instanceLikeTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, 0)
+    expect(e_minting).to.emit(instanceLikeTokenContract, "Like").withArgs(addr1.address, addr1.address, 0, s_tokenId)
+    //Try to endorse again
+    await expect(instanceLikeTokenContract.connect(addr1).mint(s_tokenId)).to.be.revertedWith("Contributions cannot be liked twice")
+  })
 
-  // should not be transferable
+  it("Should be able to like same contribution from different wallets", async function() {
+    //Endorse once
+    const e_minting = await instanceLikeTokenContract.connect(addr1).mint(s_tokenId)
+    expect(e_minting).to.emit(instanceLikeTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, 0)
+    expect(e_minting).to.emit(instanceLikeTokenContract, "Like").withArgs(addr1.address, addr1.address, 0, s_tokenId)
 
-  // should no be able to like if already has endorsed
+    //Endorse again
+    const e_minting_w2 = await instanceLikeTokenContract.connect(addr2).mint(s_tokenId)
+    expect(e_minting_w2).to.emit(instanceLikeTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr2.address, 1)
+    expect(e_minting_w2).to.emit(instanceLikeTokenContract, "Like").withArgs(addr2.address, addr1.address, 1, s_tokenId)
+  })
 
-  // should be able to burn the token and after burning token should not be liked anymore by the user
+  it("Tokens should not be transferrable", async function() {
+    await instanceLikeTokenContract.connect(addr1).mint(s_tokenId)
+    await expect(instanceLikeTokenContract.connect(addr1).transferFrom(addr1.address, addr2.address, 0)).to.be.revertedWith('Tokens are not transferrable')
+    await expect(instanceLikeTokenContract.connect(addr1)["safeTransferFrom(address,address,uint256)"](addr1.address, addr2.address, 0)).to.be.revertedWith('Tokens are not transferrable')
+    await expect(instanceLikeTokenContract.connect(addr1)["safeTransferFrom(address,address,uint256,bytes)"](addr1.address, addr2.address, 0, [])).to.be.revertedWith('Tokens are not transferrable')
+  });
+
+  it("Only owner should be able to update interface addresses", async function() {
+    await expect(instanceLikeTokenContract.connect(addr1).setProjectAddress(instanceContributionTokenContract.address)).to.be.revertedWith('Ownable: caller is not the owner')
+    await expect(instanceLikeTokenContract.connect(addr1).setEndorsesAddress(instanceLikeTokenContract.address)).to.be.revertedWith('Ownable: caller is not the owner')
+  })
+
+  it("should not be able to like if already has endorsed a contribution", async function() {
+    //Endorse token #0 as addr1
+    await instanceEndorseTokenContract.connect(addr1).mint(s_tokenId)
+    //Attempt to like the same token as addr1
+    await expect(instanceLikeTokenContract.connect(addr1).mint(s_tokenId)).to.be.reverted
+  })
+
+  it("should be able to burn the token and after burning token should not be liked by user", async function() {
+    const e_minting = await instanceLikeTokenContract.connect(addr2).mint(s_tokenId)
+    expect(await instanceLikeTokenContract.connect(addr1).hasLikedContribution(addr2.address,s_tokenId)).to.equal(true)
+    await instanceLikeTokenContract.connect(addr2).burn(0)
+    
+    expect(await instanceLikeTokenContract.connect(addr1).hasLikedContribution(addr2.address,s_tokenId)).to.equal(false)
+    // count of tokens should be now decreased by one, user shouldn't be the owner of the token
+  })
+
+  it("only owner should be able to burn his token", async function() {
+    const e_minting = await instanceLikeTokenContract.connect(addr2).mint(s_tokenId)
+    expect(await instanceLikeTokenContract.connect(addr1).hasLikedContribution(addr2.address,s_tokenId)).to.equal(true)
+    await expect(instanceLikeTokenContract.connect(addr1).burn(0)).to.be.revertedWith("Must be owner of token to be able to burn it")
+  })
 
   // should be able to get metadata of liked contribution from the like token
 
-  // should be able to burn the token and after burning token should not be liked anymore by the user
-
+  it("should be able to get metadata of liked contribution from the endorse token", async function() {
+    const e_minting = await instanceLikeTokenContract.connect(addr2).mint(s_tokenId)
+    expect(await instanceLikeTokenContract.tokenURI(0)).to.equal("http://example.com/tokens/0")
+  })
 
 })

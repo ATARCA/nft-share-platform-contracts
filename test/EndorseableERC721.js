@@ -83,7 +83,7 @@ describe("Endorsable ERC721 contract", function() {
       await expect(instanceEndorsableTokenContract.mint(002)).to.be.revertedWith("Contribution token must exist")
     })
 
-    it("Should not be able to endorse same contribution twice from same wallet", async function() {
+    it("Should not be able to endorse same contribution twice from same address", async function() {
       //Endorse once
       const e_minting = await instanceEndorsableTokenContract.connect(addr1).mint(s_tokenId)
       expect(e_minting).to.emit(instanceEndorsableTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, 0)

@@ -29,7 +29,7 @@ interface project_contributions {
   function tokenURI(uint256 tokenId) external view returns (string memory);
   function symbol() external view returns(string memory);
   function ownerOf(uint256 tokenId) external view returns(address);
-  function burn(uint256 tokenId) external view;
+  function balanceOf(address owner) external view returns(uint256);
 }
 
 interface endorsements {
@@ -78,15 +78,23 @@ contract LikeERC721 is ERC721, Ownable {
     return _contributionLikes[contributionTokenId][endorser];
   }
 
+  function burn(uint256 tokenId) public {
+    require(msg.sender == ownerOf(tokenId), "Must be owner of token to be able to burn it");
+    _burn(tokenId);
+    _contributionLikes[tokenId][msg.sender] = false;
+  }
+
   function mint(
     uint256 contributionTokenId
   ) external {
     //Check that contribution token exists
     require(sc.tokenExists(contributionTokenId),"Contribution token must exist");
 
+    require(pe.hasEndorsedContribution(msg.sender, contributionTokenId) == false, "Cannot like if already endorsed");
+
     //Todo: check that wallet haven't already minted an endorsement token for given contribution token
     //Todo: uncertain if this key check works!
-    require(_contributionLikes[contributionTokenId][msg.sender] == false, "Contributions cannot be endorsed twice");
+    require(_contributionLikes[contributionTokenId][msg.sender] == false, "Contributions cannot be liked twice");
     //msg.sender (address of method caller)
     //Todo: make incrementable token id
     _mint(msg.sender, _currentIndex);
@@ -95,6 +103,10 @@ contract LikeERC721 is ERC721, Ownable {
     address _endorsee = sc.ownerOf(contributionTokenId);
     emit Like(msg.sender, _endorsee, _currentIndex, contributionTokenId);
     _currentIndex++; 
+  }
+
+  function tokenURI(uint256 tokenId) public view override returns (string memory) {
+    return sc.tokenURI(tokenId);
   }
 
   function transferFrom(
