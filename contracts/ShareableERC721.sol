@@ -10,11 +10,17 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 //Todo: make contract pausable
 //Todo: add more complex governance tools than ownable
 
-contract ShareableERC721 is ERC721URIStorage, Ownable {
+contract ShareableERC721 is ERC721URIStorage, AccessControl {
+
+    // experiment operator
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+
+    //Todo: hardcode addresses that should initially be admins, and whom should be intially the operators of the contract
 
     string baseURI;
 
@@ -22,6 +28,16 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
     
     constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
         _currentIndex = uint256(0);
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(OPERATOR_ROLE, msg.sender);
+        // Jarno
+        _setupRole(OPERATOR_ROLE, 0x125e0e620675d46BdB31CF0EFfEe91f4E3127C31);
+        // Martin
+        _setupRole(OPERATOR_ROLE, 0xBAf811debB67BF5fe7241f383192B97261F8e008);
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
+        return super.supportsInterface(interfaceId);
     }
 
     //Consider moving event definition to new Interfaces class with Share method
@@ -31,12 +47,12 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
 
     function mint(
         address account
-    ) external onlyOwner {
+    ) external onlyRole(OPERATOR_ROLE) {
         _mint(account, _currentIndex);
         _currentIndex++;
     }
 
-    function setBaseURI(string memory baseURI_) external onlyOwner {
+    function setBaseURI(string memory baseURI_) external onlyRole(OPERATOR_ROLE) {
         baseURI = baseURI_;
     }
     

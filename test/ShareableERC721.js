@@ -86,7 +86,7 @@ describe("Shareable ERC 721 contract", function() {
     });
 
     it("Tokens should not be mintable by other users except contract owner", async function() {
-      await expect(shareableERC721.connect(addr1).mint(addr1.address)).to.be.revertedWith("Ownable: caller is not the owner")
+      await expect(shareableERC721.connect(addr1).mint(addr1.address)).to.be.reverted
     });
 
     it("Tokens should not be transferrable by anyone, unless being minted or shared", async function() {
