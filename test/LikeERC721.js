@@ -111,8 +111,8 @@ describe("Likeable ERC721 contract", function() {
   });
 
   it("Only owner should be able to update interface addresses", async function() {
-    await expect(instanceLikeTokenContract.connect(addr1).setProjectAddress(instanceContributionTokenContract.address)).to.be.revertedWith('Ownable: caller is not the owner')
-    await expect(instanceLikeTokenContract.connect(addr1).setEndorsesAddress(instanceLikeTokenContract.address)).to.be.revertedWith('Ownable: caller is not the owner')
+    await expect(instanceLikeTokenContract.connect(addr1).setProjectAddress(instanceContributionTokenContract.address)).to.be.reverted
+    await expect(instanceLikeTokenContract.connect(addr1).setEndorsesAddress(instanceLikeTokenContract.address)).to.be.reverted
   })
 
   it("should not be able to like if already has endorsed a contribution", async function() {

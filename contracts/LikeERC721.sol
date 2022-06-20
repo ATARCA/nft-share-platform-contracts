@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 //Todo: allow adding a group of owners to the contract (check openzeppelin for available governance contracts)
 
@@ -30,7 +30,10 @@ interface endorsements {
   function hasEndorsedContribution(address endorser, uint256 contributionTokenId) external view returns (bool);
 }
 
-contract LikeERC721 is ERC721, Ownable {
+contract LikeERC721 is ERC721, AccessControl {
+
+  // experiment operator
+  bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
   // Who endorsed whom, with what token and which contribution
   //Todo: consider removing liker address from event (obfuscate whom has liked, allow people to voice opinion without explicitly telling whom liked what)
@@ -46,9 +49,19 @@ contract LikeERC721 is ERC721, Ownable {
 
   constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
     _currentIndex = uint256(0);
+    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    _setupRole(OPERATOR_ROLE, msg.sender);
+    // Jarno
+    _setupRole(OPERATOR_ROLE, 0x125e0e620675d46BdB31CF0EFfEe91f4E3127C31);
+    // Martin
+    _setupRole(OPERATOR_ROLE, 0xBAf811debB67BF5fe7241f383192B97261F8e008);
   }
 
-  function setProjectAddress(project_contributions _project_contributions) public onlyOwner returns (address) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
+    return super.supportsInterface(interfaceId);
+  }
+
+  function setProjectAddress(project_contributions _project_contributions) public onlyRole(OPERATOR_ROLE) returns (address) {
     sc = _project_contributions;
     return address(sc);
   }
@@ -57,7 +70,7 @@ contract LikeERC721 is ERC721, Ownable {
     return address(sc);
   }
 
-  function setEndorsesAddress(endorsements _endorsements) public onlyOwner returns (address) {
+  function setEndorsesAddress(endorsements _endorsements) public onlyRole(OPERATOR_ROLE) returns (address) {
     pe = _endorsements;
     return address(pe);
   }
