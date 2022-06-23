@@ -16,6 +16,8 @@ import "hardhat/console.sol";
 //Todo: rename contracts
 //Todo: make contract pausable
 
+//Todo: add mapping, which endorsement token reflects which
+
 interface project_contributions {
   function tokenExists(uint256 tokenId) external view returns(bool);
   function tokenURI(uint256 tokenId) external view returns (string memory);
