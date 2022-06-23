@@ -23,6 +23,8 @@ describe("Likeable ERC721 contract", function() {
   let ContributionTokenContract;
   let instanceContributionTokenContract;
 
+  let deployed_address;
+
   let owner;
   let addr1;
   let addr2;
@@ -141,7 +143,8 @@ describe("Likeable ERC721 contract", function() {
 
   it("should be able to get metadata of liked contribution from the endorse token", async function() {
     const e_minting = await instanceLikeTokenContract.connect(addr2).mint(s_tokenId)
-    expect(await instanceLikeTokenContract.tokenURI(0)).to.equal("http://example.com/tokens/0")
+    deployed_address = instanceContributionTokenContract.address.toLowerCase();
+    expect(await instanceLikeTokenContract.tokenURI(0)).to.equal('http://example.com/tokens/'+deployed_address+'/0')
   })
 
 })

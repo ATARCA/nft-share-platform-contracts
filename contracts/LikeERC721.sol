@@ -20,7 +20,7 @@ interface project_contributions is IERC721Metadata {
   function tokenExists(uint256 tokenId) external view returns(bool);
 }
 
-interface contribution_endorsements is IERC721Metadata {
+interface contribution_endorsements is IERC721 {
   // has endorsed method required, user has any balance on other contract, means he has endorsed
   function hasEndorsedContribution(address endorser, uint256 contributionTokenId) external view returns (bool);
 }

@@ -20,6 +20,8 @@ describe("Endorsable ERC721 contract", function() {
   let ShareableTokenContract;
   let instanceShareableTokenContract;
 
+  let deployed_address;
+
   let owner;
   let addr1;
   let addr2;
@@ -142,7 +144,8 @@ describe("Endorsable ERC721 contract", function() {
 
     it("should be able to get metadata of endorsed contribution from the endorse token", async function() {
       const e_minting = await instanceEndorsableTokenContract.connect(addr2).mint(s_tokenId)
-      expect(await instanceEndorsableTokenContract.tokenURI(0)).to.equal("http://example.com/tokens/0")
+      deployed_address = instanceShareableTokenContract.address.toLowerCase();
+      expect(await instanceEndorsableTokenContract.tokenURI(0)).to.equal('http://example.com/tokens/'+deployed_address+'/0')
     })
 
   })

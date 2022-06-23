@@ -20,7 +20,7 @@ interface project_contributions is IERC721Metadata {
   function tokenExists(uint256 tokenId) external view returns(bool);
 }
 
-interface contribution_likes is IERC721Metadata {
+interface contribution_likes is IERC721 {
   function hasLikedContribution(address endorser, uint256 contributionTokenId) external view returns (bool);
   //Todo: check if msg sender has a already liked a specific contribution, a like token for the sender for a specific contribution has been minted
 }
