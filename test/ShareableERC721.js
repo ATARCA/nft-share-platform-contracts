@@ -24,6 +24,7 @@ describe("Shareable ERC 721 contract", function() {
   let addr1;
   let addr2;
   let addrs;
+  let tokenURIBase
 
   beforeEach(async function() {
 
@@ -34,7 +35,7 @@ describe("Shareable ERC 721 contract", function() {
     shareableERC721 = await TokenContract.deploy("ShareableToken","ST");
     deployed_address = shareableERC721.address;
 
-    let tokenURIBase = 'http://example.com/tokens/';
+    tokenURIBase = 'domain/metadata/';
     shareableERC721.setBaseURI(tokenURIBase);
   }); 
 
@@ -62,7 +63,7 @@ describe("Shareable ERC 721 contract", function() {
       //logEvents(minting)
       expect(minting).to.emit(shareableERC721, "Transfer").withArgs(baseAddress, addr1.address, tokenId)
       expect(await shareableERC721.ownerOf(tokenId)).to.equal(addr1.address);
-      expect(await shareableERC721.tokenURI(tokenId)).to.equal('http://example.com/tokens/'+deployed_address+'/0');
+      expect(await shareableERC721.tokenURI(tokenId)).to.equal(tokenURIBase+deployed_address+'/0');
     });
 
     it("Should mint token and should share a new token", async function() {
@@ -76,7 +77,7 @@ describe("Shareable ERC 721 contract", function() {
       expect(share).to.emit(shareableERC721, "Transfer").withArgs(tokenId, addr2.address, newTokenId)
       expect(share).to.emit(shareableERC721, "Share").withArgs(addr1.address, addr2.address, newTokenId, tokenId)
       expect(await shareableERC721.ownerOf(newTokenId)).to.equal(addr2.address);
-      expect(await shareableERC721.tokenURI(newTokenId)).to.equal('http://example.com/tokens/'+deployed_address+'/1');
+      expect(await shareableERC721.tokenURI(newTokenId)).to.equal(tokenURIBase+deployed_address+'/1');
     });
 
     it("Should mint token, should not be shareable by others", async function() {
