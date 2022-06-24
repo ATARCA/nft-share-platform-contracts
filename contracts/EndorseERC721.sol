@@ -35,6 +35,9 @@ contract EndorseERC721 is ERC721, Ownable {
 
   mapping(uint256 => mapping(address => bool)) private _contributionEndorsements;
 
+  // Endorse token id => Contribution token Id
+  mapping(uint256 => uint256) private _endorsesToContributions;
+
   constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
     _currentIndex = uint256(0);
   }
@@ -68,14 +71,16 @@ contract EndorseERC721 is ERC721, Ownable {
 
     _mint(msg.sender, _currentIndex);
     _contributionEndorsements[contributionTokenId][msg.sender] = true;
+    _endorsesToContributions[_currentIndex] = contributionTokenId;
 
     address _endorsee = contributions_contract.ownerOf(contributionTokenId);
     emit Endorse(msg.sender, _endorsee, _currentIndex, contributionTokenId);
     _currentIndex++; 
   }
 
-  function tokenURI(uint256 tokenId) public view override returns (string memory) {
-    return contributions_contract.tokenURI(tokenId);
+  function tokenURI(uint256 endorseTokenId) public view override returns (string memory) {
+    uint256 _contributionTokenId = _endorsesToContributions[endorseTokenId];
+    return contributions_contract.tokenURI(_contributionTokenId);
   }
 
   function transferFrom(

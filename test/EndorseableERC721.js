@@ -141,6 +141,11 @@ describe("Endorsable ERC721 contract", function() {
       const e_minting = await instanceEndorsableTokenContract.connect(addr2).mint(s_tokenId)
       deployed_address = instanceShareableTokenContract.address.toLowerCase();
       expect(await instanceEndorsableTokenContract.tokenURI(0)).to.equal(tokenURIBase+deployed_address+'/0')
+
+      //mint another endrsement against same contribution with different address, should return right metadata
+      await instanceEndorsableTokenContract.connect(addr1).mint(s_tokenId)
+      deployed_address = instanceShareableTokenContract.address.toLowerCase();
+      expect(await instanceEndorsableTokenContract.tokenURI(1)).to.equal(tokenURIBase+deployed_address+'/0')
     })
 
   })

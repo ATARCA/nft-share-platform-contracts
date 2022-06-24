@@ -33,6 +33,10 @@ contract LikeERC721 is ERC721, Ownable {
   //Token -> wallet adderss -> boolean
   mapping(uint256 => mapping(address => bool)) private _contributionLikes;
 
+  // How many like tokens are associated to contribution token
+  // Like token id => Contribution token Id
+  mapping(uint256 => uint256) private _likesToContributions;
+
   constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
     _currentIndex = uint256(0);
   }
@@ -65,14 +69,17 @@ contract LikeERC721 is ERC721, Ownable {
 
     _mint(msg.sender, _currentIndex);
     _contributionLikes[contributionTokenId][msg.sender] = true;
+    _likesToContributions[_currentIndex] = contributionTokenId;
 
     address _endorsee = contributions_contract.ownerOf(contributionTokenId);
     emit Like(msg.sender, _endorsee, _currentIndex, contributionTokenId);
     _currentIndex++; 
   }
 
-  function tokenURI(uint256 tokenId) public view override returns (string memory) {
-    return contributions_contract.tokenURI(tokenId);
+  function tokenURI(uint256 likeTokenId) public view override returns (string memory) {
+    uint256 _contributionTokenId = _likesToContributions[likeTokenId];
+
+    return contributions_contract.tokenURI(_contributionTokenId);
   }
 
   function transferFrom(

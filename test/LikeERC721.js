@@ -134,12 +134,15 @@ describe("Likeable ERC721 contract", function() {
     await expect(instanceLikeTokenContract.connect(addr1).burn(0)).to.be.revertedWith("Must be owner of token to be able to burn it")
   })
 
-  // should be able to get metadata of liked contribution from the like token
-
   it("should be able to get metadata of liked contribution from the endorse token", async function() {
     const e_minting = await instanceLikeTokenContract.connect(addr2).mint(s_tokenId)
     deployed_address = instanceContributionTokenContract.address.toLowerCase();
     expect(await instanceLikeTokenContract.tokenURI(0)).to.equal(tokenURIBase+deployed_address+'/0')
+
+    //mint another like against same contribution with different address, should return right metadata
+    await instanceLikeTokenContract.connect(addr1).mint(s_tokenId)
+    deployed_address = instanceContributionTokenContract.address.toLowerCase();
+    expect(await instanceLikeTokenContract.tokenURI(1)).to.equal(tokenURIBase+deployed_address+'/0')
   })
 
 })
