@@ -11,25 +11,15 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-import "hardhat/console.sol";
-
 //Todo: rename contracts
 //Todo: make contract pausable
 
-//Todo: add mapping, which endorsement token reflects which
-
-interface project_contributions {
+interface project_contributions is IERC721Metadata {
   function tokenExists(uint256 tokenId) external view returns(bool);
-  function tokenURI(uint256 tokenId) external view returns (string memory);
-  function symbol() external view returns(string memory);
-  function ownerOf(uint256 tokenId) external view returns(address);
-  function balanceOf(address owner) external view returns(uint256);
 }
 
-interface likes {
-  function balanceOf(address owner) external view returns(uint256);
+interface contribution_likes is IERC721 {
   function hasLikedContribution(address endorser, uint256 contributionTokenId) external view returns (bool);
-  //Todo: check if msg sender has a already liked a specific contribution, a like token for the sender for a specific contribution has been minted
 }
 
 contract EndorseERC721 is ERC721, AccessControl {
@@ -42,10 +32,12 @@ contract EndorseERC721 is ERC721, AccessControl {
 
   uint256 internal _currentIndex;
   //Todo: consider upgradeable contracs, non-immutable address
-  project_contributions private sc;
-  likes private lc;
+  project_contributions private contributions_contract;
 
   mapping(uint256 => mapping(address => bool)) private _contributionEndorsements;
+
+  // Endorse token id => Contribution token Id
+  mapping(uint256 => uint256) private _endorsesToContributions;
 
   constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
     _currentIndex = uint256(0);
@@ -68,21 +60,12 @@ contract EndorseERC721 is ERC721, AccessControl {
   }
 
   function setProjectAddress(project_contributions _project_contributions) public onlyRole(OPERATOR_ROLE) returns (address) {
-    sc = _project_contributions;
-    return address(sc);
+    contributions_contract = _project_contributions;
+    return address(contributions_contract);
   }
 
   function getProjectAddress() public view returns (address) {
-    return address(sc);
-  }
-
-  function setLikesAddress(likes _likes) public onlyRole(OPERATOR_ROLE) returns (address) {
-    lc = _likes;
-    return address(lc);
-  }
-
-  function getLikesAddress() public view returns (address) {
-    return address(lc);
+    return address(contributions_contract);
   }
 
   function hasEndorsedContribution(address endorser, uint256 contributionTokenId) public view returns (bool) {
@@ -93,28 +76,22 @@ contract EndorseERC721 is ERC721, AccessControl {
     uint256 contributionTokenId
   ) external {
     //Check that contribution token exists
-    require(sc.tokenExists(contributionTokenId),"Contribution token must exist");
-
-    require(lc.hasLikedContribution(msg.sender, contributionTokenId) == false, "Cannot endorse if already liked");
-
-    //Todo: require that minter has a balance of contribution tokens
-    require(sc.balanceOf(msg.sender) > 0, "Cannot endorse without any contributions awarded for this account.");
-
-    //Todo: check that wallet haven't already minted an endorsement token for given contribution token
-    //Todo: uncertain if this key check works!
+    require(contributions_contract.tokenExists(contributionTokenId),"Contribution token must exist");
+    require(contributions_contract.balanceOf(msg.sender) > 0, "Cannot endorse without any contributions awarded for this account.");
     require(_contributionEndorsements[contributionTokenId][msg.sender] == false, "Contributions cannot be endorsed twice");
-    //msg.sender (address of method caller)
-    //Todo: make incrementable token id
+
     _mint(msg.sender, _currentIndex);
     _contributionEndorsements[contributionTokenId][msg.sender] = true;
+    _endorsesToContributions[_currentIndex] = contributionTokenId;
 
-    address _endorsee = sc.ownerOf(contributionTokenId);
+    address _endorsee = contributions_contract.ownerOf(contributionTokenId);
     emit Endorse(msg.sender, _endorsee, _currentIndex, contributionTokenId);
     _currentIndex++; 
   }
 
-  function tokenURI(uint256 tokenId) public view override returns (string memory) {
-    return sc.tokenURI(tokenId);
+  function tokenURI(uint256 endorseTokenId) public view override returns (string memory) {
+    uint256 _contributionTokenId = _endorsesToContributions[endorseTokenId];
+    return contributions_contract.tokenURI(_contributionTokenId);
   }
 
   function transferFrom(

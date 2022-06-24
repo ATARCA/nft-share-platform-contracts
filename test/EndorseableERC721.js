@@ -20,12 +20,14 @@ describe("Endorsable ERC721 contract", function() {
   let ShareableTokenContract;
   let instanceShareableTokenContract;
 
+  let deployed_address;
+
   let owner;
   let addr1;
   let addr2;
   let addrs;
 
-  let tokenURIBase = 'http://example.com/tokens/';
+  let tokenURIBase = 'domain/metadata/';
 
   beforeEach(async function() {
 
@@ -33,7 +35,6 @@ describe("Endorsable ERC721 contract", function() {
     //Todo: deploy contracts
     ShareableTokenContract = await ethers.getContractFactory("ShareableERC721");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
-    //console.log('owner', owner.address)
 
     instanceShareableTokenContract = await ShareableTokenContract.deploy("ShareableToken", "ST")
     instanceShareableTokenContract.setBaseURI(tokenURIBase);
@@ -46,11 +47,9 @@ describe("Endorsable ERC721 contract", function() {
 
     //Set endorse contract interface addresses
     await instanceEndorsableTokenContract.setProjectAddress(instanceShareableTokenContract.address)
-    await instanceEndorsableTokenContract.setLikesAddress(instanceLikeTokenContract.address)
 
     //Set like contract interface addresses
     await instanceLikeTokenContract.setProjectAddress(instanceShareableTokenContract.address)
-    await instanceLikeTokenContract.setEndorsesAddress(instanceEndorsableTokenContract.address)
 
     //Mint a couple of contributions as contract author
     await instanceShareableTokenContract.mint(addr1.address)
@@ -65,7 +64,6 @@ describe("Endorsable ERC721 contract", function() {
       expect(await instanceLikeTokenContract.symbol()).to.equal("LT")
 
       expect(await instanceEndorsableTokenContract.getProjectAddress()).to.equal(instanceShareableTokenContract.address)
-      expect(await instanceEndorsableTokenContract.getLikesAddress()).to.equal(instanceLikeTokenContract.address)
     })
   })
 
@@ -113,14 +111,13 @@ describe("Endorsable ERC721 contract", function() {
 
     it("Only owner should be able to update interface addrersses", async function() {
       await expect(instanceEndorsableTokenContract.connect(addr1).setProjectAddress(instanceShareableTokenContract.address)).to.be.reverted
-      await expect(instanceEndorsableTokenContract.connect(addr1).setLikesAddress(instanceLikeTokenContract.address)).to.be.reverted
     })
 
-    it("should not be able to endorse if already has liked a contribution", async function() {
+    it("should be able to endorse even if already has liked a contribution", async function() {
       //Like token #0 as addr1
       await instanceLikeTokenContract.connect(addr1).mint(s_tokenId)
       //Attempt to endrose the same token as addr1
-      await expect(instanceEndorsableTokenContract.connect(addr1).mint(s_tokenId)).to.be.reverted
+      await expect(instanceEndorsableTokenContract.connect(addr1).mint(s_tokenId))
     })
 
     it("should be able to burn the token and after burning token should not be endorsed by user", async function() {
@@ -142,7 +139,13 @@ describe("Endorsable ERC721 contract", function() {
 
     it("should be able to get metadata of endorsed contribution from the endorse token", async function() {
       const e_minting = await instanceEndorsableTokenContract.connect(addr2).mint(s_tokenId)
-      expect(await instanceEndorsableTokenContract.tokenURI(0)).to.equal("http://example.com/tokens/0")
+      deployed_address = instanceShareableTokenContract.address.toLowerCase();
+      expect(await instanceEndorsableTokenContract.tokenURI(0)).to.equal(tokenURIBase+deployed_address+'/0')
+
+      //mint another endrsement against same contribution with different address, should return right metadata
+      await instanceEndorsableTokenContract.connect(addr1).mint(s_tokenId)
+      deployed_address = instanceShareableTokenContract.address.toLowerCase();
+      expect(await instanceEndorsableTokenContract.tokenURI(1)).to.equal(tokenURIBase+deployed_address+'/0')
     })
 
   })

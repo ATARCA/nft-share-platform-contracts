@@ -16,18 +16,8 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 //Todo: if token is burned reset users contribution endorsement related to that contribution
 //Todo: make contract pausable
 
-interface project_contributions {
+interface project_contributions is IERC721Metadata {
   function tokenExists(uint256 tokenId) external view returns(bool);
-  function tokenURI(uint256 tokenId) external view returns (string memory);
-  function symbol() external view returns(string memory);
-  function ownerOf(uint256 tokenId) external view returns(address);
-  function balanceOf(address owner) external view returns(uint256);
-}
-
-interface endorsements {
-  // has endorsed method required, user has any balance on other contract, means he has endorsed
-  function balanceOf(address owner) external view returns(uint256);
-  function hasEndorsedContribution(address endorser, uint256 contributionTokenId) external view returns (bool);
 }
 
 contract LikeERC721 is ERC721, AccessControl {
@@ -36,16 +26,19 @@ contract LikeERC721 is ERC721, AccessControl {
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
   // Who endorsed whom, with what token and which contribution
-  //Todo: consider removing liker address from event (obfuscate whom has liked, allow people to voice opinion without explicitly telling whom liked what)
+  //Todo: consider removing liker address from event (obfucontributions_contractate whom has liked, allow people to voice opinion without explicitly telling whom liked what)
   event Like(address indexed liker, address indexed likee, uint256 indexed likeTokenId, uint256 contributionTokenId);
 
   uint256 internal _currentIndex;
   //Todo: consider upgradeable contracs, non-immutable address
-  project_contributions private sc;
-  endorsements private pe;
+  project_contributions private contributions_contract;
 
   //Token -> wallet adderss -> boolean
   mapping(uint256 => mapping(address => bool)) private _contributionLikes;
+
+  // How many like tokens are associated to contribution token
+  // Like token id => Contribution token Id
+  mapping(uint256 => uint256) private _likesToContributions;
 
   constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
     _currentIndex = uint256(0);
@@ -62,21 +55,12 @@ contract LikeERC721 is ERC721, AccessControl {
   }
 
   function setProjectAddress(project_contributions _project_contributions) public onlyRole(OPERATOR_ROLE) returns (address) {
-    sc = _project_contributions;
-    return address(sc);
+    contributions_contract = _project_contributions;
+    return address(contributions_contract);
   }
 
   function getProjectAddress() public view returns (address) {
-    return address(sc);
-  }
-
-  function setEndorsesAddress(endorsements _endorsements) public onlyRole(OPERATOR_ROLE) returns (address) {
-    pe = _endorsements;
-    return address(pe);
-  }
-
-  function getEndorsesAddress() public view returns (address) {
-    return address(pe);
+    return address(contributions_contract);
   }
 
   function hasLikedContribution(address endorser, uint256 contributionTokenId) public view returns (bool) {
@@ -93,25 +77,22 @@ contract LikeERC721 is ERC721, AccessControl {
     uint256 contributionTokenId
   ) external {
     //Check that contribution token exists
-    require(sc.tokenExists(contributionTokenId),"Contribution token must exist");
-
-    require(pe.hasEndorsedContribution(msg.sender, contributionTokenId) == false, "Cannot like if already endorsed");
-
-    //Todo: check that wallet haven't already minted an endorsement token for given contribution token
-    //Todo: uncertain if this key check works!
+    require(contributions_contract.tokenExists(contributionTokenId),"Contribution token must exist");
     require(_contributionLikes[contributionTokenId][msg.sender] == false, "Contributions cannot be liked twice");
-    //msg.sender (address of method caller)
-    //Todo: make incrementable token id
+
     _mint(msg.sender, _currentIndex);
     _contributionLikes[contributionTokenId][msg.sender] = true;
+    _likesToContributions[_currentIndex] = contributionTokenId;
 
-    address _endorsee = sc.ownerOf(contributionTokenId);
+    address _endorsee = contributions_contract.ownerOf(contributionTokenId);
     emit Like(msg.sender, _endorsee, _currentIndex, contributionTokenId);
     _currentIndex++; 
   }
 
-  function tokenURI(uint256 tokenId) public view override returns (string memory) {
-    return sc.tokenURI(tokenId);
+  function tokenURI(uint256 likeTokenId) public view override returns (string memory) {
+    uint256 _contributionTokenId = _likesToContributions[likeTokenId];
+
+    return contributions_contract.tokenURI(_contributionTokenId);
   }
 
   function transferFrom(
