@@ -52,10 +52,8 @@ describe("Likeable ERC721 contract", function() {
     instanceLikeTokenContract = await LikeTokenContract.deploy("LikeERC721", "LT")
 
     await instanceLikeTokenContract.setProjectAddress(instanceContributionTokenContract.address)
-    await instanceLikeTokenContract.setEndorsesAddress(instanceEndorseTokenContract.address)
 
     await instanceEndorseTokenContract.setProjectAddress(instanceContributionTokenContract.address)
-    await instanceEndorseTokenContract.setLikesAddress(instanceLikeTokenContract.address)
 
     //Mint a couple of contributions as contract author
     await instanceContributionTokenContract.mint(addr1.address)
@@ -69,8 +67,6 @@ describe("Likeable ERC721 contract", function() {
       expect(await instanceEndorseTokenContract.symbol()).to.equal("ET")
       expect(await instanceLikeTokenContract.symbol()).to.equal("LT")
       expect(await instanceLikeTokenContract.getProjectAddress()).to.equal(instanceContributionTokenContract.address)
-      expect(await instanceLikeTokenContract.getEndorsesAddress()).to.equal(instanceEndorseTokenContract.address)
-      
     })
   })
 
@@ -114,14 +110,13 @@ describe("Likeable ERC721 contract", function() {
 
   it("Only owner should be able to update interface addresses", async function() {
     await expect(instanceLikeTokenContract.connect(addr1).setProjectAddress(instanceContributionTokenContract.address)).to.be.revertedWith('Ownable: caller is not the owner')
-    await expect(instanceLikeTokenContract.connect(addr1).setEndorsesAddress(instanceLikeTokenContract.address)).to.be.revertedWith('Ownable: caller is not the owner')
   })
 
-  it("should not be able to like if already has endorsed a contribution", async function() {
+  it("should be able to like even if already has endorsed a contribution", async function() {
     //Endorse token #0 as addr1
     await instanceEndorseTokenContract.connect(addr1).mint(s_tokenId)
     //Attempt to like the same token as addr1
-    await expect(instanceLikeTokenContract.connect(addr1).mint(s_tokenId)).to.be.reverted
+    await expect(instanceLikeTokenContract.connect(addr1).mint(s_tokenId))
   })
 
   it("should be able to burn the token and after burning token should not be liked by user", async function() {

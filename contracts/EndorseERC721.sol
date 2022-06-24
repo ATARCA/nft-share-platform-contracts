@@ -22,7 +22,6 @@ interface project_contributions is IERC721Metadata {
 
 interface contribution_likes is IERC721 {
   function hasLikedContribution(address endorser, uint256 contributionTokenId) external view returns (bool);
-  //Todo: check if msg sender has a already liked a specific contribution, a like token for the sender for a specific contribution has been minted
 }
 
 contract EndorseERC721 is ERC721, Ownable {
@@ -33,7 +32,6 @@ contract EndorseERC721 is ERC721, Ownable {
   uint256 internal _currentIndex;
   //Todo: consider upgradeable contracs, non-immutable address
   project_contributions private contributions_contract;
-  contribution_likes private likes_contract;
 
   mapping(uint256 => mapping(address => bool)) private _contributionEndorsements;
 
@@ -56,15 +54,6 @@ contract EndorseERC721 is ERC721, Ownable {
     return address(contributions_contract);
   }
 
-  function setLikesAddress(contribution_likes _likes) public onlyOwner returns (address) {
-    likes_contract = _likes;
-    return address(likes_contract);
-  }
-
-  function getLikesAddress() public view returns (address) {
-    return address(likes_contract);
-  }
-
   function hasEndorsedContribution(address endorser, uint256 contributionTokenId) public view returns (bool) {
     return _contributionEndorsements[contributionTokenId][endorser] == true;
   }
@@ -74,17 +63,9 @@ contract EndorseERC721 is ERC721, Ownable {
   ) external {
     //Check that contribution token exists
     require(contributions_contract.tokenExists(contributionTokenId),"Contribution token must exist");
-
-    require(likes_contract.hasLikedContribution(msg.sender, contributionTokenId) == false, "Cannot endorse if already liked");
-
-    //Todo: require that minter has a balance of contribution tokens
     require(contributions_contract.balanceOf(msg.sender) > 0, "Cannot endorse without any contributions awarded for this account.");
-
-    //Todo: check that wallet haven't already minted an endorsement token for given contribution token
-    //Todo: uncertain if this key check works!
     require(_contributionEndorsements[contributionTokenId][msg.sender] == false, "Contributions cannot be endorsed twice");
-    //msg.sender (address of method caller)
-    //Todo: make incrementable token id
+
     _mint(msg.sender, _currentIndex);
     _contributionEndorsements[contributionTokenId][msg.sender] = true;
 

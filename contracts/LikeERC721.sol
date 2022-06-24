@@ -20,11 +20,6 @@ interface project_contributions is IERC721Metadata {
   function tokenExists(uint256 tokenId) external view returns(bool);
 }
 
-interface contribution_endorsements is IERC721 {
-  // has endorsed method required, user has any balance on other contract, means he has endorsed
-  function hasEndorsedContribution(address endorser, uint256 contributionTokenId) external view returns (bool);
-}
-
 contract LikeERC721 is ERC721, Ownable {
 
   // Who endorsed whom, with what token and which contribution
@@ -34,7 +29,6 @@ contract LikeERC721 is ERC721, Ownable {
   uint256 internal _currentIndex;
   //Todo: consider upgradeable contracs, non-immutable address
   project_contributions private contributions_contract;
-  contribution_endorsements private endorsement_contract;
 
   //Token -> wallet adderss -> boolean
   mapping(uint256 => mapping(address => bool)) private _contributionLikes;
@@ -52,15 +46,6 @@ contract LikeERC721 is ERC721, Ownable {
     return address(contributions_contract);
   }
 
-  function setEndorsesAddress(contribution_endorsements _endorsements) public onlyOwner returns (address) {
-    endorsement_contract = _endorsements;
-    return address(endorsement_contract);
-  }
-
-  function getEndorsesAddress() public view returns (address) {
-    return address(endorsement_contract);
-  }
-
   function hasLikedContribution(address endorser, uint256 contributionTokenId) public view returns (bool) {
     return _contributionLikes[contributionTokenId][endorser];
   }
@@ -76,14 +61,8 @@ contract LikeERC721 is ERC721, Ownable {
   ) external {
     //Check that contribution token exists
     require(contributions_contract.tokenExists(contributionTokenId),"Contribution token must exist");
-
-    require(endorsement_contract.hasEndorsedContribution(msg.sender, contributionTokenId) == false, "Cannot like if already endorsed");
-
-    //Todo: check that wallet haven't already minted an endorsement token for given contribution token
-    //Todo: uncertain if this key check works!
     require(_contributionLikes[contributionTokenId][msg.sender] == false, "Contributions cannot be liked twice");
-    //msg.sender (address of method caller)
-    //Todo: make incrementable token id
+
     _mint(msg.sender, _currentIndex);
     _contributionLikes[contributionTokenId][msg.sender] = true;
 
