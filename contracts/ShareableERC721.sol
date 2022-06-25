@@ -11,11 +11,13 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "./IERC5023.sol";
+import "hardhat/console.sol";
 
 //Todo: make contract pausable
 //Todo: add more complex governance tools than ownable
 
-contract ShareableERC721 is ERC721URIStorage, Ownable {
+contract ShareableERC721 is ERC721URIStorage, Ownable, IERC5023 {
 
     string baseURI;
 
@@ -24,11 +26,6 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
     constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
         _currentIndex = uint256(0);
     }
-
-    //Consider moving event definition to new Interfaces class with Share method
-    //What got shared from whom, and from what was it derived from
-    //Bob shares Token 1 to Alice which is derived from Token 0
-    event Share(address indexed from, address indexed to, uint256 indexed tokenId, uint256 derivedFromTokenId);
 
     function mint(
         address account
@@ -48,19 +45,32 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
     }
 
     //Todo: rework to take into account latest development of nature of content on reshared tokens
-    function share(address to, uint256 tokenIdToBeShared) external virtual {
+    function share(address to, uint256 tokenIdToBeShared) public virtual {
+      require(to != address(0), "ERC721: mint to the zero address");
+      require(_exists(tokenIdToBeShared), "ShareableERC721: token to be shared must exist");
+      require(msg.sender == ownerOf(tokenIdToBeShared), "Method caller must be the owner of token");
+
+      console.log("Share method (2 params): caller", msg.sender);
+      console.log("Share method (2 params): to address", to);
+      console.log("Share method (2 params): token to be shared", tokenIdToBeShared);
+      (bool success, ) = address(this).delegatecall(abi.encodeWithSignature("share(address,uint256,uint256)", to, tokenIdToBeShared, _currentIndex));
+      if (!success) {
+        revert("Failed to share");
+      }
+    }
+
+    function share(address to, uint256 tokenIdToBeShared, uint256 newTokenId) public virtual {
+      console.log("Share method (3 params): caller", msg.sender);
       require(to != address(0), "ERC721: mint to the zero address");
       //token has to exist
       require(_exists(tokenIdToBeShared), "ShareableERC721: token to be shared must exist");
-      
       require(msg.sender == ownerOf(tokenIdToBeShared), "Method caller must be the owner of token");
-
-      _mint(to, _currentIndex);
-
-      emit Share(msg.sender, to, _currentIndex, tokenIdToBeShared);
-      
+      _mint(to, newTokenId);
+      emit Share(msg.sender, to, newTokenId, tokenIdToBeShared);
       _currentIndex++;
     }
+
+
 
     //Todo: safeShare, similar to safe transfer, check that contract recipient is aware of ERC721 protocol
     //Todo: do we want to enable sharing to contracts

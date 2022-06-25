@@ -72,7 +72,9 @@ describe("Shareable ERC 721 contract", function() {
       deployed_address = shareableERC721.address.toLowerCase();
       expect(minting).to.emit(shareableERC721, "Transfer").withArgs(baseAddress, addr1.address, tokenId)
       
-      const share = await shareableERC721.connect(addr1).share(addr2.address, tokenId);
+      const share = await shareableERC721.connect(addr1)["share(address,uint256)"](addr2.address, tokenId);
+      //await expect(instanceLikeTokenContract.connect(addr1)["safeTransferFrom(address,address,uint256)"](addr1.address, addr2.address, 0)).to.be.revertedWith('Tokens are not transferrable')
+    
       //logEvents(share)
       expect(share).to.emit(shareableERC721, "Transfer").withArgs(tokenId, addr2.address, newTokenId)
       expect(share).to.emit(shareableERC721, "Share").withArgs(addr1.address, addr2.address, newTokenId, tokenId)
@@ -83,9 +85,9 @@ describe("Shareable ERC 721 contract", function() {
     it("Should mint token, should not be shareable by others", async function() {
       await shareableERC721.mint(addr1.address)
       //Attempt to as any other wallet than the token receiver but not contract creator
-      await expect(shareableERC721.connect(addr2).share(addr2.address, tokenId)).to.be.revertedWith("Method caller must be the owner of token")
+      await expect(shareableERC721.connect(addr2)["share(address,uint256)"](addr2.address, tokenId)).to.be.revertedWith("Method caller must be the owner of token")
       //Attempt to share as contract creator
-      await expect(shareableERC721.share(addr2.address, tokenId)).to.be.revertedWith("Method caller must be the owner of token")
+      await expect(shareableERC721.connect(owner)["share(address,uint256)"](addr2.address, tokenId)).to.be.revertedWith("Method caller must be the owner of token")
     });
 
     it("Tokens should not be mintable by other users except contract owner", async function() {
