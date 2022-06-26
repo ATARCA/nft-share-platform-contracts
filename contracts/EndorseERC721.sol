@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./IERC5023.sol";
 
 import "hardhat/console.sol";
 
@@ -24,7 +25,7 @@ interface contribution_likes is IERC721 {
   function hasLikedContribution(address endorser, uint256 contributionTokenId) external view returns (bool);
 }
 
-contract EndorseERC721 is ERC721, Ownable {
+contract EndorseERC721 is ERC721, Ownable, IERC5023 {
 
   // Who endorsed whom, with what token and which contribution
   event Endorse(address indexed endorser, address indexed endorsee, uint256 indexed endorsementTokenId, uint256 contributionTokenId);
@@ -61,21 +62,29 @@ contract EndorseERC721 is ERC721, Ownable {
     return _contributionEndorsements[contributionTokenId][endorser] == true;
   }
 
-  function mint(
-    uint256 contributionTokenId
-  ) external {
-    //Check that contribution token exists
+  function share(uint256 contributionTokenId) public {
     require(contributions_contract.tokenExists(contributionTokenId),"Contribution token must exist");
     require(contributions_contract.balanceOf(msg.sender) > 0, "Cannot endorse without any contributions awarded for this account.");
     require(_contributionEndorsements[contributionTokenId][msg.sender] == false, "Contributions cannot be endorsed twice");
 
-    _mint(msg.sender, _currentIndex);
-    _contributionEndorsements[contributionTokenId][msg.sender] = true;
-    _endorsesToContributions[_currentIndex] = contributionTokenId;
+    (bool success, ) = address(this).delegatecall(abi.encodeWithSignature("share(address,uint256,uint256)", msg.sender, contributionTokenId, _currentIndex));
+    if (!success) {
+        revert("Failed to share");
+    }
+  }
 
-    address _endorsee = contributions_contract.ownerOf(contributionTokenId);
-    emit Endorse(msg.sender, _endorsee, _currentIndex, contributionTokenId);
-    _currentIndex++; 
+  function share(address to, uint256 tokenIdToBeShared, uint256 newTokenId) public virtual {
+    require(contributions_contract.tokenExists(tokenIdToBeShared),"Contribution token must exist");
+    require(contributions_contract.balanceOf(msg.sender) > 0, "Cannot endorse without any contributions awarded for this account.");
+    require(_contributionEndorsements[tokenIdToBeShared][msg.sender] == false, "Contributions cannot be endorsed twice");
+
+    _mint(to, newTokenId);
+    _contributionEndorsements[tokenIdToBeShared][to] = true;
+    _endorsesToContributions[newTokenId] = tokenIdToBeShared;
+
+    address _endorsee = contributions_contract.ownerOf(tokenIdToBeShared);
+    emit Share(to, _endorsee, newTokenId, tokenIdToBeShared);
+    _currentIndex++;
   }
 
   function tokenURI(uint256 endorseTokenId) public view override returns (string memory) {

@@ -45,7 +45,7 @@ contract ShareableERC721 is ERC721URIStorage, Ownable, IERC5023 {
     }
 
     //Todo: rework to take into account latest development of nature of content on reshared tokens
-    function share(address to, uint256 tokenIdToBeShared) public virtual {
+    function share(address to, uint256 tokenIdToBeShared) public {
       require(to != address(0), "ERC721: mint to the zero address");
       require(_exists(tokenIdToBeShared), "ShareableERC721: token to be shared must exist");
       require(msg.sender == ownerOf(tokenIdToBeShared), "Method caller must be the owner of token");
@@ -53,13 +53,14 @@ contract ShareableERC721 is ERC721URIStorage, Ownable, IERC5023 {
       console.log("Share method (2 params): caller", msg.sender);
       console.log("Share method (2 params): to address", to);
       console.log("Share method (2 params): token to be shared", tokenIdToBeShared);
+      // preserve msg.sender
       (bool success, ) = address(this).delegatecall(abi.encodeWithSignature("share(address,uint256,uint256)", to, tokenIdToBeShared, _currentIndex));
       if (!success) {
         revert("Failed to share");
       }
     }
 
-    function share(address to, uint256 tokenIdToBeShared, uint256 newTokenId) public virtual {
+    function share(address to, uint256 tokenIdToBeShared, uint256 newTokenId) public {
       console.log("Share method (3 params): caller", msg.sender);
       require(to != address(0), "ERC721: mint to the zero address");
       //token has to exist
@@ -69,8 +70,6 @@ contract ShareableERC721 is ERC721URIStorage, Ownable, IERC5023 {
       emit Share(msg.sender, to, newTokenId, tokenIdToBeShared);
       _currentIndex++;
     }
-
-
 
     //Todo: safeShare, similar to safe transfer, check that contract recipient is aware of ERC721 protocol
     //Todo: do we want to enable sharing to contracts
@@ -103,13 +102,6 @@ contract ShareableERC721 is ERC721URIStorage, Ownable, IERC5023 {
     function tokenExists(uint256 tokenId) external view returns (bool){
         return _exists(tokenId);
     }
-
-
-
-
-    //disable transfers 
-    //secure minting
-    //override functions
 
     //disable approve (delegated permissions to transfer)
 }
