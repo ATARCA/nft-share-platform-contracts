@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./IERC5023.sol";
 
 //Todo: allow adding a group of owners to the contract (check openzeppelin for available governance contracts)
 
@@ -20,7 +21,7 @@ interface project_contributions is IERC721Metadata {
   function tokenExists(uint256 tokenId) external view returns(bool);
 }
 
-contract LikeERC721 is ERC721, Ownable {
+contract LikeERC721 is ERC721, Ownable, IERC5023 {
 
   // Who endorsed whom, with what token and which contribution
   //Todo: consider removing liker address from event (obfucontributions_contractate whom has liked, allow people to voice opinion without explicitly telling whom liked what)
@@ -60,20 +61,29 @@ contract LikeERC721 is ERC721, Ownable {
     _contributionLikes[tokenId][msg.sender] = false;
   }
 
-  function mint(
-    uint256 contributionTokenId
-  ) external {
-    //Check that contribution token exists
+  function share(uint256 contributionTokenId) public {
     require(contributions_contract.tokenExists(contributionTokenId),"Contribution token must exist");
     require(_contributionLikes[contributionTokenId][msg.sender] == false, "Contributions cannot be liked twice");
 
-    _mint(msg.sender, _currentIndex);
-    _contributionLikes[contributionTokenId][msg.sender] = true;
-    _likesToContributions[_currentIndex] = contributionTokenId;
+    (bool success, ) = address(this).delegatecall(abi.encodeWithSignature("share(address,uint256,uint256)", msg.sender, contributionTokenId, _currentIndex));
+    if (!success) {
+        revert("Failed to share");
+    }
+  }
 
-    address _endorsee = contributions_contract.ownerOf(contributionTokenId);
-    emit Like(msg.sender, _endorsee, _currentIndex, contributionTokenId);
+  function share(address to, uint256 tokenIdToBeShared, uint256 newTokenId) public virtual {
+    require(contributions_contract.tokenExists(tokenIdToBeShared),"Contribution token must exist");
+    require(_contributionLikes[tokenIdToBeShared][msg.sender] == false, "Contributions cannot be liked twice");
+    require(to == msg.sender, "Can only share tokens to oneself");
+
+    _mint(to, newTokenId);
+    _contributionLikes[tokenIdToBeShared][to] = true;
+    _likesToContributions[newTokenId] = tokenIdToBeShared;
+
+    address _endorsee = contributions_contract.ownerOf(tokenIdToBeShared);
+    emit Share(to, _endorsee, newTokenId, tokenIdToBeShared);
     _currentIndex++; 
+
   }
 
   function tokenURI(uint256 likeTokenId) public view override returns (string memory) {

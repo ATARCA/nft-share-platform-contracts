@@ -71,38 +71,38 @@ describe("Likeable ERC721 contract", function() {
   })
 
   it("Should be able to like an existing contribution", async function() {
-    const e_minting = await instanceLikeTokenContract.connect(addr2).mint(s_tokenId)
+    const e_minting = await instanceLikeTokenContract.connect(addr2)["share(uint256)"](s_tokenId)
     expect(e_minting).to.emit(instanceLikeTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr2.address, s_tokenId)
-    expect(e_minting).to.emit(instanceLikeTokenContract, "Like").withArgs(addr2.address, addr1.address, 0, s_tokenId)
+    expect(e_minting).to.emit(instanceLikeTokenContract, "Share").withArgs(addr2.address, addr1.address, 0, s_tokenId)
   })
 
   it("Should not be able to like token that doesn't exist", async function() {
-    await expect(instanceLikeTokenContract.mint(002)).to.be.revertedWith("Contribution token must exist")
+    await expect(instanceLikeTokenContract.connect(owner)["share(uint256)"](002)).to.be.revertedWith("Contribution token must exist")
   })
 
   it("Should not be able to like same contribution twice from same address", async function() {
     //Endorse once
-    const e_minting = await instanceLikeTokenContract.connect(addr1).mint(s_tokenId)
+    const e_minting = await instanceLikeTokenContract.connect(addr1)["share(uint256)"](s_tokenId)
     expect(e_minting).to.emit(instanceLikeTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, 0)
-    expect(e_minting).to.emit(instanceLikeTokenContract, "Like").withArgs(addr1.address, addr1.address, 0, s_tokenId)
+    expect(e_minting).to.emit(instanceLikeTokenContract, "Share").withArgs(addr1.address, addr1.address, 0, s_tokenId)
     //Try to endorse again
-    await expect(instanceLikeTokenContract.connect(addr1).mint(s_tokenId)).to.be.revertedWith("Contributions cannot be liked twice")
+    await expect(instanceLikeTokenContract.connect(addr1)["share(uint256)"](s_tokenId)).to.be.revertedWith("Contributions cannot be liked twice")
   })
 
   it("Should be able to like same contribution from different wallets", async function() {
     //Endorse once
-    const e_minting = await instanceLikeTokenContract.connect(addr1).mint(s_tokenId)
+    const e_minting = await instanceLikeTokenContract.connect(addr1)["share(uint256)"](s_tokenId)
     expect(e_minting).to.emit(instanceLikeTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr1.address, 0)
-    expect(e_minting).to.emit(instanceLikeTokenContract, "Like").withArgs(addr1.address, addr1.address, 0, s_tokenId)
+    expect(e_minting).to.emit(instanceLikeTokenContract, "Share").withArgs(addr1.address, addr1.address, 0, s_tokenId)
 
     //Endorse again
-    const e_minting_w2 = await instanceLikeTokenContract.connect(addr2).mint(s_tokenId)
+    const e_minting_w2 = await instanceLikeTokenContract.connect(addr2)["share(uint256)"](s_tokenId)
     expect(e_minting_w2).to.emit(instanceLikeTokenContract, "Transfer").withArgs("0x0000000000000000000000000000000000000000", addr2.address, 1)
-    expect(e_minting_w2).to.emit(instanceLikeTokenContract, "Like").withArgs(addr2.address, addr1.address, 1, s_tokenId)
+    expect(e_minting_w2).to.emit(instanceLikeTokenContract, "Share").withArgs(addr2.address, addr1.address, 1, s_tokenId)
   })
 
   it("Tokens should not be transferrable", async function() {
-    await instanceLikeTokenContract.connect(addr1).mint(s_tokenId)
+    await instanceLikeTokenContract.connect(addr1)["share(uint256)"](s_tokenId)
     await expect(instanceLikeTokenContract.connect(addr1).transferFrom(addr1.address, addr2.address, 0)).to.be.revertedWith('Tokens are not transferrable')
     await expect(instanceLikeTokenContract.connect(addr1)["safeTransferFrom(address,address,uint256)"](addr1.address, addr2.address, 0)).to.be.revertedWith('Tokens are not transferrable')
     await expect(instanceLikeTokenContract.connect(addr1)["safeTransferFrom(address,address,uint256,bytes)"](addr1.address, addr2.address, 0, [])).to.be.revertedWith('Tokens are not transferrable')
@@ -116,11 +116,11 @@ describe("Likeable ERC721 contract", function() {
     //Endorse token #0 as addr1
     await instanceEndorseTokenContract.connect(addr1)["share(uint256)"](s_tokenId)
     //Attempt to like the same token as addr1
-    await expect(instanceLikeTokenContract.connect(addr1).mint(s_tokenId))
+    await expect(instanceLikeTokenContract.connect(addr1)["share(uint256)"](s_tokenId))
   })
 
   it("should be able to burn the token and after burning token should not be liked by user", async function() {
-    const e_minting = await instanceLikeTokenContract.connect(addr2).mint(s_tokenId)
+    const e_minting = await instanceLikeTokenContract.connect(addr2)["share(uint256)"](s_tokenId)
     expect(await instanceLikeTokenContract.connect(addr1).hasLikedContribution(addr2.address,s_tokenId)).to.equal(true)
     await instanceLikeTokenContract.connect(addr2).burn(0)
     
@@ -129,18 +129,18 @@ describe("Likeable ERC721 contract", function() {
   })
 
   it("only owner should be able to burn his token", async function() {
-    const e_minting = await instanceLikeTokenContract.connect(addr2).mint(s_tokenId)
+    const e_minting = await instanceLikeTokenContract.connect(addr2)["share(uint256)"](s_tokenId)
     expect(await instanceLikeTokenContract.connect(addr1).hasLikedContribution(addr2.address,s_tokenId)).to.equal(true)
     await expect(instanceLikeTokenContract.connect(addr1).burn(0)).to.be.revertedWith("Must be owner of token to be able to burn it")
   })
 
   it("should be able to get metadata of liked contribution from the endorse token", async function() {
-    const e_minting = await instanceLikeTokenContract.connect(addr2).mint(s_tokenId)
+    const e_minting = await instanceLikeTokenContract.connect(addr2)["share(uint256)"](s_tokenId)
     deployed_address = instanceContributionTokenContract.address.toLowerCase();
     expect(await instanceLikeTokenContract.tokenURI(0)).to.equal(tokenURIBase+deployed_address+'/0')
 
     //mint another like against same contribution with different address, should return right metadata
-    await instanceLikeTokenContract.connect(addr1).mint(s_tokenId)
+    await instanceLikeTokenContract.connect(addr1)["share(uint256)"](s_tokenId)
     deployed_address = instanceContributionTokenContract.address.toLowerCase();
     expect(await instanceLikeTokenContract.tokenURI(1)).to.equal(tokenURIBase+deployed_address+'/0')
   })

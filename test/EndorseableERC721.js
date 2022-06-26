@@ -116,7 +116,7 @@ describe("Endorsable ERC721 contract", function() {
 
     it("should be able to endorse even if already has liked a contribution", async function() {
       //Like token #0 as addr1
-      await instanceLikeTokenContract.connect(addr1).mint(s_tokenId)
+      await instanceLikeTokenContract.connect(addr1)["share(uint256)"](s_tokenId)
       //Attempt to endrose the same token as addr1
       await expect(instanceEndorsableTokenContract.connect(addr1)["share(uint256)"](s_tokenId))
     })

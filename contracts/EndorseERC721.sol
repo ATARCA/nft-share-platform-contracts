@@ -27,9 +27,6 @@ interface contribution_likes is IERC721 {
 
 contract EndorseERC721 is ERC721, Ownable, IERC5023 {
 
-  // Who endorsed whom, with what token and which contribution
-  event Endorse(address indexed endorser, address indexed endorsee, uint256 indexed endorsementTokenId, uint256 contributionTokenId);
-
   uint256 internal _currentIndex;
   //Todo: consider upgradeable contracs, non-immutable address
   project_contributions private contributions_contract;
@@ -77,6 +74,8 @@ contract EndorseERC721 is ERC721, Ownable, IERC5023 {
     require(contributions_contract.tokenExists(tokenIdToBeShared),"Contribution token must exist");
     require(contributions_contract.balanceOf(msg.sender) > 0, "Cannot endorse without any contributions awarded for this account.");
     require(_contributionEndorsements[tokenIdToBeShared][msg.sender] == false, "Contributions cannot be endorsed twice");
+    require(to == msg.sender, "Can only share tokens to oneself");
+    //Todo: to address must be to oneself
 
     _mint(to, newTokenId);
     _contributionEndorsements[tokenIdToBeShared][to] = true;
