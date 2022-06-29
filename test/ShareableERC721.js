@@ -70,11 +70,12 @@ describe("Shareable ERC 721 contract", function() {
       const minting = await shareableERC721.mint(addr1.address)
       //logEvents(minting)
       deployed_address = shareableERC721.address.toLowerCase();
+      expect(minting).to.emit(shareableERC721, "Mint").withArgs(owner.address, addr1.address, tokenId)
       expect(minting).to.emit(shareableERC721, "Transfer").withArgs(baseAddress, addr1.address, tokenId)
       
       const share = await shareableERC721.connect(addr1).share(addr2.address, tokenId);
       //logEvents(share)
-      expect(share).to.emit(shareableERC721, "Transfer").withArgs(tokenId, addr2.address, newTokenId)
+      expect(share).to.emit(shareableERC721, "Transfer").withArgs(baseAddress, addr2.address, newTokenId)
       expect(share).to.emit(shareableERC721, "Share").withArgs(addr1.address, addr2.address, newTokenId, tokenId)
       expect(await shareableERC721.ownerOf(newTokenId)).to.equal(addr2.address);
       expect(await shareableERC721.tokenURI(newTokenId)).to.equal(tokenURIBase+deployed_address+'/1');
