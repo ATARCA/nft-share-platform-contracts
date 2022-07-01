@@ -1,6 +1,7 @@
 const { inputToConfig } = require("@ethereum-waffle/compiler");
 const { Description } = require("@ethersproject/properties");
 const { expect } = require("chai");
+const { keccak256, toUtf8Bytes, formatBytes32String } = require("ethers/lib/utils");
 const { ethers } = require("hardhat");
 const hre = require("hardhat");
 
@@ -98,5 +99,34 @@ describe("Shareable ERC 721 contract", function() {
       await expect(shareableERC721["safeTransferFrom(address,address,uint256)"](owner.address, addr1.address, 0)).to.be.revertedWith('Tokens are not transferrable')
       await expect(shareableERC721["safeTransferFrom(address,address,uint256,bytes)"](owner.address, addr1.address, 0, [])).to.be.revertedWith('Tokens are not transferrable')
     }); 
+
+    it("Contract deployer should be able to promote and demote", async function() {
+      await shareableERC721.addOperator(addr1.address)
+      expect(await shareableERC721.hasRole(keccak256(toUtf8Bytes("OPERATOR_ROLE")),addr1.address)).to.be.true
+      await shareableERC721.removeOperator(addr1.address)
+      expect(await shareableERC721.hasRole(keccak256(toUtf8Bytes("OPERATOR_ROLE")),addr1.address)).to.be.false
+
+      await shareableERC721.addAdmin(addr1.address)
+      expect(await shareableERC721.hasRole(ethers.constants.HashZero, addr1.address)).to.be.true
+      await shareableERC721.removeAdmin(addr1.address)
+      expect(await shareableERC721.hasRole(ethers.constants.HashZero, addr1.address)).to.be.false
+    })
+
+    it("Promoted admin users can promote other users", async function() {
+      await shareableERC721.addAdmin(addr1.address)
+      expect(await shareableERC721.hasRole(ethers.constants.HashZero, addr1.address)).to.be.true
+      await shareableERC721.connect(addr1).addOperator(addr2.address)
+      expect(await shareableERC721.hasRole(keccak256(toUtf8Bytes("OPERATOR_ROLE")),addr2.address)).to.be.true
+
+      await shareableERC721.connect(addr1).addAdmin(addr2.address)
+      expect(await shareableERC721.hasRole(ethers.constants.HashZero, addr2.address)).to.be.true
+    })
+
+    it("Users whom are not admins cannot promote other users", async function() {
+      await expect(shareableERC721.connect(addr1).addOperator(addr2.address)).to.be.reverted
+      await expect(shareableERC721.connect(addr1).addAdmin(addr2.address)).to.be.reverted
+    })
+    
+
   });
 })

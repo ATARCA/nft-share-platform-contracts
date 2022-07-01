@@ -20,8 +20,6 @@ contract ShareableERC721 is ERC721URIStorage, AccessControl {
     // experiment operator
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
-    //Todo: hardcode addresses that should initially be admins, and whom should be intially the operators of the contract
-
     string baseURI;
 
     uint256 internal _currentIndex;
@@ -30,11 +28,24 @@ contract ShareableERC721 is ERC721URIStorage, AccessControl {
         _currentIndex = uint256(0);
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(OPERATOR_ROLE, msg.sender);
-        // Jarno
-        _setupRole(OPERATOR_ROLE, 0x125e0e620675d46BdB31CF0EFfEe91f4E3127C31);
-        // Martin
-        _setupRole(OPERATOR_ROLE, 0xBAf811debB67BF5fe7241f383192B97261F8e008);
     }
+
+    function addOperator(address newOperater) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _grantRole(OPERATOR_ROLE, newOperater);
+    }
+
+    function removeOperator(address operator) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _revokeRole(OPERATOR_ROLE, operator);
+    }
+
+    function addAdmin(address newAdmin) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _grantRole(DEFAULT_ADMIN_ROLE, newAdmin);
+    }
+
+    function removeAdmin(address admin) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _revokeRole(DEFAULT_ADMIN_ROLE, admin);
+    }
+
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
