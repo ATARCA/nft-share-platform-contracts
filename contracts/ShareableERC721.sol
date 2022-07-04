@@ -56,10 +56,14 @@ contract ShareableERC721 is ERC721URIStorage, AccessControl {
     //Bob shares Token 1 to Alice which is derived from Token 0
     event Share(address indexed from, address indexed to, uint256 indexed tokenId, uint256 derivedFromTokenId);
 
+    // Event for 'original' tokens
+    event Mint(address indexed from, address indexed to, uint256 indexed tokenId);
+
     function mint(
         address account
     ) external onlyRole(OPERATOR_ROLE) {
         _mint(account, _currentIndex);
+        emit Mint(msg.sender, account, _currentIndex);
         _currentIndex++;
     }
 
