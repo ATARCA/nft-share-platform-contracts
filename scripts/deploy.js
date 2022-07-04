@@ -1,14 +1,34 @@
+const tokenURIBase = 'domain/metadata/';
+
+
 async function main() {
   const [deployer] = await ethers.getSigners();
 
   console.log("Deploying contracts with the account:", deployer.address);
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
+  
+  ShareableTokenContract = await ethers.getContractFactory("ShareableERC721");
+  instanceShareableTokenContract = await ShareableTokenContract.deploy("ShareableToken", "Streamr Contribution Token")
+  instanceShareableTokenContract.setBaseURI(tokenURIBase);
 
-  const Token = await ethers.getContractFactory("Token");
-  const token = await Token.deploy();
+  EndorsableTokenContract = await ethers.getContractFactory("EndorseERC721");
+  instanceEndorsableTokenContract = await EndorsableTokenContract.deploy("EndorseERC721", "Streamr Endorsement Token")
+  await instanceEndorsableTokenContract.setProjectAddress(instanceShareableTokenContract.address)
 
-  console.log("Token address:", token.address);
+  LikeTokenContract = await ethers.getContractFactory("LikeERC721");
+  instanceLikeTokenContract = await LikeTokenContract.deploy("LikeERC721", "Streamr Like Token")
+  await instanceLikeTokenContract.setProjectAddress(instanceShareableTokenContract.address)
+
+  let likeProjectaddress = await instanceLikeTokenContract.getProjectAddress()
+  let endorseProjectaddress = await instanceEndorsableTokenContract.getProjectAddress()
+
+  console.log("Shareable token address: ", instanceShareableTokenContract.address);
+  console.log("Endorsement token address: ", instanceEndorsableTokenContract.address);
+  console.log("Like token address: ", instanceLikeTokenContract.address);
+
+  console.log('Endorsement token contracts project address set to:', endorseProjectaddress)
+  console.log('Like token contracts project address set to:', likeProjectaddress)
 }
 
 main()
