@@ -110,7 +110,7 @@ describe("Endorsable ERC721 contract", function() {
     });
 
     it("Only owner should be able to update interface addrersses", async function() {
-      await expect(instanceEndorsableTokenContract.connect(addr1).setProjectAddress(instanceShareableTokenContract.address)).to.be.revertedWith('Ownable: caller is not the owner')
+      await expect(instanceEndorsableTokenContract.connect(addr1).setProjectAddress(instanceShareableTokenContract.address)).to.be.reverted
     })
 
     it("should be able to endorse even if already has liked a contribution", async function() {

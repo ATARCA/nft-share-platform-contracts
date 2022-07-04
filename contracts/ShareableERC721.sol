@@ -9,13 +9,16 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 //Todo: make contract pausable
 //Todo: add more complex governance tools than ownable
 
-contract ShareableERC721 is ERC721URIStorage, Ownable {
+contract ShareableERC721 is ERC721URIStorage, AccessControl {
+
+    // experiment operator
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
     string baseURI;
 
@@ -23,6 +26,29 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
     
     constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
         _currentIndex = uint256(0);
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(OPERATOR_ROLE, msg.sender);
+    }
+
+    function addOperator(address newOperater) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _grantRole(OPERATOR_ROLE, newOperater);
+    }
+
+    function removeOperator(address operator) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _revokeRole(OPERATOR_ROLE, operator);
+    }
+
+    function addAdmin(address newAdmin) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _grantRole(DEFAULT_ADMIN_ROLE, newAdmin);
+    }
+
+    function removeAdmin(address admin) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _revokeRole(DEFAULT_ADMIN_ROLE, admin);
+    }
+
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
+        return super.supportsInterface(interfaceId);
     }
 
     //Consider moving event definition to new Interfaces class with Share method
@@ -32,12 +58,12 @@ contract ShareableERC721 is ERC721URIStorage, Ownable {
 
     function mint(
         address account
-    ) external onlyOwner {
+    ) external onlyRole(OPERATOR_ROLE) {
         _mint(account, _currentIndex);
         _currentIndex++;
     }
 
-    function setBaseURI(string memory baseURI_) external onlyOwner {
+    function setBaseURI(string memory baseURI_) external onlyRole(OPERATOR_ROLE)  {
         
         address self_ = address(this);
         baseURI = string.concat(baseURI_, Strings.toHexString(uint160(self_), 20),"/");

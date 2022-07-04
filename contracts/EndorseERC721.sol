@@ -9,9 +9,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-
-import "hardhat/console.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 //Todo: rename contracts
 //Todo: make contract pausable
@@ -20,11 +18,10 @@ interface project_contributions is IERC721Metadata {
   function tokenExists(uint256 tokenId) external view returns(bool);
 }
 
-interface contribution_likes is IERC721 {
-  function hasLikedContribution(address endorser, uint256 contributionTokenId) external view returns (bool);
-}
+contract EndorseERC721 is ERC721, AccessControl {
 
-contract EndorseERC721 is ERC721, Ownable {
+  // experiment operator
+  bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
   // Who endorsed whom, with what token and which contribution
   event Endorse(address indexed endorser, address indexed endorsee, uint256 indexed endorsementTokenId, uint256 contributionTokenId);
@@ -39,7 +36,29 @@ contract EndorseERC721 is ERC721, Ownable {
   mapping(uint256 => uint256) private _endorsesToContributions;
 
   constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
-    _currentIndex = uint256(0);
+        _currentIndex = uint256(0);
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(OPERATOR_ROLE, msg.sender);
+  }
+
+  function addOperator(address newOperater) public onlyRole(DEFAULT_ADMIN_ROLE) {
+      _grantRole(OPERATOR_ROLE, newOperater);
+  }
+
+  function removeOperator(address operator) public onlyRole(DEFAULT_ADMIN_ROLE) {
+      _revokeRole(OPERATOR_ROLE, operator);
+  }
+
+  function addAdmin(address newAdmin) public onlyRole(DEFAULT_ADMIN_ROLE) {
+      _grantRole(DEFAULT_ADMIN_ROLE, newAdmin);
+  }
+
+  function removeAdmin(address admin) public onlyRole(DEFAULT_ADMIN_ROLE) {
+      _revokeRole(DEFAULT_ADMIN_ROLE, admin);
+  }
+
+  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
+    return super.supportsInterface(interfaceId);
   }
 
   function burn(uint256 tokenId) public {
@@ -48,7 +67,7 @@ contract EndorseERC721 is ERC721, Ownable {
     _contributionEndorsements[tokenId][msg.sender] = false;
   }
 
-  function setProjectAddress(project_contributions _project_contributions) public onlyOwner returns (address) {
+  function setProjectAddress(project_contributions _project_contributions) public onlyRole(OPERATOR_ROLE) returns (address) {
     contributions_contract = _project_contributions;
     return address(contributions_contract);
   }
