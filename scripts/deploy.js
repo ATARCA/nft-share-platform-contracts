@@ -10,7 +10,7 @@ async function main() {
   
   ShareableTokenContract = await ethers.getContractFactory("ShareableERC721");
   instanceShareableTokenContract = await ShareableTokenContract.deploy("ShareableToken", "Streamr Contribution Token")
-  instanceShareableTokenContract.setBaseURI(tokenURIBase);
+  await instanceShareableTokenContract.setBaseURI(tokenURIBase);
 
   EndorsableTokenContract = await ethers.getContractFactory("EndorseERC721");
   instanceEndorsableTokenContract = await EndorsableTokenContract.deploy("EndorseERC721", "Streamr Endorsement Token")
