@@ -29,6 +29,17 @@ Add Ropsten private key to hardhat.config.js
 npx hardhat run scripts/deploy.js --network ropsten
 ```
 
+Verification of contracts on Ropsten:
+
+Add Etherscan API key to .env file
+
+Run verify contracts command with the arguments of which network it was deployd to and what were the constructor arguments during deployment.
+
+```
+npx hardhat verify --network ropsten <DeployedContractAddress> "Constructor Argument1" "Constructor Argument2" ...
+``` 
+
+
 
 Todo:
 - [x] Skeleton setup for development
