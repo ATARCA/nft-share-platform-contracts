@@ -1,26 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
 
 //Todo: allow adding a group of owners to the contract (check openzeppelin for available governance contracts)
 
 //Todo: if token is burned reset users contribution endorsement related to that contribution
 //Todo: make contract pausable
 
-interface project_contributions is IERC721Metadata {
+interface project_contributions is IERC721MetadataUpgradeable {
   function tokenExists(uint256 tokenId) external view returns(bool);
 }
 
-contract LikeERC721 is ERC721, AccessControl {
+contract LikeERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
   // experiment operator
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
@@ -40,11 +35,18 @@ contract LikeERC721 is ERC721, AccessControl {
   // Like token id => Contribution token Id
   mapping(uint256 => uint256) private _likesToContributions;
 
-  constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
+  /*constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
       _currentIndex = uint256(0);
       _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
       _setupRole(OPERATOR_ROLE, msg.sender);
-  }
+  }*/
+
+  function initialize(string memory _name, string memory _symbol) public initializer {
+        __ERC721_init(_name, _symbol);
+        _currentIndex = uint256(0); //Todo: consider moving to somewhere else, clashes with upgradeability
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(OPERATOR_ROLE, msg.sender);
+    }
 
   function addOperator(address newOperater) public onlyRole(DEFAULT_ADMIN_ROLE) {
       _grantRole(OPERATOR_ROLE, newOperater);
@@ -62,7 +64,7 @@ contract LikeERC721 is ERC721, AccessControl {
       _revokeRole(DEFAULT_ADMIN_ROLE, admin);
   }
 
-  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Upgradeable, AccessControlUpgradeable) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 

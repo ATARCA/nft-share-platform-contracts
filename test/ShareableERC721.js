@@ -2,7 +2,7 @@ const { inputToConfig } = require("@ethereum-waffle/compiler");
 const { Description } = require("@ethersproject/properties");
 const { expect } = require("chai");
 const { keccak256, toUtf8Bytes, formatBytes32String } = require("ethers/lib/utils");
-const { ethers } = require("hardhat");
+const { ethers, upgrades } = require("hardhat");
 const hre = require("hardhat");
 
 //Todo: check that events are fired correctly
@@ -33,7 +33,8 @@ describe("Shareable ERC 721 contract", function() {
     TokenContract = await ethers.getContractFactory("ShareableERC721");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    shareableERC721 = await TokenContract.deploy("ShareableToken","ST");
+    shareableERC721 = await upgrades.deployProxy(TokenContract,["ShareableToken","ST"]);
+    await shareableERC721.deployed();
     deployed_address = shareableERC721.address;
 
     tokenURIBase = 'domain/metadata/';
@@ -127,7 +128,5 @@ describe("Shareable ERC 721 contract", function() {
       await expect(shareableERC721.connect(addr1).addOperator(addr2.address)).to.be.reverted
       await expect(shareableERC721.connect(addr1).addAdmin(addr2.address)).to.be.reverted
     })
-    
-
   });
 })

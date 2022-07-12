@@ -1,21 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 //Todo: make contract pausable
 //Todo: add more complex governance tools than ownable
 
-contract ShareableERC721 is ERC721URIStorage, AccessControl {
+contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
     // experiment operator
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
@@ -24,11 +17,18 @@ contract ShareableERC721 is ERC721URIStorage, AccessControl {
 
     uint256 internal _currentIndex;
     
-    constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
-        _currentIndex = uint256(0);
+    function initialize(string memory _name, string memory _symbol) public initializer {
+        __ERC721_init(_name, _symbol);
+        _currentIndex = uint256(0); //Todo: consider moving to somewhere else, clashes with upgradeability
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(OPERATOR_ROLE, msg.sender);
     }
+
+    /*constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
+        _currentIndex = uint256(0);
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(OPERATOR_ROLE, msg.sender);
+    }*/
 
     function addOperator(address newOperater) public onlyRole(DEFAULT_ADMIN_ROLE) {
         _grantRole(OPERATOR_ROLE, newOperater);
@@ -47,7 +47,7 @@ contract ShareableERC721 is ERC721URIStorage, AccessControl {
     }
 
 
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Upgradeable, AccessControlUpgradeable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
@@ -70,7 +70,7 @@ contract ShareableERC721 is ERC721URIStorage, AccessControl {
     function setBaseURI(string memory baseURI_) external onlyRole(OPERATOR_ROLE)  {
         
         address self_ = address(this);
-        baseURI = string.concat(baseURI_, Strings.toHexString(uint160(self_), 20),"/");
+        baseURI = string.concat(baseURI_, StringsUpgradeable.toHexString(uint160(self_), 20),"/");
     }
     
     function _baseURI() internal view override returns (string memory) {

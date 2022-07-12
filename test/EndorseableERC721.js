@@ -2,7 +2,7 @@ const { inputToConfig } = require("@ethereum-waffle/compiler");
 const { Description } = require("@ethersproject/properties");
 const { expect } = require("chai");
 const exp = require("constants");
-const { ethers } = require("hardhat");
+const { ethers, upgrades } = require("hardhat");
 const hre = require("hardhat");
 
 const logEvents = async function(calledMethod) {
@@ -36,14 +36,20 @@ describe("Endorsable ERC721 contract", function() {
     ShareableTokenContract = await ethers.getContractFactory("ShareableERC721");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    instanceShareableTokenContract = await ShareableTokenContract.deploy("ShareableToken", "ST")
+    instanceShareableTokenContract = await upgrades.deployProxy(ShareableTokenContract, ["ShareableToken", "ST"])
+    await instanceShareableTokenContract.deployed()
+    //await ShareableTokenContract.deploy("ShareableToken", "ST")
     instanceShareableTokenContract.setBaseURI(tokenURIBase);
 
     EndorsableTokenContract = await ethers.getContractFactory("EndorseERC721");
-    instanceEndorsableTokenContract = await EndorsableTokenContract.deploy("EndorseERC721", "ET")
+    instanceEndorsableTokenContract = await upgrades.deployProxy(EndorsableTokenContract, ["EndorseERC721", "ET"]);
+    //await EndorsableTokenContract.deploy("EndorseERC721", "ET")
+    await instanceEndorsableTokenContract.deployed()
 
     LikeTokenContract = await ethers.getContractFactory("LikeERC721");
-    instanceLikeTokenContract = await LikeTokenContract.deploy("LikeERC721", "LT")
+    instanceLikeTokenContract = await upgrades.deployProxy(LikeTokenContract,["LikeERC721", "LT"]);
+    //await LikeTokenContract.deploy("LikeERC721", "LT")
+    await instanceLikeTokenContract.deployed()
 
     //Set endorse contract interface addresses
     await instanceEndorsableTokenContract.setProjectAddress(instanceShareableTokenContract.address)
