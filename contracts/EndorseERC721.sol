@@ -5,14 +5,14 @@ import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
-
+import "./Helpers.sol";
 
 //Todo: rename contracts
 //Todo: make contract pausable
 
-interface project_contributions is IERC721MetadataUpgradeable {
+/*interface project_contributions is IShareableERC721 {
   function tokenExists(uint256 tokenId) external view returns(bool);
-}
+}*/
 
 contract EndorseERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
@@ -24,7 +24,7 @@ contract EndorseERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
   uint256 internal _currentIndex;
   //Todo: consider upgradeable contracs, non-immutable address
-  project_contributions private contributions_contract;
+  IShareableERC721 private contributions_contract;
 
   mapping(uint256 => mapping(address => bool)) private _contributionEndorsements;
 
@@ -64,7 +64,7 @@ contract EndorseERC721 is ERC721Upgradeable, AccessControlUpgradeable {
     _contributionEndorsements[tokenId][msg.sender] = false;
   }
 
-  function setProjectAddress(project_contributions _project_contributions) public onlyRole(OPERATOR_ROLE) returns (address) {
+  function setProjectAddress(IShareableERC721 _project_contributions) public onlyRole(OPERATOR_ROLE) returns (address) {
     contributions_contract = _project_contributions;
     return address(contributions_contract);
   }
