@@ -15,7 +15,7 @@ const logEvents = async function(calledMethod) {
   }
 }
 
-describe("LikeTokenBeacon", function() {
+describe("EndorseTokenBeacon", function() {
 
   let TokenContract;
   let shareableERC721;
@@ -34,14 +34,14 @@ describe("LikeTokenBeacon", function() {
   beforeEach(async function() {
 
     await hre.network.provider.send("hardhat_reset")
-    TokenContract = await ethers.getContractFactory("LikeERC721");
-    TokenBeacon = await ethers.getContractFactory("LikeTokenBeacon");
+    TokenContract = await ethers.getContractFactory("EndorseERC721");
+    TokenBeacon = await ethers.getContractFactory("EndorseTokenBeacon");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    likeERC721 = await TokenContract.deploy();
-    await likeERC721.initialize("LikeERC721","LT", owner.address);
+    endorseERC721 = await TokenContract.deploy();
+    await endorseERC721.initialize("EndorseERC721","ET", owner.address);
     //await shareableERC721.deployed();
-    deployed_address = likeERC721.address;
+    deployed_address = endorseERC721.address;
     
     deployedTokenBeacon = await TokenBeacon.deploy(deployed_address, owner.address);
     //console.log('Owner of beacon', await deployedTokenBeacon.owner())
@@ -59,11 +59,11 @@ describe("LikeTokenBeacon", function() {
   describe("Deployment", function() {
  
     it("Should be set the right symbol", async function() {
-      expect(await likeERC721.symbol()).to.equal("LT");
+      expect(await endorseERC721.symbol()).to.equal("ET");
     });
     
     it("Should be set the right token name", async function() {
-      expect(await likeERC721.name()).to.equal("LikeERC721");
+      expect(await endorseERC721.name()).to.equal("EndorseERC721");
     });
     
     it("Token beacon should have right implementation address", async function() {
@@ -78,5 +78,5 @@ describe("LikeTokenBeacon", function() {
     it("Beacon should not be upgreadable by others", async function() { //Todo: currently upgradeable by anyone through the parent contract
       await expect(deployedTokenBeacon.connect(addr1).update(redeployedContract.address)).to.be.reverted
     });
-  });
+  });  
 })

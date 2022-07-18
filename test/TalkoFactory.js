@@ -175,7 +175,7 @@ describe("Talko Factory", function() {
       let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, owner.address);
       let receipt = await deployedProxyAddress.wait()
 
-      console.log(_factoryContract)
+      //console.log(_factoryContract)
       
       let event = _.filter(receipt?.events, function(o) {
         return o.event === 'SProxyCreated'
@@ -183,24 +183,24 @@ describe("Talko Factory", function() {
       //console.log('found event', event[0]?.args)
 
       let deployAddress = event[0]?.args[0]
-      console.log('deploy address', deployAddress)
+      //console.log('deploy address', deployAddress)
       let proxiedST = await ShareableERC721.attach(deployAddress);
 
       await proxiedST.mint(addr1.address)
       await proxiedST.mint(addr2.address)
 
       let beaconAddress = await _factoryContract.SBeaconAddress();
-      console.log(beaconAddress)
+      //console.log(beaconAddress)
       
       let sBeacon = await BeaconShareableERC721.attach(beaconAddress)
       let sBeaconImplementation = await sBeacon.implementation()
-      console.log('pre-update address', sBeaconImplementation)
+      //console.log('pre-update address', sBeaconImplementation)
 
       let redeployedTokeContract = await ShareableERC721v2Test.deploy();
 
       let update = await sBeacon.update(redeployedTokeContract.address)
       logEvents(update)
-      console.log('post upgrade address', await sBeacon.implementation())
+      //console.log('post upgrade address', await sBeacon.implementation())
 
       proxiedST = await ShareableERC721v2Test.attach(deployAddress);
       expect(await proxiedST.getIndex2()).to.equal(200)
@@ -209,8 +209,8 @@ describe("Talko Factory", function() {
       expect(await proxiedST.hasRole(operatorRole, owner.address)).to.be.true
       expect(await proxiedST.hasRole(adminRole, addr1.address)).to.be.false
 
-      console.log(await proxiedST.getIndex2())
-      console.log(await proxiedST.getIndex())
+      //console.log(await proxiedST.getIndex2())
+      //console.log(await proxiedST.getIndex())
       await proxiedST.mint(addr1.address)
     })
   });

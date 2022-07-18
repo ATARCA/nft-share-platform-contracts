@@ -8,6 +8,7 @@ import "./LikeERC721.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 //Handles the collection of contracts and their updates
 contract EndorseTokenBeacon is Ownable { //Todo: make initializable, inherit ownership from the deployer
@@ -20,7 +21,7 @@ contract EndorseTokenBeacon is Ownable { //Todo: make initializable, inherit own
     transferOwnership(_owner);
   }
 
-  function update(address _endorseTokenBeacon_vLogic) public { //Todo: limit rights to initializer
+  function update(address _endorseTokenBeacon_vLogic) public onlyOwner { //Todo: limit rights to initializer
     endorseTokenBeacon.upgradeTo(_endorseTokenBeacon_vLogic);
     endorseTokenBeacon_vLogic = _endorseTokenBeacon_vLogic;
   }

@@ -144,7 +144,7 @@
             "label": "contributions_contract",
             "offset": 0,
             "slot": "202",
-            "type": "t_contract(IShareableERC721)3684",
+            "type": "t_contract(IShareableERC721)3687",
             "contract": "EndorseERC721",
             "src": "contracts/EndorseERC721.sol:27"
           },
@@ -190,7 +190,7 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IShareableERC721)3684": {
+          "t_contract(IShareableERC721)3687": {
             "label": "contract IShareableERC721",
             "numberOfBytes": "20"
           },
@@ -377,7 +377,7 @@
             "label": "contributions_contract",
             "offset": 0,
             "slot": "202",
-            "type": "t_contract(IShareableERC721)3684",
+            "type": "t_contract(IShareableERC721)3687",
             "contract": "LikeERC721",
             "src": "contracts/LikeERC721.sol:30"
           },
@@ -423,7 +423,7 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IShareableERC721)3684": {
+          "t_contract(IShareableERC721)3687": {
             "label": "contract IShareableERC721",
             "numberOfBytes": "20"
           },
