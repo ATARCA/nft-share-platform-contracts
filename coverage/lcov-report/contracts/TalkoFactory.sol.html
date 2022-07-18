@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/TalkoFactory.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> TalkoFactory.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">47.37% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>9/19</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/0</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">42.86% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>3/7</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">47.37% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>9/19</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+&nbsp;
+import "./ShareableERC721.sol";
+import "./EndorseERC721.sol";
+import "./LikeERC721.sol";
+&nbsp;
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
+import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
+import "./ShareableTokenBeacon.sol";
+import "./LikeTokenBeacon.sol";
+import "./EndorseTokenBeacon.sol";
+&nbsp;
+import "hardhat/console.sol";
+&nbsp;
+contract TalkoFactory { //Todo: access control
+&nbsp;
+  //Autoincrementable key for proxies ?
+&nbsp;
+  //create mappings for all beacons
+&nbsp;
+  mapping(uint256 =&gt; address) private shareable_t_proxies;
+  mapping(uint256 =&gt; address) private like_t_proxies;
+  mapping(uint256 =&gt; address) private endorse_t_proxies;
+&nbsp;
+  event SProxyCreated(address indexed _sproxy, address indexed _creator, string indexed _symbol);
+  event LProxyCreated(address indexed _sproxy, address indexed _creator, string indexed _symbol);
+  event EProxyCreated(address indexed _sproxy, address indexed _creator, string indexed _symbol);
+  
+  //Create individual BeaconVaults for contracts
+&nbsp;
+  ShareableTokenBeacon immutable s_beacon;
+  LikeTokenBeacon immutable l_beacon;
+  EndorseTokenBeacon immutable e_beacon;
+&nbsp;
+  constructor(address _shareableTokenBeacon_vLogic, address _likeTokenBeacon_vLogic, address _endorseTokenBeacon_vLogic) {
+    //set all beacons up with deployed instances of contracts
+    s_beacon = new ShareableTokenBeacon(_shareableTokenBeacon_vLogic, msg.sender);
+    console.log("s_beacon logic address", _shareableTokenBeacon_vLogic);
+    l_beacon = new LikeTokenBeacon(_likeTokenBeacon_vLogic, msg.sender);
+    e_beacon = new EndorseTokenBeacon(_endorseTokenBeacon_vLogic, msg.sender);
+    //beacon = new TalkoVaultBeacon(_shareableTokenBeacon_vLogic, _likeTokenBeacon_vLogic, _endorseTokenBeacon_vLogic);
+  }
+&nbsp;
+  function SBeaconAddress() public view returns(address) {
+    return address(s_beacon);
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function LBeaconAddress() public view returns(address) {</span>
+<span class="cstat-no" title="statement not covered" >    return address(l_beacon);</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function EBeaconAddress() public view returns(address) {</span>
+<span class="cstat-no" title="statement not covered" >    return address(e_beacon);</span>
+  }
+&nbsp;
+  // create-functions for all beacons, make a new proxy for an existing beacon, initialize it add proxy address ot vault
+&nbsp;
+  function createSProxy(string memory _name, string memory _symbol, uint256 _index, address _owner) external returns(address) { //Todo: access control, consider adding the new owner of proxied contract
+    //console.log("Attempting to create a new S Proxy by ", msg.sender);
+    //bytes4 _sel = ShareableERC721(address(0)).initialize.selector;
+    //console.logBytes4(_sel);
+    //address _addr = s_beacon.implementation();
+    //console.log("Beacon implementation address ", _addr);
+    BeaconProxy proxy = new BeaconProxy(
+      address(s_beacon),
+      abi.encodeWithSelector(ShareableERC721(address(0)).initialize.selector, _name, _symbol, _owner) //Todo: consider 
+    );
+    //console.log("Created a new S Proxy by ", msg.sender);
+    shareable_t_proxies[_index] = address(proxy);
+    //console.log("Deployed proxy at", address(proxy));
+    emit SProxyCreated(address(proxy), msg.sender, _symbol);
+    return address(proxy);
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function createLProxy(string memory _name, string memory _symbol, uint256 _index, address _owner) external returns(address) {</span>
+<span class="cstat-no" title="statement not covered" >    BeaconProxy proxy = new BeaconProxy(</span>
+      address(l_beacon),
+      abi.encodeWithSelector(LikeERC721(address(0)).initialize.selector, _name, _symbol, _owner) //Todo: consider 
+    );
+<span class="cstat-no" title="statement not covered" >    like_t_proxies[_index] = address(proxy)</span>;
+    //console.log("Deployed proxy at", address(proxy));
+<span class="cstat-no" title="statement not covered" >    emit LProxyCreated(address(proxy), msg.sender, _symbol);</span>
+<span class="cstat-no" title="statement not covered" >    return address(proxy);</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function createEProxy(string memory _name, string memory _symbol, uint256 _index, address _owner) external returns(address) {</span>
+<span class="cstat-no" title="statement not covered" >    BeaconProxy proxy = new BeaconProxy(</span>
+      address(e_beacon),
+      abi.encodeWithSelector(EndorseERC721(address(0)).initialize.selector, _name, _symbol, _owner) //Todo: consider 
+    );
+<span class="cstat-no" title="statement not covered" >    endorse_t_proxies[_index] = address(proxy)</span>;
+    //console.log("Deployed proxy at", address(proxy));
+<span class="cstat-no" title="statement not covered" >    emit EProxyCreated(address(proxy), msg.sender, _symbol);</span>
+<span class="cstat-no" title="statement not covered" >    return address(proxy);</span>
+  }
+&nbsp;
+&nbsp;
+  //Refactor other beacons to fulfil IBeacon interface
+&nbsp;
+  // get implementation functions for all beacons
+&nbsp;
+  // get specific proxy by address
+&nbsp;
+  // get address of a beacon
+&nbsp;
+  /*function createShareableBeacon() public returns(address) {
+    UpgradeableBeacon ubeacon = new UpgradeableBeacon(address(shareableERC721));
+    return address(ubeacon);
+  }
+&nbsp;
+  function createShareableProxy(address beacon, string memory _name, string memory _symbol) public returns(address) {
+    BeaconProxy proxy = new BeaconProxy(beacon, abi.encode(_name, _symbol));
+    return address(proxy);
+  }*/
+}</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Jul 18 2022 19:49:38 GMT+0200 (Central European Summer Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

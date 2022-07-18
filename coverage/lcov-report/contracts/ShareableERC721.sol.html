@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/ShareableERC721.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> ShareableERC721.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">91.67% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>22/24</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">66.67% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>4/6</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">86.67% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>13/15</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">92.31% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>24/26</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">105×</span>
+<span class="cline-any cline-yes">105×</span>
+<span class="cline-any cline-yes">105×</span>
+<span class="cline-any cline-yes">105×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">52×</span>
+<span class="cline-any cline-yes">52×</span>
+<span class="cline-any cline-yes">52×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">32×</span>
+<span class="cline-any cline-yes">32×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+&nbsp;
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "hardhat/console.sol";
+&nbsp;
+//Todo: make contract pausable
+//Todo: add more complex governance tools than ownable
+&nbsp;
+contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
+&nbsp;
+    // experiment operator
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+&nbsp;
+    string baseURI;
+&nbsp;
+    uint256 internal _currentIndex;
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function getIndex() public view returns(uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        return _currentIndex;</span>
+    }
+    
+    function initialize(string memory _name, string memory _symbol, address _owner) external initializer { //Todo: pass owner address
+        //console.log('caller of ShareableERC721 was:', msg.sender);
+        //console.log('tx origin of ShareableERC721 was:', tx.origin);
+        //console.log('new owner of contract', _owner); //Todo: consider making owners of these contracts wallets instead of contracts
+        __ERC721_init(_name, _symbol);
+        _currentIndex = uint256(0); //Todo: consider moving to somewhere else, clashes with upgradeability
+        _setupRole(DEFAULT_ADMIN_ROLE, _owner);
+        _setupRole(OPERATOR_ROLE, _owner);
+        //console.log('msg sender', msg.sender);
+        //console.log('tx origin', tx.origin);
+    }
+&nbsp;
+    /*constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
+        _currentIndex = uint256(0);
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(OPERATOR_ROLE, msg.sender);
+    }*/
+&nbsp;
+    function addOperator(address newOperater) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _grantRole(OPERATOR_ROLE, newOperater);
+    }
+&nbsp;
+    function removeOperator(address operator) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _revokeRole(OPERATOR_ROLE, operator);
+    }
+&nbsp;
+    function addAdmin(address newAdmin) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _grantRole(DEFAULT_ADMIN_ROLE, newAdmin);
+    }
+&nbsp;
+    function removeAdmin(address admin) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _revokeRole(DEFAULT_ADMIN_ROLE, admin);
+    }
+&nbsp;
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Upgradeable, AccessControlUpgradeable) returns (bool) {</span>
+<span class="cstat-no" title="statement not covered" >        return super.supportsInterface(interfaceId);</span>
+    }
+&nbsp;
+    //Consider moving event definition to new Interfaces class with Share method
+    //What got shared from whom, and from what was it derived from
+    //Bob shares Token 1 to Alice which is derived from Token 0
+    event Share(address indexed from, address indexed to, uint256 indexed tokenId, uint256 derivedFromTokenId);
+&nbsp;
+    // Event for 'original' tokens
+    event Mint(address indexed from, address indexed to, uint256 indexed tokenId);
+&nbsp;
+    function mint(
+        address account
+    ) external onlyRole(OPERATOR_ROLE) {
+        _mint(account, _currentIndex);
+        emit Mint(msg.sender, account, _currentIndex);
+        _currentIndex++;
+    }
+&nbsp;
+    function setBaseURI(string memory baseURI_) external onlyRole(OPERATOR_ROLE)  {
+        
+        address self_ = address(this);
+        baseURI = string.concat(baseURI_, StringsUpgradeable.toHexString(uint160(self_), 20),"/");
+    }
+    
+    function _baseURI() internal view override returns (string memory) {
+        return baseURI;
+    }
+&nbsp;
+    //Todo: rework to take into account latest development of nature of content on reshared tokens
+    function share(address to, uint256 tokenIdToBeShared) external virtual {
+      <span class="missing-if-branch" title="else path not taken" >E</span>require(to != address(0), "ERC721: mint to the zero address");
+      //token has to exist
+      <span class="missing-if-branch" title="else path not taken" >E</span>require(_exists(tokenIdToBeShared), "ShareableERC721: token to be shared must exist");
+      
+      require(msg.sender == ownerOf(tokenIdToBeShared), "Method caller must be the owner of token");
+&nbsp;
+      _mint(to, _currentIndex);
+&nbsp;
+      emit Share(msg.sender, to, _currentIndex, tokenIdToBeShared);
+      
+      _currentIndex++;
+    }
+&nbsp;
+    //Todo: safeShare, similar to safe transfer, check that contract recipient is aware of ERC721 protocol
+    //Todo: do we want to enable sharing to contracts
+&nbsp;
+    function transferFrom(
+        address,
+        address,
+        uint256
+    ) public override pure {
+        revert('Tokens are not transferrable');
+    }
+&nbsp;
+    function safeTransferFrom(
+        address,
+        address,
+        uint256
+    ) public override pure {
+        revert('Tokens are not transferrable');
+    }
+&nbsp;
+    function safeTransferFrom(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) public override pure {
+        revert('Tokens are not transferrable');
+    }
+&nbsp;
+    function tokenExists(uint256 tokenId) external view returns (bool){
+        return _exists(tokenId);
+    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+    //disable transfers 
+    //secure minting
+    //override functions
+&nbsp;
+    //disable approve (delegated permissions to transfer)
+}</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Jul 18 2022 19:49:38 GMT+0200 (Central European Summer Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>
