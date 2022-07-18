@@ -56,7 +56,7 @@ describe("ShareableTokenBeacon", function() {
     //shareableERC721.setBaseURI(tokenURIBase);
   }); 
 
-  describe("Deployment", function() {
+  describe("ShareableTokenBeacon", function() {
  
     it("Should be set the right symbol", async function() {
       expect(await shareableERC721.symbol()).to.equal("ST");

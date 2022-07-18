@@ -5,3 +5,5 @@ cache/
 artifacts/
 typechain-types/
 .env
+coverage/*
+/coverage
