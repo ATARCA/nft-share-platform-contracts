@@ -20,12 +20,12 @@ contract EndorseTokenBeacon is Ownable { //Todo: make initializable, inherit own
     transferOwnership(_owner);
   }
 
-  function updateEndorseTokenBeacon(address _endorseTokenBeacon_vLogic) public { //Todo: limit rights to initializer
+  function update(address _endorseTokenBeacon_vLogic) public { //Todo: limit rights to initializer
     endorseTokenBeacon.upgradeTo(_endorseTokenBeacon_vLogic);
     endorseTokenBeacon_vLogic = _endorseTokenBeacon_vLogic;
   }
 
-  function implementationEndorsementToken() public view returns(address) {
+  function implementation() public view returns(address) {
     return endorseTokenBeacon.implementation();
   }
 }
