@@ -2,29 +2,29 @@
   "manifestVersion": "3.2",
   "admin": {
     "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-    "txHash": "0x485a92adc038ca0a19b8baf5bcf5246b8bbcc52edcb99fd2200ed04bdfa22bcb"
+    "txHash": "0x8e5c0db75c418c2fa00ef6f85a2e63682c11ae0b4a6af2df4b20b4d63e82031a"
   },
   "proxies": [
     {
       "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
-      "txHash": "0x85bf8a7e54b01c52596f3e8e0c7e8f85f24cfe284cc60628fad3471d9005aaec",
+      "txHash": "0xd011ffe048f25900ae66e1eaba89e3c987ea2264c78b5127e718b16bb7aa1e55",
       "kind": "transparent"
     },
     {
       "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
-      "txHash": "0x48bcc8f32584ad2f8314647b3b4ce1cebb1caf4342b6f67ac7afcf682884772b",
+      "txHash": "0xb6259b1e2a126a4ead5de0ad08c4ae0bcdae38e93604915a4089566a4a1e693c",
       "kind": "transparent"
     },
     {
       "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-      "txHash": "0x9abdcd3a00a6a1c3840fdd0f1c9c4602c15e577696c524d7238f5452b8108b89",
+      "txHash": "0x4602a3384914eeec91e8ffc70f2b4e99cde78dda0fc9dcc812ed10d86126f88a",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "7a7784fbf5086e78efd83762b1f26352c5a893df932620d60173deb467318e73": {
+    "62d966b5e01f7b25649f9161f89a511b9207eaab14e8466d6c11c219311d58c5": {
       "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
-      "txHash": "0x0bb0473c1820cf4dcfca95aa8d1cfddcae2f6c310d6395fd027febd3fccec51c",
+      "txHash": "0x1221327b6b5d983c250a6307033dbcd099856c91080f89c367d5db7548325d27",
       "layout": {
         "storage": [
           {
@@ -144,7 +144,7 @@
             "label": "contributions_contract",
             "offset": 0,
             "slot": "202",
-            "type": "t_contract(IShareableERC721)3676",
+            "type": "t_contract(IShareableERC721)3684",
             "contract": "EndorseERC721",
             "src": "contracts/EndorseERC721.sol:27"
           },
@@ -190,7 +190,7 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IShareableERC721)3676": {
+          "t_contract(IShareableERC721)3684": {
             "label": "contract IShareableERC721",
             "numberOfBytes": "20"
           },
@@ -255,9 +255,9 @@
         }
       }
     },
-    "2df1c1aeec20f5afacbe65f548dcc3d5ddf5985892f0063516655997ccc7782a": {
+    "e67db72dff181550bc2e0e76671f6223c6f8018682635f5f6c545a497a3a14c4": {
       "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
-      "txHash": "0x6ef92d58dcab6557a16adee70a9b11df5000b68e095b0b72f750a08f9354c191",
+      "txHash": "0xd805216c1b539edf9fb8220b5f37390dadf7c25524a255686f83c84210bb97be",
       "layout": {
         "storage": [
           {
@@ -377,7 +377,7 @@
             "label": "contributions_contract",
             "offset": 0,
             "slot": "202",
-            "type": "t_contract(IShareableERC721)3676",
+            "type": "t_contract(IShareableERC721)3684",
             "contract": "LikeERC721",
             "src": "contracts/LikeERC721.sol:30"
           },
@@ -423,7 +423,7 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IShareableERC721)3676": {
+          "t_contract(IShareableERC721)3684": {
             "label": "contract IShareableERC721",
             "numberOfBytes": "20"
           },
@@ -488,9 +488,9 @@
         }
       }
     },
-    "dbe4ffc7e70c176cc3ee0145981f74413c5a1cef80b68c4499b4a2964fd33a1d": {
+    "6ba3e47f76db4f9f9bd0b8802fd7e5b6477e9787e4a4290b02afb19a4c325cd7": {
       "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "txHash": "0x83ffd02774f1b507fc85fa43a6d91bf3259e6367ec5e33d791789c20dde4b5d9",
+      "txHash": "0xcc8174daa72913045327d949a467048a12d8a04c0f2f19d9d20aa9d480bac5c5",
       "layout": {
         "storage": [
           {

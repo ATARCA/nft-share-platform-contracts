@@ -25,6 +25,8 @@ describe("Talko Factory", function() {
   let EndorseableERC721;
   let _endorseableERC721;
 
+  let ShareableERC721v2Test;
+
   let BeaconShareableERC721;
   let _beaconShareableERC721
 
@@ -46,14 +48,26 @@ describe("Talko Factory", function() {
   let tokenId     = "0x0000000000000000000000000000000000000000";    
   let newTokenId  = "0x0000000000000000000000000000000000000001";
 
+  let operatorRole = keccak256(ethers.utils.toUtf8Bytes("OPERATOR_ROLE"));
+  let adminRole = ethers.constants.HashZero
+
   beforeEach(async function() {
 
     await hre.network.provider.send("hardhat_reset");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
+    //console.log('@@@@@@@')
+    //console.log('owner wallet is', owner.address)
+    //console.log('@@@@@@@')
+
+    BeaconShareableERC721 = await ethers.getContractFactory("ShareableTokenBeacon");
+
     ShareableERC721 = await ethers.getContractFactory("ShareableERC721");
     _shareableERC721 = await ShareableERC721.deploy();
     await _shareableERC721.deployed()
+
+
+    ShareableERC721v2Test = await ethers.getContractFactory("ShareableERC721v2Test");
 
     //BeaconShareableERC721 = await ethers.getContractFactory("ShareableTokenBeacon");
     //_beaconShareableERC721  = await BeaconShareableERC721.deploy(_shareableERC721.address);
@@ -108,36 +122,97 @@ describe("Talko Factory", function() {
     //update beacon
     //check status of proxy
     it("Proxy can be deployed and has correct arguments", async function() {
-      //console.log(_factoryContract)
-      let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0);
+      let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, owner.address);
       let receipt = await deployedProxyAddress.wait()
       
       let event = _.filter(receipt?.events, function(o) {
         return o.event === 'SProxyCreated'
       });
-      console.log('found event', event[0]?.args)
 
       let deployAddress = event[0]?.args[0]
       expect(deployedProxyAddress).to.emit(_factoryContract, "SProxyCreated").withArgs(deployAddress, owner.address, "ST")
+    });
 
-      //let getProxy = await ethers.getContractAt(ShareableERC721, deployAddress);
+    it("Deployed proxy can be interacted with", async function() {
+      //Mint a couple of tokens
+      //check that tokens got minted
+
+      let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, owner.address);
+      let receipt = await deployedProxyAddress.wait()
+      
+      let event = _.filter(receipt?.events, function(o) {
+        return o.event === 'SProxyCreated'
+      });
+      //console.log('found event', event[0]?.args)
+
+      let deployAddress = event[0]?.args[0]
       let proxiedST = await ShareableERC721.attach(deployAddress);
-      console.log(proxiedST.address)
 
       await proxiedST.mint(addr1.address)
       await proxiedST.mint(addr2.address)
       expect(await proxiedST.ownerOf(tokenId)).to.equal(addr1.address);
-
-      //console.log(getProxy)
-    });
-
-    it("Deployed proxy can be interacted with", async function() {
-      //Todo deploy proxy
-      //Mint a couple of tokens
-      //check that tokens got minted
     })
 
+    it("Deploy proxy to different owner, deployer shouldn't have rights to proxy ", async function() {
+      let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, addr1.address);
+      let receipt = await deployedProxyAddress.wait()
+      
+      let event = _.filter(receipt?.events, function(o) {
+        return o.event === 'SProxyCreated'
+      });
 
+      let deployAddress = event[0]?.args[0]
+      let proxiedST = await ShareableERC721.attach(deployAddress);
+      await expect(proxiedST.mint(addr1.address)).to.be.reverted
+
+      expect(await proxiedST.hasRole(adminRole, addr1.address)).to.be.true
+      expect(await proxiedST.hasRole(operatorRole, addr1.address)).to.be.true
+      expect(await proxiedST.hasRole(adminRole, owner.address)).to.be.false
+
+    })
+
+    it("Token Beacon owner should be able to upgrade proxies, upgrade shouldn't affect state of proxies", async function() {
+      let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, owner.address);
+      let receipt = await deployedProxyAddress.wait()
+
+      console.log(_factoryContract)
+      
+      let event = _.filter(receipt?.events, function(o) {
+        return o.event === 'SProxyCreated'
+      });
+      //console.log('found event', event[0]?.args)
+
+      let deployAddress = event[0]?.args[0]
+      console.log('deploy address', deployAddress)
+      let proxiedST = await ShareableERC721.attach(deployAddress);
+
+      await proxiedST.mint(addr1.address)
+      await proxiedST.mint(addr2.address)
+
+      let beaconAddress = await _factoryContract.SBeaconAddress();
+      console.log(beaconAddress)
+      
+      let sBeacon = await BeaconShareableERC721.attach(beaconAddress)
+      let sBeaconImplementation = await sBeacon.implementation()
+      console.log('pre-update address', sBeaconImplementation)
+
+      let redeployedTokeContract = await ShareableERC721v2Test.deploy();
+
+      let update = await sBeacon.update(redeployedTokeContract.address)
+      logEvents(update)
+      console.log('post upgrade address', await sBeacon.implementation())
+
+      proxiedST = await ShareableERC721v2Test.attach(deployAddress);
+      expect(await proxiedST.getIndex2()).to.equal(200)
+      expect(await proxiedST.getIndex()).to.equal(2)
+      expect(await proxiedST.hasRole(adminRole, owner.address)).to.be.true
+      expect(await proxiedST.hasRole(operatorRole, owner.address)).to.be.true
+      expect(await proxiedST.hasRole(adminRole, addr1.address)).to.be.false
+
+      console.log(await proxiedST.getIndex2())
+      console.log(await proxiedST.getIndex())
+      await proxiedST.mint(addr1.address)
+    })
   });
 
   

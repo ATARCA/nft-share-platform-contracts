@@ -10,13 +10,14 @@ import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 
 //Handles the collection of contracts and their updates
-contract EndorseTokenBeacon { //Todo: make initializable, inherit ownership from the deployer
+contract EndorseTokenBeacon is Ownable { //Todo: make initializable, inherit ownership from the deployer
   UpgradeableBeacon immutable endorseTokenBeacon;
   address public endorseTokenBeacon_vLogic;
 
-  constructor(address _endorseTokenBeacon_vLogic) {
+  constructor(address _endorseTokenBeacon_vLogic, address _owner) {
     endorseTokenBeacon = new UpgradeableBeacon(_endorseTokenBeacon_vLogic);
     endorseTokenBeacon_vLogic = _endorseTokenBeacon_vLogic;
+    transferOwnership(_owner);
   }
 
   function updateEndorseTokenBeacon(address _endorseTokenBeacon_vLogic) public { //Todo: limit rights to initializer

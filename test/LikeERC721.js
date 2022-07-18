@@ -42,19 +42,19 @@ describe("Likeable ERC721 contract", function() {
     //console.log('owner', owner.address)
 
     ContributionTokenContract = await ethers.getContractFactory("ShareableERC721");
-    instanceContributionTokenContract = await upgrades.deployProxy(ContributionTokenContract,["ShareableToken","ST"]);
+    instanceContributionTokenContract = await upgrades.deployProxy(ContributionTokenContract,["ShareableToken","ST",owner.address]);
     await instanceContributionTokenContract.deployed()
     //= await ContributionTokenContract.deploy("ShareableToken", "ST")
     instanceContributionTokenContract.setBaseURI(tokenURIBase);
 
     EndorseTokenContract = await ethers.getContractFactory("EndorseERC721");
-    instanceEndorseTokenContract = await upgrades.deployProxy(EndorseTokenContract, ["EndorseERC721", "ET"]);
+    instanceEndorseTokenContract = await upgrades.deployProxy(EndorseTokenContract, ["EndorseERC721", "ET",owner.address]);
     await instanceEndorseTokenContract.deployed()
     //await upgrades.deployProxy(EndorseTokenContract, ["EndorseERC721", "ET"]);
     //await EndorseTokenContract.deploy("EndorseERC721", "ET")
 
     LikeTokenContract = await ethers.getContractFactory("LikeERC721");
-    instanceLikeTokenContract = await upgrades.deployProxy(LikeTokenContract, ["LikeERC721","LT"]);
+    instanceLikeTokenContract = await upgrades.deployProxy(LikeTokenContract, ["LikeERC721","LT",owner.address]);
     await instanceLikeTokenContract.deployed()
     //await LikeTokenContract.deploy("LikeERC721", "LT")
 

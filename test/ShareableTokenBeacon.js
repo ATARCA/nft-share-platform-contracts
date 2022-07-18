@@ -39,12 +39,12 @@ describe("ShareableTokenBeacon", function() {
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
     shareableERC721 = await TokenContract.deploy();
-    await shareableERC721.initialize("ShareableToken","ST");
+    await shareableERC721.initialize("ShareableToken","ST", owner.address);
     //await shareableERC721.deployed();
     deployed_address = shareableERC721.address;
     
-    deployedTokenBeacon = await TokenBeacon.deploy(deployed_address);
-    console.log('Owner of beacon', await deployedTokenBeacon.owner())
+    deployedTokenBeacon = await TokenBeacon.deploy(deployed_address, owner.address);
+    //console.log('Owner of beacon', await deployedTokenBeacon.owner())
 
     //deploy ShareableERC721 again
     
@@ -67,16 +67,16 @@ describe("ShareableTokenBeacon", function() {
     });
 
     it("Token beacon should have right implementation address", async function() {
-      expect(await deployedTokenBeacon.implementationShareableToken()).to.equal(deployed_address);
+      expect(await deployedTokenBeacon.implementation()).to.equal(deployed_address);
     });
 
     it("Beacon should be upgreadable", async function() {
-      const upgrade = await deployedTokenBeacon.updateShareableToken(redeployedShareableERC721.address)
-      expect(await deployedTokenBeacon.implementationShareableToken()).to.equal(redeployedShareableERC721.address);
+      const upgrade = await deployedTokenBeacon.update(redeployedShareableERC721.address)
+      expect(await deployedTokenBeacon.implementation()).to.equal(redeployedShareableERC721.address);
     });
 
     it("Beacon should not be upgreadable by others", async function() { //Todo: currently upgradeable by anyone through the parent contract
-      await expect(deployedTokenBeacon.connect(addr1).updateShareableToken(redeployedShareableERC721.address)).to.be.reverted
+      await expect(deployedTokenBeacon.connect(addr1).update(redeployedShareableERC721.address)).to.be.reverted
     });
 
     /*it("Upgraded contract should have the same state post-upgrade", async function() {

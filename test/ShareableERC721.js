@@ -33,7 +33,7 @@ describe("Shareable ERC 721 contract", function() {
     TokenContract = await ethers.getContractFactory("ShareableERC721");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    shareableERC721 = await upgrades.deployProxy(TokenContract,["ShareableToken","ST"]);
+    shareableERC721 = await upgrades.deployProxy(TokenContract,["ShareableToken","ST", owner.address]);
     await shareableERC721.deployed();
     deployed_address = shareableERC721.address;
 

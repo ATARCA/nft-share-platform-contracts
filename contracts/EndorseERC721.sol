@@ -31,11 +31,11 @@ contract EndorseERC721 is ERC721Upgradeable, AccessControlUpgradeable {
   // Endorse token id => Contribution token Id
   mapping(uint256 => uint256) private _endorsesToContributions;
 
-  function initialize(string memory _name, string memory _symbol) public initializer {
+  function initialize(string memory _name, string memory _symbol, address _owner) public initializer {
     __ERC721_init(_name, _symbol);
     _currentIndex = uint256(0); //Todo: consider moving to somewhere else, clashes with upgradeability
-    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    _setupRole(OPERATOR_ROLE, msg.sender);
+    _setupRole(DEFAULT_ADMIN_ROLE, _owner);
+    _setupRole(OPERATOR_ROLE, _owner);
   }
 
   function addOperator(address newOperater) public onlyRole(DEFAULT_ADMIN_ROLE) {

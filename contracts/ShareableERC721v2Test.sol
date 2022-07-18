@@ -9,7 +9,7 @@ import "hardhat/console.sol";
 //Todo: make contract pausable
 //Todo: add more complex governance tools than ownable
 
-contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
+contract ShareableERC721v2Test is ERC721Upgradeable, AccessControlUpgradeable {
 
     // experiment operator
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
@@ -133,9 +133,10 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
     function tokenExists(uint256 tokenId) external view returns (bool){
         return _exists(tokenId);
     }
-
-
-
+    
+    function getIndex2() public view returns(uint256) {
+        return _currentIndex*100;
+    }
 
     //disable transfers 
     //secure minting
