@@ -16,6 +16,12 @@ const logEvents = async function(calledMethod) {
   }
 }
 
+const findEvent = function(eventName, transactionReceipt) {
+  return _.filter(transactionReceipt?.events, function(o) {
+    return o.event == eventName
+  });
+}
+
 describe("Talko Factory", function() {
 
   let ShareableERC721;
@@ -45,8 +51,8 @@ describe("Talko Factory", function() {
   let addrs;
   let tokenURIBase
 
-  let tokenId     = "0x0000000000000000000000000000000000000000";    
-  let newTokenId  = "0x0000000000000000000000000000000000000001";
+  let tokenId     = ethers.constants.Zero    
+  let newTokenId  = ethers.constants.One
 
   let operatorRole = keccak256(ethers.utils.toUtf8Bytes("OPERATOR_ROLE"));
   let adminRole = ethers.constants.HashZero
@@ -56,79 +62,33 @@ describe("Talko Factory", function() {
     await hre.network.provider.send("hardhat_reset");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    //console.log('@@@@@@@')
-    //console.log('owner wallet is', owner.address)
-    //console.log('@@@@@@@')
-
     BeaconShareableERC721 = await ethers.getContractFactory("ShareableTokenBeacon");
 
     ShareableERC721 = await ethers.getContractFactory("ShareableERC721");
     _shareableERC721 = await ShareableERC721.deploy();
     await _shareableERC721.deployed()
 
-
     ShareableERC721v2Test = await ethers.getContractFactory("ShareableERC721v2Test");
-
-    //BeaconShareableERC721 = await ethers.getContractFactory("ShareableTokenBeacon");
-    //_beaconShareableERC721  = await BeaconShareableERC721.deploy(_shareableERC721.address);
 
     LikeERC721 = await ethers.getContractFactory("LikeERC721");
     _likeERC721 = await LikeERC721.deploy();
     await _likeERC721.deployed()
 
-    //BeaconLikeERC721 = await ethers.getContractAt("LikeTokenBeacon");
-    //_beaconLikeERC721 = await ethers.deploy(_likeERC721.address);
-
     EndorseableERC721 = await ethers.getContractFactory("EndorseERC721");
     _endorseableERC721 = await EndorseableERC721.deploy();
     await _endorseableERC721.deployed()
 
-    //BeaconEndorseableERC721 = await ethers.getContractAt("EndorseTokenBeacon");
-    //_beaconEndorseableERC721 = await BeaconEndorseableERC721.deploy(_endorseableERC721.address);
-
     FactoryContract = await ethers.getContractFactory("TalkoFactory");
     _factoryContract = await FactoryContract.deploy(_shareableERC721.address, _likeERC721.address, _endorseableERC721.address);
     await _factoryContract.deployed()
-
-    //await shareableERC721.initialize("ShareableToken","ST");
-    //await shareableERC721.deployed();
-    //deployed_address = shareableERC721.address;
-    
-    //deployedTokenBeacon = await TokenBeacon.deploy(deployed_address);
-    //console.log('Owner of beacon', await deployedTokenBeacon.owner())
-
-    //deploy ShareableERC721 again
-    
-    //redeployedShareableERC721 = await TokenContract.deploy()
-
-    //Deploy factory
-
-
-
-    //tokenURIBase = 'domain/metadata/';
-    //shareableERC721.setBaseURI(tokenURIBase);
-
-    //Deploy all token contracts
-    //Deploy all beacons
   }); 
 
   describe("Deployment", function() {
  
-    //Setup a factory
-    //Try to createSProxy
-
-    //mint couple of tokens
-
-    //update beacon
-    //check status of proxy
     it("Proxy can be deployed and has correct arguments", async function() {
       let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, owner.address);
       let receipt = await deployedProxyAddress.wait()
-      
-      let event = _.filter(receipt?.events, function(o) {
-        return o.event === 'SProxyCreated'
-      });
-
+      let event = findEvent('SProxyCreated', receipt)
       let deployAddress = event[0]?.args[0]
       expect(deployedProxyAddress).to.emit(_factoryContract, "SProxyCreated").withArgs(deployAddress, owner.address, "ST")
     });
@@ -140,9 +100,7 @@ describe("Talko Factory", function() {
       let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, owner.address);
       let receipt = await deployedProxyAddress.wait()
       
-      let event = _.filter(receipt?.events, function(o) {
-        return o.event === 'SProxyCreated'
-      });
+      let event = findEvent('SProxyCreated', receipt)
       //console.log('found event', event[0]?.args)
 
       let deployAddress = event[0]?.args[0]
@@ -157,9 +115,7 @@ describe("Talko Factory", function() {
       let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, addr1.address);
       let receipt = await deployedProxyAddress.wait()
       
-      let event = _.filter(receipt?.events, function(o) {
-        return o.event === 'SProxyCreated'
-      });
+      let event = findEvent('SProxyCreated', receipt)
 
       let deployAddress = event[0]?.args[0]
       let proxiedST = await ShareableERC721.attach(deployAddress);
@@ -171,36 +127,22 @@ describe("Talko Factory", function() {
 
     })
 
-    it("Token Beacon owner should be able to upgrade proxies, upgrade shouldn't affect state of proxies", async function() {
+    it("Token Beacon owner should be able to upgrade his proxies, upgrade shouldn't affect state of proxies", async function() {
+      //Shareable token beacon
       let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, owner.address);
       let receipt = await deployedProxyAddress.wait()
-
-      //console.log(_factoryContract)
-      
-      let event = _.filter(receipt?.events, function(o) {
-        return o.event === 'SProxyCreated'
-      });
-      //console.log('found event', event[0]?.args)
-
+      let event = findEvent('SProxyCreated', receipt)
       let deployAddress = event[0]?.args[0]
-      //console.log('deploy address', deployAddress)
       let proxiedST = await ShareableERC721.attach(deployAddress);
+      let beaconAddress = await _factoryContract.SBeaconAddress();
 
       await proxiedST.mint(addr1.address)
       await proxiedST.mint(addr2.address)
 
-      let beaconAddress = await _factoryContract.SBeaconAddress();
-      //console.log(beaconAddress)
-      
       let sBeacon = await BeaconShareableERC721.attach(beaconAddress)
       let sBeaconImplementation = await sBeacon.implementation()
-      //console.log('pre-update address', sBeaconImplementation)
-
       let redeployedTokeContract = await ShareableERC721v2Test.deploy();
-
-      let update = await sBeacon.update(redeployedTokeContract.address)
-      logEvents(update)
-      //console.log('post upgrade address', await sBeacon.implementation())
+      await sBeacon.update(redeployedTokeContract.address)
 
       proxiedST = await ShareableERC721v2Test.attach(deployAddress);
       expect(await proxiedST.getIndex2()).to.equal(200)
@@ -212,7 +154,44 @@ describe("Talko Factory", function() {
       //console.log(await proxiedST.getIndex2())
       //console.log(await proxiedST.getIndex())
       await proxiedST.mint(addr1.address)
+
+      // LikeToken Beacon 
+      let deployedLProxyAddress = await _factoryContract.createLProxy("LikeERC721","LT",0, owner.address);
+      let l_receipt = await deployedLProxyAddress.wait()
+      //console.log(l_receipt)
+      let l_event = findEvent('LProxyCreated', l_receipt)
+      let l_deployAddress = l_event[0]?.args[0]
+      //console.log(l_deployAddress)
+      let proxiedLT = await LikeERC721.attach(l_deployAddress);
+
+      await proxiedLT.setProjectAddress(deployAddress);
+      expect(await proxiedLT.getProjectAddress()).to.be.equal(deployAddress)
+
+      const l_minting = await proxiedLT.connect(addr2).mint(ethers.constants.Zero)
+      expect(l_minting).to.emit(proxiedLT, "Transfer").withArgs(ethers.constants.AddressZero, addr2.address, 0)
+      expect(l_minting).to.emit(proxiedLT, "Like").withArgs(addr2.address, addr1.address, 0, ethers.constants.AddressZero)
+      expect(await proxiedLT.getIndex()).to.equal(ethers.constants.One)
+
+      //Try to update LProxy & check that index is the same after upgrade
+
+      // EndorseToken Beacon
+      let deployedEProxyAddress = await _factoryContract.createEProxy("EndorseERC721","ET",0, owner.address);
+      let e_receipt = await deployedEProxyAddress.wait()
+      let e_event = findEvent('EProxyCreated', e_receipt)
+      let e_deployAddress = e_event[0]?.args[0]
+      let proxiedET = await EndorseableERC721.attach(e_deployAddress)
+
+      await proxiedET.setProjectAddress(deployAddress)
+      expect(await proxiedET.getProjectAddress()).to.be.equal(deployAddress)
+      expect(await proxiedET.getIndex()).to.be.equal(ethers.constants.Zero)
+      const e_minting = await proxiedET.connect(addr1).mint(ethers.constants.Zero)
+      expect(await proxiedET.getIndex()).to.be.equal(ethers.constants.One)
+      
+
+      //upgrade contact, check that state is still the same
+      
     })
+
   });
 
   

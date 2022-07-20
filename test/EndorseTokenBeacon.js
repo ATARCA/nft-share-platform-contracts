@@ -18,18 +18,16 @@ const logEvents = async function(calledMethod) {
 describe("EndorseTokenBeacon", function() {
 
   let TokenContract;
-  let shareableERC721;
   let deployed_address;
   let TokenBeacon;
   let deployedTokenBeacon;
 
-  let redeployedShareableERC721;
+  let redeployedContract;
 
   let owner;
   let addr1;
   let addr2;
   let addrs;
-  let tokenURIBase
 
   beforeEach(async function() {
 
@@ -40,20 +38,11 @@ describe("EndorseTokenBeacon", function() {
 
     endorseERC721 = await TokenContract.deploy();
     await endorseERC721.initialize("EndorseERC721","ET", owner.address);
-    //await shareableERC721.deployed();
     deployed_address = endorseERC721.address;
     
     deployedTokenBeacon = await TokenBeacon.deploy(deployed_address, owner.address);
-    //console.log('Owner of beacon', await deployedTokenBeacon.owner())
-
     //deploy ShareableERC721 again
-    
     redeployedContract = await TokenContract.deploy()
-
-    //Deploy proxy
-
-    //tokenURIBase = 'domain/metadata/';
-    //shareableERC721.setBaseURI(tokenURIBase);
   }); 
 
   describe("Deployment", function() {

@@ -7,14 +7,8 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
 import "./Helpers.sol";
 
-//Todo: allow adding a group of owners to the contract (check openzeppelin for available governance contracts)
-
 //Todo: if token is burned reset users contribution endorsement related to that contribution
 //Todo: make contract pausable
-
-/*interface project_contributions is IERC721MetadataUpgradeable {
-  function tokenExists(uint256 tokenId) external view returns(bool);
-}*/
 
 contract LikeERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
@@ -26,7 +20,12 @@ contract LikeERC721 is ERC721Upgradeable, AccessControlUpgradeable {
   event Like(address indexed liker, address indexed likee, uint256 indexed likeTokenId, uint256 contributionTokenId);
 
   uint256 internal _currentIndex;
-  //Todo: consider upgradeable contracs, non-immutable address
+
+  function getIndex() public view returns(uint256) {
+    return _currentIndex;
+  }
+  //Todo: consider upgradeable contracs, non-immutable address?
+  // Address for proxy contract ?
   IShareableERC721 private contributions_contract;
 
   //Token -> wallet adderss -> boolean
@@ -35,12 +34,6 @@ contract LikeERC721 is ERC721Upgradeable, AccessControlUpgradeable {
   // How many like tokens are associated to contribution token
   // Like token id => Contribution token Id
   mapping(uint256 => uint256) private _likesToContributions;
-
-  /*constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
-      _currentIndex = uint256(0);
-      _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-      _setupRole(OPERATOR_ROLE, msg.sender);
-  }*/
 
   function initialize(string memory _name, string memory _symbol, address _owner) public initializer {
         __ERC721_init(_name, _symbol);

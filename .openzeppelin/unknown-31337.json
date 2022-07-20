@@ -22,9 +22,9 @@
     }
   ],
   "impls": {
-    "22789b3e01a6235433ff94369a112bc03d6f6db8488e12292f1b85448b01e156": {
+    "6d4cb37dbf9e3092c3076ac8c075f168eed819bbe76909be775ce351b69c2056": {
       "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "txHash": "0x0a2c6d7cb91fd3429319a76958c2ae1e5607612fb253d5ce325ff8817d0f167f",
+      "txHash": "0x337f34a9a2fbab8da2905df3b98ce32be62dbf265776795ef2384826d1522821",
       "layout": {
         "storage": [
           {
@@ -138,7 +138,7 @@
             "slot": "201",
             "type": "t_string_storage",
             "contract": "ShareableERC721",
-            "src": "contracts/ShareableERC721.sol:21"
+            "src": "contracts/ShareableERC721.sol:20"
           },
           {
             "label": "_currentIndex",
@@ -146,7 +146,7 @@
             "slot": "202",
             "type": "t_uint256",
             "contract": "ShareableERC721",
-            "src": "contracts/ShareableERC721.sol:23"
+            "src": "contracts/ShareableERC721.sol:22"
           }
         ],
         "types": {
@@ -460,9 +460,9 @@
         }
       }
     },
-    "36a59d06ac8fbf7d37c33a51ea5720ca5541306b62c921d09472bd9626779d5f": {
+    "f8cc2e8b50c3b7d1fa868638bf461e12c4be14bb785af13d27ffc4e9c428943d": {
       "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
-      "txHash": "0xe0af91849c5ca0ba5ac06d104a2b8b36caedda324cc72db0e15e181f1e0dd4e8",
+      "txHash": "0x87a64f5f516629cdd41e6497d37d7dbf432e46e8dcd12e250549f5c83169125a",
       "layout": {
         "storage": [
           {
@@ -576,7 +576,7 @@
             "slot": "201",
             "type": "t_uint256",
             "contract": "LikeERC721",
-            "src": "contracts/LikeERC721.sol:32"
+            "src": "contracts/LikeERC721.sol:26"
           },
           {
             "label": "contributions_contract",
@@ -584,7 +584,7 @@
             "slot": "202",
             "type": "t_contract(IShareableERC721)4105",
             "contract": "LikeERC721",
-            "src": "contracts/LikeERC721.sol:34"
+            "src": "contracts/LikeERC721.sol:36"
           },
           {
             "label": "_contributionLikes",
@@ -592,7 +592,7 @@
             "slot": "203",
             "type": "t_mapping(t_uint256,t_mapping(t_address,t_bool))",
             "contract": "LikeERC721",
-            "src": "contracts/LikeERC721.sol:37"
+            "src": "contracts/LikeERC721.sol:39"
           },
           {
             "label": "_likesToContributions",
@@ -600,7 +600,7 @@
             "slot": "204",
             "type": "t_mapping(t_uint256,t_uint256)",
             "contract": "LikeERC721",
-            "src": "contracts/LikeERC721.sol:41"
+            "src": "contracts/LikeERC721.sol:43"
           }
         ],
         "types": {

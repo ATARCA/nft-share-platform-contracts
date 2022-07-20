@@ -7,7 +7,6 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "hardhat/console.sol";
 
 //Todo: make contract pausable
-//Todo: add more complex governance tools than ownable
 
 contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
@@ -23,22 +22,11 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
     }
     
     function initialize(string memory _name, string memory _symbol, address _owner) external initializer { //Todo: pass owner address
-        //console.log('caller of ShareableERC721 was:', msg.sender);
-        //console.log('tx origin of ShareableERC721 was:', tx.origin);
-        //console.log('new owner of contract', _owner); //Todo: consider making owners of these contracts wallets instead of contracts
         __ERC721_init(_name, _symbol);
-        _currentIndex = uint256(0); //Todo: consider moving to somewhere else, clashes with upgradeability
+        _currentIndex = uint256(0); //Todo: consider moving to somewhere else, may clash with beacon proxy upgradeability
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
         _setupRole(OPERATOR_ROLE, _owner);
-        //console.log('msg sender', msg.sender);
-        //console.log('tx origin', tx.origin);
     }
-
-    /*constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
-        _currentIndex = uint256(0);
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(OPERATOR_ROLE, msg.sender);
-    }*/
 
     function addOperator(address newOperater) public onlyRole(DEFAULT_ADMIN_ROLE) {
         _grantRole(OPERATOR_ROLE, newOperater);
@@ -102,9 +90,6 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
       _currentIndex++;
     }
 
-    //Todo: safeShare, similar to safe transfer, check that contract recipient is aware of ERC721 protocol
-    //Todo: do we want to enable sharing to contracts
-
     function transferFrom(
         address,
         address,
@@ -134,12 +119,5 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
         return _exists(tokenId);
     }
 
-
-
-
-    //disable transfers 
-    //secure minting
-    //override functions
-
-    //disable approve (delegated permissions to transfer)
+    //disable approve (delegated permissions to transfer)?
 }

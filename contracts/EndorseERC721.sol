@@ -10,10 +10,6 @@ import "./Helpers.sol";
 //Todo: rename contracts
 //Todo: make contract pausable
 
-/*interface project_contributions is IShareableERC721 {
-  function tokenExists(uint256 tokenId) external view returns(bool);
-}*/
-
 contract EndorseERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
   // experiment operator
@@ -36,6 +32,10 @@ contract EndorseERC721 is ERC721Upgradeable, AccessControlUpgradeable {
     _currentIndex = uint256(0); //Todo: consider moving to somewhere else, clashes with upgradeability
     _setupRole(DEFAULT_ADMIN_ROLE, _owner);
     _setupRole(OPERATOR_ROLE, _owner);
+  }
+
+  function getIndex() public view returns(uint256) {
+    return _currentIndex;
   }
 
   function addOperator(address newOperater) public onlyRole(DEFAULT_ADMIN_ROLE) {

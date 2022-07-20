@@ -40,20 +40,10 @@ describe("ShareableTokenBeacon", function() {
 
     shareableERC721 = await TokenContract.deploy();
     await shareableERC721.initialize("ShareableToken","ST", owner.address);
-    //await shareableERC721.deployed();
     deployed_address = shareableERC721.address;
     
-    deployedTokenBeacon = await TokenBeacon.deploy(deployed_address, owner.address);
-    //console.log('Owner of beacon', await deployedTokenBeacon.owner())
-
-    //deploy ShareableERC721 again
-    
+    deployedTokenBeacon = await TokenBeacon.deploy(deployed_address, owner.address);    
     redeployedShareableERC721 = await TokenContract.deploy()
-
-    //Deploy proxy
-
-    //tokenURIBase = 'domain/metadata/';
-    //shareableERC721.setBaseURI(tokenURIBase);
   }); 
 
   describe("ShareableTokenBeacon", function() {
@@ -78,28 +68,5 @@ describe("ShareableTokenBeacon", function() {
     it("Beacon should not be upgreadable by others", async function() { //Todo: currently upgradeable by anyone through the parent contract
       await expect(deployedTokenBeacon.connect(addr1).update(redeployedShareableERC721.address)).to.be.reverted
     });
-
-    /*it("Upgraded contract should have the same state post-upgrade", async function() {
-      //Todo: mint couple of tokens
-      //Todo: 
-      expect(await shareableERC721.getIndex()).to.equal(0)
-      await shareableERC721.mint(addr1.address)
-      await shareableERC721.mint(addr2.address)
-      expect(await shareableERC721.getIndex()).to.equal(2)
-      const upgrade = await deployedTokenBeacon.updateShareableToken(redeployedShareableERC721.address)
-      expect(await redeployedShareableERC721.getIndex()).to.equal(2)
-    });*/
-    
-    //Check who is owner of the Beacon contract (should be the smart contract that deployed it)
-    
-    //Check who is owner of the sToken contract 
-
-    //Upgraded address should point to right address
-    //Upgraded contract should have right contract state
-
-    //Only deployer should be able to upgrade beacon
-
   });
-
-  
 })
