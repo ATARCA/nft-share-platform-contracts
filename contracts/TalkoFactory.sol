@@ -18,9 +18,9 @@ contract TalkoFactory { //Todo: access control
   mapping(uint256 => address) private like_t_proxies;
   mapping(uint256 => address) private endorse_t_proxies;
 
-  event SProxyCreated(address indexed _sproxy, address indexed _creator, string indexed _symbol);
-  event LProxyCreated(address indexed _sproxy, address indexed _creator, string indexed _symbol);
-  event EProxyCreated(address indexed _sproxy, address indexed _creator, string indexed _symbol);
+  event ShareableERC721ProxyCreated(address indexed _sproxy, address indexed _creator, string indexed _symbol);
+  event LikeERC721ProxyCreated(address indexed _sproxy, address indexed _creator, string indexed _symbol);
+  event EndorseERC721ProxyCreated(address indexed _sproxy, address indexed _creator, string indexed _symbol);
 
   TokenBeacon immutable s_beacon;
   TokenBeacon immutable l_beacon;
@@ -55,7 +55,7 @@ contract TalkoFactory { //Todo: access control
       abi.encodeWithSelector(ShareableERC721(address(0)).initialize.selector, _name, _symbol, _owner) //Todo: consider 
     );
     shareable_t_proxies[_index] = address(proxy);
-    emit SProxyCreated(address(proxy), msg.sender, _symbol);
+    emit ShareableERC721ProxyCreated(address(proxy), msg.sender, _symbol);
     return address(proxy);
   }
 
@@ -67,7 +67,7 @@ contract TalkoFactory { //Todo: access control
       abi.encodeWithSelector(LikeERC721(address(0)).initialize.selector, _name, _symbol, _owner) //Todo: consider 
     );
     like_t_proxies[_index] = address(proxy);
-    emit LProxyCreated(address(proxy), msg.sender, _symbol);
+    emit LikeERC721ProxyCreated(address(proxy), msg.sender, _symbol);
     return address(proxy);
   }
 
@@ -79,7 +79,7 @@ contract TalkoFactory { //Todo: access control
       abi.encodeWithSelector(EndorseERC721(address(0)).initialize.selector, _name, _symbol, _owner) //Todo: consider 
     );
     endorse_t_proxies[_index] = address(proxy);
-    emit EProxyCreated(address(proxy), msg.sender, _symbol);
+    emit EndorseERC721ProxyCreated(address(proxy), msg.sender, _symbol);
     return address(proxy);
   }
 }

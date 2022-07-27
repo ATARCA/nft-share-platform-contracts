@@ -88,9 +88,9 @@ describe("Talko Factory", function() {
     it("Proxy can be deployed and has correct arguments", async function() {
       let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, owner.address);
       let receipt = await deployedProxyAddress.wait()
-      let event = findEvent('SProxyCreated', receipt)
+      let event = findEvent('ShareableERC721ProxyCreated', receipt)
       let deployAddress = event[0]?.args[0]
-      expect(deployedProxyAddress).to.emit(_factoryContract, "SProxyCreated").withArgs(deployAddress, owner.address, "ST")
+      expect(deployedProxyAddress).to.emit(_factoryContract, "ShareableERC721ProxyCreated").withArgs(deployAddress, owner.address, "ST")
     });
 
     it("Deployed proxy can be interacted with", async function() {
@@ -100,7 +100,7 @@ describe("Talko Factory", function() {
       let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, owner.address);
       let receipt = await deployedProxyAddress.wait()
       
-      let event = findEvent('SProxyCreated', receipt)
+      let event = findEvent('ShareableERC721ProxyCreated', receipt)
       //console.log('found event', event[0]?.args)
 
       let deployAddress = event[0]?.args[0]
@@ -115,7 +115,7 @@ describe("Talko Factory", function() {
       let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, addr1.address);
       let receipt = await deployedProxyAddress.wait()
       
-      let event = findEvent('SProxyCreated', receipt)
+      let event = findEvent('ShareableERC721ProxyCreated', receipt)
 
       let deployAddress = event[0]?.args[0]
       let proxiedST = await ShareableERC721.attach(deployAddress);
@@ -131,7 +131,7 @@ describe("Talko Factory", function() {
       //Shareable token beacon
       let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, owner.address);
       let receipt = await deployedProxyAddress.wait()
-      let event = findEvent('SProxyCreated', receipt)
+      let event = findEvent('ShareableERC721ProxyCreated', receipt)
       let deployAddress = event[0]?.args[0]
       let proxiedST = await ShareableERC721.attach(deployAddress);
       let beaconAddress = await _factoryContract.SBeaconAddress();
@@ -159,7 +159,7 @@ describe("Talko Factory", function() {
       let deployedLProxyAddress = await _factoryContract.createLProxy("LikeERC721","LT",0, owner.address);
       let l_receipt = await deployedLProxyAddress.wait()
       //console.log(l_receipt)
-      let l_event = findEvent('LProxyCreated', l_receipt)
+      let l_event = findEvent('LikeERC721ProxyCreated', l_receipt)
       let l_deployAddress = l_event[0]?.args[0]
       //console.log(l_deployAddress)
       let proxiedLT = await LikeERC721.attach(l_deployAddress);
@@ -177,7 +177,7 @@ describe("Talko Factory", function() {
       // EndorseToken Beacon
       let deployedEProxyAddress = await _factoryContract.createEProxy("EndorseERC721","ET",0, owner.address);
       let e_receipt = await deployedEProxyAddress.wait()
-      let e_event = findEvent('EProxyCreated', e_receipt)
+      let e_event = findEvent('EndorseERC721ProxyCreated', e_receipt)
       let e_deployAddress = e_event[0]?.args[0]
       let proxiedET = await EndorseableERC721.attach(e_deployAddress)
 
