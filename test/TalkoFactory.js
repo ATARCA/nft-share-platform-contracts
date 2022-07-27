@@ -62,7 +62,7 @@ describe("Talko Factory", function() {
     await hre.network.provider.send("hardhat_reset");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    BeaconShareableERC721 = await ethers.getContractFactory("ShareableTokenBeacon");
+    BeaconShareableERC721 = await ethers.getContractFactory("TokenBeacon");
 
     ShareableERC721 = await ethers.getContractFactory("ShareableERC721");
     _shareableERC721 = await ShareableERC721.deploy();
