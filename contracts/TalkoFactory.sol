@@ -33,15 +33,15 @@ contract TalkoFactory { //Todo: access control
     e_beacon = new TokenBeacon(_endorseTokenBeacon_vLogic, msg.sender);
   }
 
-  function SBeaconAddress() public view returns(address) {
+  function ShareableERC721BeaconAddress() public view returns(address) {
     return address(s_beacon);
   }
 
-  function LBeaconAddress() public view returns(address) {
+  function LikeERC721BeaconAddress() public view returns(address) {
     return address(l_beacon);
   }
 
-  function EBeaconAddress() public view returns(address) {
+  function EndorseERC721BeaconAddress() public view returns(address) {
     return address(e_beacon);
   }
 

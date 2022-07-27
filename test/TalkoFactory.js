@@ -134,7 +134,7 @@ describe("Talko Factory", function() {
       let event = findEvent('ShareableERC721ProxyCreated', receipt)
       let deployAddress = event[0]?.args[0]
       let proxiedST = await ShareableERC721.attach(deployAddress);
-      let beaconAddress = await _factoryContract.SBeaconAddress();
+      let beaconAddress = await _factoryContract.ShareableERC721BeaconAddress();
 
       await proxiedST.mint(addr1.address)
       await proxiedST.mint(addr2.address)

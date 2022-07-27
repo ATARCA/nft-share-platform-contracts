@@ -42,7 +42,7 @@ describe("Likeable ERC721 contract", function() {
     ContributionTokenContract = await ethers.getContractFactory("ShareableERC721");
     instanceContributionTokenContract = await upgrades.deployProxy(ContributionTokenContract,["ShareableToken","ST",owner.address]);
     await instanceContributionTokenContract.deployed()
-    instanceContributionTokenContract.setBaseURI(tokenURIBase);
+    await instanceContributionTokenContract.setBaseURI(tokenURIBase);
 
     EndorseTokenContract = await ethers.getContractFactory("EndorseERC721");
     instanceEndorseTokenContract = await upgrades.deployProxy(EndorseTokenContract, ["EndorseERC721", "ET",owner.address]);
