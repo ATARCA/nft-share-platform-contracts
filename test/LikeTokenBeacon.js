@@ -32,7 +32,7 @@ describe("LikeTokenBeacon", function() {
 
     await hre.network.provider.send("hardhat_reset")
     TokenContract = await ethers.getContractFactory("LikeERC721");
-    TokenBeacon = await ethers.getContractFactory("LikeTokenBeacon");
+    TokenBeacon = await ethers.getContractFactory("TokenBeacon");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
     likeERC721 = await TokenContract.deploy();
@@ -43,7 +43,7 @@ describe("LikeTokenBeacon", function() {
     redeployedContract = await TokenContract.deploy()
   }); 
 
-  describe("Deployment", function() {
+  describe("LikeERC721 and TokenBeacon", function() {
  
     it("Should be set the right symbol", async function() {
       expect(await likeERC721.symbol()).to.equal("LT");

@@ -35,7 +35,7 @@ describe("ShareableTokenBeacon", function() {
 
     await hre.network.provider.send("hardhat_reset")
     TokenContract = await ethers.getContractFactory("ShareableERC721");
-    TokenBeacon = await ethers.getContractFactory("ShareableTokenBeacon");
+    TokenBeacon = await ethers.getContractFactory("TokenBeacon");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
     shareableERC721 = await TokenContract.deploy();
@@ -46,7 +46,7 @@ describe("ShareableTokenBeacon", function() {
     redeployedShareableERC721 = await TokenContract.deploy()
   }); 
 
-  describe("ShareableTokenBeacon", function() {
+  describe("ShareableToken And TokenBeacon", function() {
  
     it("Should be set the right symbol", async function() {
       expect(await shareableERC721.symbol()).to.equal("ST");

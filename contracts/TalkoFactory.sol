@@ -8,10 +8,8 @@ import "./LikeERC721.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
-import "./ShareableTokenBeacon.sol";
-import "./LikeTokenBeacon.sol";
-import "./EndorseTokenBeacon.sol";
 
+import "./TokenBeacon.sol";
 
 contract TalkoFactory { //Todo: access control
 
@@ -24,15 +22,15 @@ contract TalkoFactory { //Todo: access control
   event LProxyCreated(address indexed _sproxy, address indexed _creator, string indexed _symbol);
   event EProxyCreated(address indexed _sproxy, address indexed _creator, string indexed _symbol);
 
-  ShareableTokenBeacon immutable s_beacon;
-  LikeTokenBeacon immutable l_beacon;
-  EndorseTokenBeacon immutable e_beacon;
+  TokenBeacon immutable s_beacon;
+  TokenBeacon immutable l_beacon;
+  TokenBeacon immutable e_beacon;
 
   constructor(address _shareableTokenBeacon_vLogic, address _likeTokenBeacon_vLogic, address _endorseTokenBeacon_vLogic) {
     //set all beacons up with deployed instances of contracts
-    s_beacon = new ShareableTokenBeacon(_shareableTokenBeacon_vLogic, msg.sender);
-    l_beacon = new LikeTokenBeacon(_likeTokenBeacon_vLogic, msg.sender);
-    e_beacon = new EndorseTokenBeacon(_endorseTokenBeacon_vLogic, msg.sender);
+    s_beacon = new TokenBeacon(_shareableTokenBeacon_vLogic, msg.sender);
+    l_beacon = new TokenBeacon(_likeTokenBeacon_vLogic, msg.sender);
+    e_beacon = new TokenBeacon(_endorseTokenBeacon_vLogic, msg.sender);
   }
 
   function SBeaconAddress() public view returns(address) {
