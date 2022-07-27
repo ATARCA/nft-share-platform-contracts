@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "hardhat/console.sol";
 
 //Todo: make contract pausable
 //Todo: add more complex governance tools than ownable
@@ -23,15 +22,10 @@ contract ShareableERC721v2Test is ERC721Upgradeable, AccessControlUpgradeable {
     }
     
     function initialize(string memory _name, string memory _symbol, address _owner) external initializer { //Todo: pass owner address
-        //console.log('caller of ShareableERC721 was:', msg.sender);
-        //console.log('tx origin of ShareableERC721 was:', tx.origin);
-        //console.log('new owner of contract', _owner); //Todo: consider making owners of these contracts wallets instead of contracts
         __ERC721_init(_name, _symbol);
         _currentIndex = uint256(0); //Todo: consider moving to somewhere else, clashes with upgradeability
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
         _setupRole(OPERATOR_ROLE, _owner);
-        //console.log('msg sender', msg.sender);
-        //console.log('tx origin', tx.origin);
     }
 
     /*constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {

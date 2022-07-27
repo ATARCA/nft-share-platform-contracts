@@ -12,7 +12,6 @@ import "./ShareableTokenBeacon.sol";
 import "./LikeTokenBeacon.sol";
 import "./EndorseTokenBeacon.sol";
 
-import "hardhat/console.sol";
 
 contract TalkoFactory { //Todo: access control
 
