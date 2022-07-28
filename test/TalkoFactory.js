@@ -111,6 +111,17 @@ describe("Talko Factory", function() {
       expect(await proxiedST.ownerOf(tokenId)).to.equal(addr1.address);
     })
 
+    it("Proxies name & symbol pair should be unique", async function() {
+      let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, owner.address);
+      await expect(_factoryContract.createSProxy("ShareableToken","ST",0, owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
+      
+      let deployedLProxyAddress = await _factoryContract.createLProxy("LikeERC721","LT",0, owner.address);
+      await expect(_factoryContract.createLProxy("LikeERC721","LT",0, owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
+
+      let deployedEProxyAddress = await _factoryContract.createEProxy("EndorseERC721","ET",0, owner.address);
+      await expect(_factoryContract.createEProxy("EndorseERC721","ET",0, owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
+    })
+
     it("Deploy proxy to different owner, deployer shouldn't have rights to proxy ", async function() {
       let deployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, addr1.address);
       let receipt = await deployedProxyAddress.wait()
