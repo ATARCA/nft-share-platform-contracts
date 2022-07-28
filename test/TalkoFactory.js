@@ -90,7 +90,7 @@ describe("Talko Factory", function() {
       let receipt = await deployedProxyAddress.wait()
       let event = findEvent('ShareableERC721ProxyCreated', receipt)
       let deployAddress = event[0]?.args[0]
-      expect(deployedProxyAddress).to.emit(_factoryContract, "ShareableERC721ProxyCreated").withArgs(deployAddress, owner.address, "ST")
+      expect(deployedProxyAddress).to.emit(_factoryContract, "ShareableERC721ProxyCreated").withArgs(deployAddress, owner.address, "ShareableToken", "ST")
     });
 
     it("Deployed proxy can be interacted with", async function() {

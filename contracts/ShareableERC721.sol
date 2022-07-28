@@ -16,6 +16,8 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
     uint256 internal _currentIndex;
 
+    //Todo: consider mapping shares / mints, what came from where
+
     function getIndex() public view returns(uint256) {
         return _currentIndex;
     }
@@ -27,8 +29,8 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
         _setupRole(OPERATOR_ROLE, _owner);
     }
 
-    function addOperator(address newOperater) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        _grantRole(OPERATOR_ROLE, newOperater);
+    function addOperator(address newOperator) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _grantRole(OPERATOR_ROLE, newOperator);
     }
 
     function removeOperator(address operator) public onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -117,6 +119,8 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
     function tokenExists(uint256 tokenId) external view returns (bool){
         return _exists(tokenId);
     }
+
+    //Todo: Consider adding burn
 
     //disable approve (delegated permissions to transfer)?
 }
