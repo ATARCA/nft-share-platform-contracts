@@ -39,7 +39,7 @@ contract TalkoFactory { //Todo: access control
   }
 
   //name and symbol exist 
-  function getShareableProxiesNameAndSymbols(string memory _name, string memory _symbol) public view returns(bool) {
+  function shareableProxyNameAndSymbolExists(string memory _name, string memory _symbol) public view returns(bool) {
     //compare name to stored hash
     bytes32 _stringInBytes32 = keccak256(bytes(_name));
     bytes32 _symbolInBytes32 = keccak256(bytes(_symbol));
@@ -47,14 +47,14 @@ contract TalkoFactory { //Todo: access control
   }
 
   function setShareableProxiesNameAndSymbols(string memory _name, string memory _symbol) private returns(bool) {
-    require(getShareableProxiesNameAndSymbols(_name,_symbol) == false, "A proxy with given name and symbol already exists!");
+    require(shareableProxyNameAndSymbolExists(_name,_symbol) == false, "A proxy with given name and symbol already exists!");
     bytes32 _stringInBytes32 = keccak256(bytes(_name));
     bytes32 _symbolInBytes32 = keccak256(bytes(_symbol));
     shareable_proxies_names_and_symbols[_stringInBytes32] = _symbolInBytes32;
     return true;
   }
 
-  function getLikeableProxiesNameAndSymbols(string memory _name, string memory _symbol) public view returns(bool) {
+  function likeableProxyNameAndSymbolExists(string memory _name, string memory _symbol) public view returns(bool) {
     //compare name to stored hash
     bytes32 _stringInBytes32 = keccak256(bytes(_name));
     bytes32 _symbolInBytes32 = keccak256(bytes(_symbol));
@@ -62,14 +62,14 @@ contract TalkoFactory { //Todo: access control
   }
 
   function setLikeableProxiesNameAndSymbols(string memory _name, string memory _symbol) private returns(bool) {
-    require(getLikeableProxiesNameAndSymbols(_name,_symbol) == false, "A proxy with given name and symbol already exists!");
+    require(likeableProxyNameAndSymbolExists(_name,_symbol) == false, "A proxy with given name and symbol already exists!");
     bytes32 _stringInBytes32 = keccak256(bytes(_name));
     bytes32 _symbolInBytes32 = keccak256(bytes(_symbol));
     likeable_proxies_names_and_symbols[_stringInBytes32] = _symbolInBytes32;
     return true;
   }
 
-  function getEndorsableProxiesNameAndSymbols(string memory _name, string memory _symbol) public view returns(bool) {
+  function endorsableProxyNameAndSymbolExists(string memory _name, string memory _symbol) public view returns(bool) {
     //compare name to stored hash
     bytes32 _stringInBytes32 = keccak256(bytes(_name));
     bytes32 _symbolInBytes32 = keccak256(bytes(_symbol));
@@ -77,7 +77,7 @@ contract TalkoFactory { //Todo: access control
   }
 
   function setEndorsbleProxiesNameAndSymbols(string memory _name, string memory _symbol) private returns(bool) {
-    require(getEndorsableProxiesNameAndSymbols(_name,_symbol) == false, "A proxy with given name and symbol already exists!");
+    require(endorsableProxyNameAndSymbolExists(_name,_symbol) == false, "A proxy with given name and symbol already exists!");
     bytes32 _stringInBytes32 = keccak256(bytes(_name));
     bytes32 _symbolInBytes32 = keccak256(bytes(_symbol));
     endorsable_proxies_names_and_symbols[_stringInBytes32] = _symbolInBytes32;
