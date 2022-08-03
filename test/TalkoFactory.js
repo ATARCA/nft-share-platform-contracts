@@ -6,8 +6,6 @@ const { ethers, upgrades } = require("hardhat");
 const hre = require("hardhat");
 const _ = require("lodash");
 
-//Todo: check that events are fired correctly
-
 //Todo: abstract to a helper library
 const logEvents = async function(calledMethod) {
   const receipt = await calledMethod.wait()
@@ -30,30 +28,15 @@ describe("Talko Factory", function() {
   let _likeERC721;
   let EndorseableERC721;
   let _endorseableERC721;
-
   let ShareableERC721v2Test;
-
   let BeaconShareableERC721;
-  let _beaconShareableERC721
-
-  let BeaconLikeERC721;
-  let _beaconLikeERC721;
-
-  let BeaconEndorseableERC721;
-  let _beaconEndorseableERC721;
-
   let FactoryContract;
   let _factoryContract;
-
   let owner;
   let addr1;
   let addr2;
   let addrs;
-  let tokenURIBase
-
   let tokenId     = ethers.constants.Zero    
-  let newTokenId  = ethers.constants.One
-
   let operatorRole = keccak256(ethers.utils.toUtf8Bytes("OPERATOR_ROLE"));
   let adminRole = ethers.constants.HashZero
 
@@ -86,46 +69,41 @@ describe("Talko Factory", function() {
   describe("Deployment", function() {
  
     it("Proxy can be deployed and has correct arguments", async function() {
-      expect(await _factoryContract.getIndex()).to.be.equal(0)
+      expect(await _factoryContract.getIndexForShareableERC721ProxyInstance()).to.be.equal(0)
       let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST",owner.address);
       let receipt = await deployedProxyAddress.wait()
       let event = findEvent('ShareableERC721ProxyCreated', receipt)
       let deployAddress = event[0]?.args[0]
       expect(deployedProxyAddress).to.emit(_factoryContract, "ShareableERC721ProxyCreated").withArgs(deployAddress, owner.address, "ShareableToken", "ST")
-      expect(await _factoryContract.getIndex()).to.be.equal(1)
+      expect(await _factoryContract.getIndexForShareableERC721ProxyInstance()).to.be.equal(1)
     });
 
     it("Deployed proxy can be interacted with", async function() {
-      //Mint a couple of tokens
-      //check that tokens got minted
-
       let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST", owner.address);
       let receipt = await deployedProxyAddress.wait()
-      
       let event = findEvent('ShareableERC721ProxyCreated', receipt)
-      //console.log('found event', event[0]?.args)
-
       let deployAddress = event[0]?.args[0]
       let proxiedST = await ShareableERC721.attach(deployAddress);
-
       await proxiedST.mint(addr1.address)
       await proxiedST.mint(addr2.address)
       expect(await proxiedST.ownerOf(tokenId)).to.equal(addr1.address);
     })
 
     it("Proxies name & symbol pair should be unique", async function() {
-      expect(await _factoryContract.getIndex()).to.be.equal(0)
+      expect(await _factoryContract.getIndexForShareableERC721ProxyInstance()).to.be.equal(0)
       let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST", owner.address);
       await expect(_factoryContract.createShareableERC721Proxy("ShareableToken","ST", owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
-      
-      expect(await _factoryContract.getIndex()).to.be.equal(1)
+      expect(await _factoryContract.getIndexForShareableERC721ProxyInstance()).to.be.equal(1)
+
+      expect(await _factoryContract.getIndexForLikeERC721ProxyInstance()).to.be.equal(0)
       let deployedLProxyAddress = await _factoryContract.createLikeERC721Proxy("LikeERC721","LT", owner.address);
       await expect(_factoryContract.createLikeERC721Proxy("LikeERC721","LT", owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
-      
-      expect(await _factoryContract.getIndex()).to.be.equal(2)
+      expect(await _factoryContract.getIndexForLikeERC721ProxyInstance()).to.be.equal(1)
+
+      expect(await _factoryContract.getIndexForEndorseERC721ProxyInstance()).to.be.equal(0)
       let deployedEProxyAddress = await _factoryContract.createEndorseERC721Proxy("EndorseERC721","ET", owner.address);
       await expect(_factoryContract.createEndorseERC721Proxy("EndorseERC721","ET", owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
-      expect(await _factoryContract.getIndex()).to.be.equal(3)
+      expect(await _factoryContract.getIndexForEndorseERC721ProxyInstance()).to.be.equal(1)
     })
 
     it("Deploy proxy to different owner, deployer shouldn't have rights to proxy ", async function() {
@@ -167,18 +145,13 @@ describe("Talko Factory", function() {
       expect(await proxiedST.hasRole(adminRole, owner.address)).to.be.true
       expect(await proxiedST.hasRole(operatorRole, owner.address)).to.be.true
       expect(await proxiedST.hasRole(adminRole, addr1.address)).to.be.false
-
-      //console.log(await proxiedST.getIndex2())
-      //console.log(await proxiedST.getIndex())
       await proxiedST.mint(addr1.address)
 
       // LikeToken Beacon 
       let deployedLProxyAddress = await _factoryContract.createLikeERC721Proxy("LikeERC721","LT", owner.address);
       let l_receipt = await deployedLProxyAddress.wait()
-      //console.log(l_receipt)
       let l_event = findEvent('LikeERC721ProxyCreated', l_receipt)
       let l_deployAddress = l_event[0]?.args[0]
-      //console.log(l_deployAddress)
       let proxiedLT = await LikeERC721.attach(l_deployAddress);
 
       await proxiedLT.setProjectAddress(deployAddress);
@@ -190,7 +163,6 @@ describe("Talko Factory", function() {
       expect(await proxiedLT.getIndex()).to.equal(ethers.constants.One)
 
       //Try to update LProxy & check that index is the same after upgrade
-
       // EndorseToken Beacon
       let deployedEProxyAddress = await _factoryContract.createEndorseERC721Proxy("EndorseERC721","ET", owner.address);
       let e_receipt = await deployedEProxyAddress.wait()
@@ -203,13 +175,6 @@ describe("Talko Factory", function() {
       expect(await proxiedET.getIndex()).to.be.equal(ethers.constants.Zero)
       const e_minting = await proxiedET.connect(addr1).mint(ethers.constants.Zero)
       expect(await proxiedET.getIndex()).to.be.equal(ethers.constants.One)
-      
-
-      //upgrade contact, check that state is still the same
-      
     })
-
   });
-
-  
 })
