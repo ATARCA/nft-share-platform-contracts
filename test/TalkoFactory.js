@@ -89,21 +89,28 @@ describe("Talko Factory", function() {
       expect(await proxiedST.ownerOf(tokenId)).to.equal(addr1.address);
     })
 
-    it("Proxies name & symbol pair should be unique", async function() {
+    it("Proxies names should be unique", async function() {
       expect(await _factoryContract.getIndexForShareableERC721ProxyInstance()).to.be.equal(0)
       let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST", owner.address);
-      await expect(_factoryContract.createShareableERC721Proxy("ShareableToken","ST", owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
       expect(await _factoryContract.getIndexForShareableERC721ProxyInstance()).to.be.equal(1)
+      await expect(_factoryContract.createShareableERC721Proxy("ShareableToken","ST", owner.address)).to.be.revertedWith("A proxy with given name already exists!")     
+
+      await _factoryContract.createShareableERC721Proxy("ShareableToken for different project but with same symbol","ST", owner.address);
+      expect(await _factoryContract.getIndexForShareableERC721ProxyInstance()).to.be.equal(2)
 
       expect(await _factoryContract.getIndexForLikeERC721ProxyInstance()).to.be.equal(0)
       let deployedLProxyAddress = await _factoryContract.createLikeERC721Proxy("LikeERC721","LT", owner.address);
-      await expect(_factoryContract.createLikeERC721Proxy("LikeERC721","LT", owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
       expect(await _factoryContract.getIndexForLikeERC721ProxyInstance()).to.be.equal(1)
+      await expect(_factoryContract.createLikeERC721Proxy("LikeERC721","LT", owner.address)).to.be.revertedWith("A proxy with given name already exists!")
+      await _factoryContract.createLikeERC721Proxy("LikeERC721 for different project but with same symbol","LT", owner.address);
+      expect(await _factoryContract.getIndexForLikeERC721ProxyInstance()).to.be.equal(2)
 
       expect(await _factoryContract.getIndexForEndorseERC721ProxyInstance()).to.be.equal(0)
       let deployedEProxyAddress = await _factoryContract.createEndorseERC721Proxy("EndorseERC721","ET", owner.address);
-      await expect(_factoryContract.createEndorseERC721Proxy("EndorseERC721","ET", owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
       expect(await _factoryContract.getIndexForEndorseERC721ProxyInstance()).to.be.equal(1)
+      await expect(_factoryContract.createEndorseERC721Proxy("EndorseERC721","ET", owner.address)).to.be.revertedWith("A proxy with given name already exists!")
+      await _factoryContract.createEndorseERC721Proxy("EndorseERC721 for differenty project but with same symbol","ET", owner.address);
+      expect(await _factoryContract.getIndexForEndorseERC721ProxyInstance()).to.be.equal(2)
     })
 
     it("Deploy proxy to different owner, deployer shouldn't have rights to proxy ", async function() {

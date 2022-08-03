@@ -18,9 +18,9 @@ contract TalkoFactory { //Todo: access control
   uint256 internal _indexEndorseERC721ProxyInstance;
 
   //keccak256 bytes32 hash map of strings
-  mapping(bytes32 => bytes32) private shareable_proxies_names_and_symbols;
-  mapping(bytes32 => bytes32) private likeable_proxies_names_and_symbols;
-  mapping(bytes32 => bytes32) private endorsable_proxies_names_and_symbols;
+  mapping(bytes32 => bool) private shareable_proxies_names_and_symbols;
+  mapping(bytes32 => bool) private likeable_proxies_names_and_symbols;
+  mapping(bytes32 => bool) private endorsable_proxies_names_and_symbols;
 
   //Autoincrementable key for proxies ?
   mapping(uint256 => address) private shareable_t_proxies;
@@ -55,48 +55,42 @@ contract TalkoFactory { //Todo: access control
   }
 
   //name and symbol exist 
-  function shareableProxyNameAndSymbolExists(string memory _name, string memory _symbol) public view returns(bool) {
+  function shareableProxyNameExists(string memory _name) public view returns(bool) {
     //compare name to stored hash
     bytes32 _nameInBytes32 = keccak256(bytes(_name));
-    bytes32 _symbolInBytes32 = keccak256(bytes(_symbol));
-    return shareable_proxies_names_and_symbols[_nameInBytes32] == _symbolInBytes32;
+    return shareable_proxies_names_and_symbols[_nameInBytes32];
   }
 
-  function setShareableProxiesNameAndSymbols(string memory _name, string memory _symbol) private returns(bool) {
-    require(shareableProxyNameAndSymbolExists(_name,_symbol) == false, "A proxy with given name and symbol already exists!");
+  function setShareableProxiesName(string memory _name) private returns(bool) {
+    require(shareableProxyNameExists(_name) == false, "A proxy with given name already exists!");
     bytes32 _nameInBytes32 = keccak256(bytes(_name));
-    bytes32 _symbolInBytes32 = keccak256(bytes(_symbol));
-    shareable_proxies_names_and_symbols[_nameInBytes32] = _symbolInBytes32;
+    shareable_proxies_names_and_symbols[_nameInBytes32] = true;
     return true;
   }
 
-  function likeableProxyNameAndSymbolExists(string memory _name, string memory _symbol) public view returns(bool) {
+  function likeableProxyNameExists(string memory _name) public view returns(bool) {
     //compare name to stored hash
     bytes32 _nameInBytes32 = keccak256(bytes(_name));
-    bytes32 _symbolInBytes32 = keccak256(bytes(_symbol));
-    return likeable_proxies_names_and_symbols[_nameInBytes32] == _symbolInBytes32;
+    return likeable_proxies_names_and_symbols[_nameInBytes32];
   }
 
-  function setLikeableProxiesNameAndSymbols(string memory _name, string memory _symbol) private returns(bool) {
-    require(likeableProxyNameAndSymbolExists(_name,_symbol) == false, "A proxy with given name and symbol already exists!");
+  function setLikeableProxiesName(string memory _name) private returns(bool) {
+    require(likeableProxyNameExists(_name) == false, "A proxy with given name already exists!");
     bytes32 _stringInBytes32 = keccak256(bytes(_name));
-    bytes32 _symbolInBytes32 = keccak256(bytes(_symbol));
-    likeable_proxies_names_and_symbols[_stringInBytes32] = _symbolInBytes32;
+    likeable_proxies_names_and_symbols[_stringInBytes32] = true;
     return true;
   }
 
-  function endorsableProxyNameAndSymbolExists(string memory _name, string memory _symbol) public view returns(bool) {
+  function endorsableProxyNameExists(string memory _name) public view returns(bool) {
     //compare name to stored hash
     bytes32 _stringInBytes32 = keccak256(bytes(_name));
-    bytes32 _symbolInBytes32 = keccak256(bytes(_symbol));
-    return endorsable_proxies_names_and_symbols[_stringInBytes32] == _symbolInBytes32;
+    return endorsable_proxies_names_and_symbols[_stringInBytes32];
   }
 
-  function setEndorsbleProxiesNameAndSymbols(string memory _name, string memory _symbol) private returns(bool) {
-    require(endorsableProxyNameAndSymbolExists(_name,_symbol) == false, "A proxy with given name and symbol already exists!");
+  function setEndorsableProxiesName(string memory _name) private returns(bool) {
+    require(endorsableProxyNameExists(_name) == false, "A proxy with given name already exists!");
     bytes32 _stringInBytes32 = keccak256(bytes(_name));
-    bytes32 _symbolInBytes32 = keccak256(bytes(_symbol));
-    endorsable_proxies_names_and_symbols[_stringInBytes32] = _symbolInBytes32;
+    endorsable_proxies_names_and_symbols[_stringInBytes32] = true;
     return true;
   }
   
@@ -114,7 +108,7 @@ contract TalkoFactory { //Todo: access control
   }
 
   function createShareableERC721Proxy(string memory _name, string memory _symbol, address _owner) external returns(address) {
-    setShareableProxiesNameAndSymbols(_name,_symbol);
+    setShareableProxiesName(_name);
 
     BeaconProxy proxy = new BeaconProxy(
       address(s_beacon),
@@ -127,7 +121,7 @@ contract TalkoFactory { //Todo: access control
   }
 
   function createLikeERC721Proxy(string memory _name, string memory _symbol, address _owner) external returns(address) {
-    setLikeableProxiesNameAndSymbols(_name, _symbol);
+    setLikeableProxiesName(_name);
     BeaconProxy proxy = new BeaconProxy(
       address(l_beacon),
       abi.encodeWithSelector(LikeERC721(address(0)).initialize.selector, _name, _symbol, _owner) 
@@ -139,7 +133,7 @@ contract TalkoFactory { //Todo: access control
   }
 
   function createEndorseERC721Proxy(string memory _name, string memory _symbol, address _owner) external returns(address) {
-    setEndorsbleProxiesNameAndSymbols(_name, _symbol);
+    setEndorsableProxiesName(_name);
     BeaconProxy proxy = new BeaconProxy(
       address(e_beacon),
       abi.encodeWithSelector(EndorseERC721(address(0)).initialize.selector, _name, _symbol, _owner) 
