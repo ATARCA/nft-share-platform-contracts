@@ -13,6 +13,8 @@ import "./TokenBeacon.sol";
 
 contract TalkoFactory { //Todo: access control
 
+  uint256 internal _currentIndex;
+
   //keccak256 bytes32 hash map of strings
   mapping(bytes32 => bytes32) private shareable_proxies_names_and_symbols;
   mapping(bytes32 => bytes32) private likeable_proxies_names_and_symbols;
@@ -36,6 +38,10 @@ contract TalkoFactory { //Todo: access control
     s_beacon = new TokenBeacon(_shareableTokenBeacon_vLogic, msg.sender);
     l_beacon = new TokenBeacon(_likeTokenBeacon_vLogic, msg.sender);
     e_beacon = new TokenBeacon(_endorseTokenBeacon_vLogic, msg.sender);
+  }
+
+  function getIndex() public view returns(uint256) {
+    return _currentIndex;
   }
 
   //name and symbol exist 
@@ -99,7 +105,7 @@ contract TalkoFactory { //Todo: access control
 
   // create-functions for all beacons, make a new proxy for an existing beacon, initialize it add proxy address ot vault
 
-  function createShareableERC721Proxy(string memory _name, string memory _symbol, uint256 _index, address _owner) external returns(address) {
+  function createShareableERC721Proxy(string memory _name, string memory _symbol, address _owner) external returns(address) {
     //Todo: check that a proxy doesn't already exist in the given index
     //Todo: check if transaction is reverted if same name and symbol given twice
     setShareableProxiesNameAndSymbols(_name,_symbol);
@@ -108,32 +114,35 @@ contract TalkoFactory { //Todo: access control
       address(s_beacon),
       abi.encodeWithSelector(ShareableERC721(address(0)).initialize.selector, _name, _symbol, _owner) //Todo: consider 
     );
-    shareable_t_proxies[_index] = address(proxy);
+    shareable_t_proxies[_currentIndex] = address(proxy);
     emit ShareableERC721ProxyCreated(address(proxy), _owner, _name, _symbol);
+    _currentIndex++;
     return address(proxy);
   }
 
-  function createLikeERC721Proxy(string memory _name, string memory _symbol, uint256 _index, address _owner) external returns(address) {
+  function createLikeERC721Proxy(string memory _name, string memory _symbol, address _owner) external returns(address) {
     //Todo: check that a proxy doesn't already exist in the given index
     setLikeableProxiesNameAndSymbols(_name, _symbol);
     BeaconProxy proxy = new BeaconProxy(
       address(l_beacon),
       abi.encodeWithSelector(LikeERC721(address(0)).initialize.selector, _name, _symbol, _owner) //Todo: consider 
     );
-    like_t_proxies[_index] = address(proxy);
+    like_t_proxies[_currentIndex] = address(proxy);
     emit LikeERC721ProxyCreated(address(proxy), _owner,_name, _symbol);
+    _currentIndex++;
     return address(proxy);
   }
 
-  function createEndorseERC721Proxy(string memory _name, string memory _symbol, uint256 _index, address _owner) external returns(address) {
+  function createEndorseERC721Proxy(string memory _name, string memory _symbol, address _owner) external returns(address) {
     //Todo: check that a proxy doesn't already exist in the given index
     setEndorsbleProxiesNameAndSymbols(_name, _symbol);
     BeaconProxy proxy = new BeaconProxy(
       address(e_beacon),
       abi.encodeWithSelector(EndorseERC721(address(0)).initialize.selector, _name, _symbol, _owner) //Todo: consider 
     );
-    endorse_t_proxies[_index] = address(proxy);
+    endorse_t_proxies[_currentIndex] = address(proxy);
     emit EndorseERC721ProxyCreated(address(proxy), _owner, _name, _symbol);
+    _currentIndex++;
     return address(proxy);
   }
 }

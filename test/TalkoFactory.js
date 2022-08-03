@@ -86,18 +86,20 @@ describe("Talko Factory", function() {
   describe("Deployment", function() {
  
     it("Proxy can be deployed and has correct arguments", async function() {
-      let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST",0, owner.address);
+      expect(await _factoryContract.getIndex()).to.be.equal(0)
+      let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST",owner.address);
       let receipt = await deployedProxyAddress.wait()
       let event = findEvent('ShareableERC721ProxyCreated', receipt)
       let deployAddress = event[0]?.args[0]
       expect(deployedProxyAddress).to.emit(_factoryContract, "ShareableERC721ProxyCreated").withArgs(deployAddress, owner.address, "ShareableToken", "ST")
+      expect(await _factoryContract.getIndex()).to.be.equal(1)
     });
 
     it("Deployed proxy can be interacted with", async function() {
       //Mint a couple of tokens
       //check that tokens got minted
 
-      let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST",0, owner.address);
+      let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST", owner.address);
       let receipt = await deployedProxyAddress.wait()
       
       let event = findEvent('ShareableERC721ProxyCreated', receipt)
@@ -112,18 +114,22 @@ describe("Talko Factory", function() {
     })
 
     it("Proxies name & symbol pair should be unique", async function() {
-      let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST",0, owner.address);
-      await expect(_factoryContract.createShareableERC721Proxy("ShareableToken","ST",0, owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
+      expect(await _factoryContract.getIndex()).to.be.equal(0)
+      let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST", owner.address);
+      await expect(_factoryContract.createShareableERC721Proxy("ShareableToken","ST", owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
       
-      let deployedLProxyAddress = await _factoryContract.createLikeERC721Proxy("LikeERC721","LT",0, owner.address);
-      await expect(_factoryContract.createLikeERC721Proxy("LikeERC721","LT",0, owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
+      expect(await _factoryContract.getIndex()).to.be.equal(1)
+      let deployedLProxyAddress = await _factoryContract.createLikeERC721Proxy("LikeERC721","LT", owner.address);
+      await expect(_factoryContract.createLikeERC721Proxy("LikeERC721","LT", owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
       
-      let deployedEProxyAddress = await _factoryContract.createEndorseERC721Proxy("EndorseERC721","ET",0, owner.address);
-      await expect(_factoryContract.createEndorseERC721Proxy("EndorseERC721","ET",0, owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
+      expect(await _factoryContract.getIndex()).to.be.equal(2)
+      let deployedEProxyAddress = await _factoryContract.createEndorseERC721Proxy("EndorseERC721","ET", owner.address);
+      await expect(_factoryContract.createEndorseERC721Proxy("EndorseERC721","ET", owner.address)).to.be.revertedWith("A proxy with given name and symbol already exists!")
+      expect(await _factoryContract.getIndex()).to.be.equal(3)
     })
 
     it("Deploy proxy to different owner, deployer shouldn't have rights to proxy ", async function() {
-      let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST",0, addr1.address);
+      let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST", addr1.address);
       let receipt = await deployedProxyAddress.wait()
       
       let event = findEvent('ShareableERC721ProxyCreated', receipt)
@@ -140,7 +146,7 @@ describe("Talko Factory", function() {
 
     it("Token Beacon owner should be able to upgrade his proxies, upgrade shouldn't affect state of proxies", async function() {
       //Shareable token beacon
-      let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST",0, owner.address);
+      let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST", owner.address);
       let receipt = await deployedProxyAddress.wait()
       let event = findEvent('ShareableERC721ProxyCreated', receipt)
       let deployAddress = event[0]?.args[0]
@@ -167,7 +173,7 @@ describe("Talko Factory", function() {
       await proxiedST.mint(addr1.address)
 
       // LikeToken Beacon 
-      let deployedLProxyAddress = await _factoryContract.createLikeERC721Proxy("LikeERC721","LT",0, owner.address);
+      let deployedLProxyAddress = await _factoryContract.createLikeERC721Proxy("LikeERC721","LT", owner.address);
       let l_receipt = await deployedLProxyAddress.wait()
       //console.log(l_receipt)
       let l_event = findEvent('LikeERC721ProxyCreated', l_receipt)
@@ -186,7 +192,7 @@ describe("Talko Factory", function() {
       //Try to update LProxy & check that index is the same after upgrade
 
       // EndorseToken Beacon
-      let deployedEProxyAddress = await _factoryContract.createEndorseERC721Proxy("EndorseERC721","ET",0, owner.address);
+      let deployedEProxyAddress = await _factoryContract.createEndorseERC721Proxy("EndorseERC721","ET", owner.address);
       let e_receipt = await deployedEProxyAddress.wait()
       let e_event = findEvent('EndorseERC721ProxyCreated', e_receipt)
       let e_deployAddress = e_event[0]?.args[0]
