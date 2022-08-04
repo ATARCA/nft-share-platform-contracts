@@ -17,15 +17,9 @@ contract TalkoFactory { //Todo: access control
   uint256 internal _indexLikeERC721ProxyInstance;
   uint256 internal _indexEndorseERC721ProxyInstance;
 
-  //keccak256 bytes32 hash map of strings
-  mapping(bytes32 => bool) private shareable_proxies_names_and_symbols;
-  mapping(bytes32 => bool) private likeable_proxies_names_and_symbols;
-  mapping(bytes32 => bool) private endorsable_proxies_names_and_symbols;
-
-  //Autoincrementable key for proxies ?
-  mapping(uint256 => address) private shareable_t_proxies;
-  mapping(uint256 => address) private like_t_proxies;
-  mapping(uint256 => address) private endorse_t_proxies;
+  mapping(bytes32 => bool) private shareable_proxies_names;
+  mapping(bytes32 => bool) private likeable_proxies_names;
+  mapping(bytes32 => bool) private endorsable_proxies_names;
 
   event ShareableERC721ProxyCreated(address indexed _sproxy, address indexed _owner, string indexed _name, string _symbol);
   event LikeERC721ProxyCreated(address indexed _lproxy, address indexed _owner, string indexed _name, string _symbol);
@@ -53,47 +47,42 @@ contract TalkoFactory { //Todo: access control
   function getIndexForEndorseERC721ProxyInstance() public view returns(uint256) {
     return _indexEndorseERC721ProxyInstance;
   }
-
-  //name and symbol exist 
+ 
   function shareableProxyNameExists(string memory _name) public view returns(bool) {
-    //compare name to stored hash
     bytes32 _nameInBytes32 = keccak256(bytes(_name));
-    return shareable_proxies_names_and_symbols[_nameInBytes32];
+    return shareable_proxies_names[_nameInBytes32];
   }
 
   function setShareableProxiesName(string memory _name) private returns(bool) {
     require(shareableProxyNameExists(_name) == false, "A proxy with given name already exists!");
     bytes32 _nameInBytes32 = keccak256(bytes(_name));
-    shareable_proxies_names_and_symbols[_nameInBytes32] = true;
+    shareable_proxies_names[_nameInBytes32] = true;
     return true;
   }
 
   function likeableProxyNameExists(string memory _name) public view returns(bool) {
-    //compare name to stored hash
     bytes32 _nameInBytes32 = keccak256(bytes(_name));
-    return likeable_proxies_names_and_symbols[_nameInBytes32];
+    return likeable_proxies_names[_nameInBytes32];
   }
 
   function setLikeableProxiesName(string memory _name) private returns(bool) {
     require(likeableProxyNameExists(_name) == false, "A proxy with given name already exists!");
     bytes32 _stringInBytes32 = keccak256(bytes(_name));
-    likeable_proxies_names_and_symbols[_stringInBytes32] = true;
+    likeable_proxies_names[_stringInBytes32] = true;
     return true;
   }
 
   function endorsableProxyNameExists(string memory _name) public view returns(bool) {
-    //compare name to stored hash
     bytes32 _stringInBytes32 = keccak256(bytes(_name));
-    return endorsable_proxies_names_and_symbols[_stringInBytes32];
+    return endorsable_proxies_names[_stringInBytes32];
   }
 
   function setEndorsableProxiesName(string memory _name) private returns(bool) {
     require(endorsableProxyNameExists(_name) == false, "A proxy with given name already exists!");
     bytes32 _stringInBytes32 = keccak256(bytes(_name));
-    endorsable_proxies_names_and_symbols[_stringInBytes32] = true;
+    endorsable_proxies_names[_stringInBytes32] = true;
     return true;
   }
-  
 
   function ShareableERC721BeaconAddress() public view returns(address) {
     return address(s_beacon);
@@ -114,7 +103,6 @@ contract TalkoFactory { //Todo: access control
       address(s_beacon),
       abi.encodeWithSelector(ShareableERC721(address(0)).initialize.selector, _name, _symbol, _owner) 
     );
-    shareable_t_proxies[_indexShareableERC721ProxyInstance] = address(proxy);
     emit ShareableERC721ProxyCreated(address(proxy), _owner, _name, _symbol);
     _indexShareableERC721ProxyInstance++;
     return address(proxy);
@@ -126,7 +114,6 @@ contract TalkoFactory { //Todo: access control
       address(l_beacon),
       abi.encodeWithSelector(LikeERC721(address(0)).initialize.selector, _name, _symbol, _owner) 
     );
-    like_t_proxies[_indexLikeERC721ProxyInstance] = address(proxy);
     emit LikeERC721ProxyCreated(address(proxy), _owner,_name, _symbol);
     _indexLikeERC721ProxyInstance++;
     return address(proxy);
@@ -138,7 +125,6 @@ contract TalkoFactory { //Todo: access control
       address(e_beacon),
       abi.encodeWithSelector(EndorseERC721(address(0)).initialize.selector, _name, _symbol, _owner) 
     );
-    endorse_t_proxies[_indexEndorseERC721ProxyInstance] = address(proxy);
     emit EndorseERC721ProxyCreated(address(proxy), _owner, _name, _symbol);
     _indexEndorseERC721ProxyInstance++;
     return address(proxy);
