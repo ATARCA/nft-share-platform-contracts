@@ -6,8 +6,9 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 //Todo: make contract pausable
+//Todo: add more complex governance tools than ownable
 
-contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
+contract ShareableERC721v2Test is ERC721Upgradeable, AccessControlUpgradeable {
 
     // experiment operator
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
@@ -16,21 +17,25 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
     uint256 internal _currentIndex;
 
-    //Todo: consider mapping shares / mints, what came from where
-
     function getIndex() public view returns(uint256) {
         return _currentIndex;
     }
     
     function initialize(string memory _name, string memory _symbol, address _owner) external initializer { //Todo: pass owner address
         __ERC721_init(_name, _symbol);
-        _currentIndex = uint256(0); //Todo: consider moving to somewhere else, may clash with beacon proxy upgradeability
+        _currentIndex = uint256(0); //Todo: consider moving to somewhere else, clashes with upgradeability
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
         _setupRole(OPERATOR_ROLE, _owner);
     }
 
-    function addOperator(address newOperator) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        _grantRole(OPERATOR_ROLE, newOperator);
+    /*constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
+        _currentIndex = uint256(0);
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(OPERATOR_ROLE, msg.sender);
+    }*/
+
+    function addOperator(address newOperater) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _grantRole(OPERATOR_ROLE, newOperater);
     }
 
     function removeOperator(address operator) public onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -91,6 +96,9 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
       _currentIndex++;
     }
 
+    //Todo: safeShare, similar to safe transfer, check that contract recipient is aware of ERC721 protocol
+    //Todo: do we want to enable sharing to contracts
+
     function transferFrom(
         address,
         address,
@@ -119,8 +127,14 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
     function tokenExists(uint256 tokenId) external view returns (bool){
         return _exists(tokenId);
     }
+    
+    function getIndex2() public view returns(uint256) {
+        return _currentIndex*100;
+    }
 
-    //Todo: Consider adding burn
+    //disable transfers 
+    //secure minting
+    //override functions
 
-    //disable approve (delegated permissions to transfer)?
+    //disable approve (delegated permissions to transfer)
 }

@@ -1,26 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-
-//Todo: allow adding a group of owners to the contract (check openzeppelin for available governance contracts)
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
+import "./Helpers.sol";
 
 //Todo: if token is burned reset users contribution endorsement related to that contribution
 //Todo: make contract pausable
 
-interface project_contributions is IERC721Metadata {
-  function tokenExists(uint256 tokenId) external view returns(bool);
-}
-
-contract LikeERC721 is ERC721, AccessControl {
+contract LikeERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
   // experiment operator
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
@@ -30,8 +20,13 @@ contract LikeERC721 is ERC721, AccessControl {
   event Like(address indexed liker, address indexed likee, uint256 indexed likeTokenId, uint256 contributionTokenId);
 
   uint256 internal _currentIndex;
-  //Todo: consider upgradeable contracs, non-immutable address
-  project_contributions private contributions_contract;
+
+  function getIndex() public view returns(uint256) {
+    return _currentIndex;
+  }
+  //Todo: consider upgradeable contracs, non-immutable address?
+  // Address for proxy contract ?
+  IShareableERC721 private contributions_contract;
 
   //Token -> wallet adderss -> boolean
   mapping(uint256 => mapping(address => bool)) private _contributionLikes;
@@ -40,11 +35,12 @@ contract LikeERC721 is ERC721, AccessControl {
   // Like token id => Contribution token Id
   mapping(uint256 => uint256) private _likesToContributions;
 
-  constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
-      _currentIndex = uint256(0);
-      _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-      _setupRole(OPERATOR_ROLE, msg.sender);
-  }
+  function initialize(string memory _name, string memory _symbol, address _owner) public initializer {
+        __ERC721_init(_name, _symbol);
+        _currentIndex = uint256(0); //Todo: consider moving to somewhere else, clashes with upgradeability
+        _setupRole(DEFAULT_ADMIN_ROLE, _owner);
+        _setupRole(OPERATOR_ROLE, _owner);
+    }
 
   function addOperator(address newOperater) public onlyRole(DEFAULT_ADMIN_ROLE) {
       _grantRole(OPERATOR_ROLE, newOperater);
@@ -62,11 +58,11 @@ contract LikeERC721 is ERC721, AccessControl {
       _revokeRole(DEFAULT_ADMIN_ROLE, admin);
   }
 
-  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Upgradeable, AccessControlUpgradeable) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 
-  function setProjectAddress(project_contributions _project_contributions) public onlyRole(OPERATOR_ROLE) returns (address) {
+  function setProjectAddress(IShareableERC721 _project_contributions) public onlyRole(OPERATOR_ROLE) returns (address) {
     contributions_contract = _project_contributions;
     return address(contributions_contract);
   }

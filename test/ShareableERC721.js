@@ -2,7 +2,7 @@ const { inputToConfig } = require("@ethereum-waffle/compiler");
 const { Description } = require("@ethersproject/properties");
 const { expect } = require("chai");
 const { keccak256, toUtf8Bytes, formatBytes32String } = require("ethers/lib/utils");
-const { ethers } = require("hardhat");
+const { ethers, upgrades } = require("hardhat");
 const hre = require("hardhat");
 
 //Todo: check that events are fired correctly
@@ -33,7 +33,8 @@ describe("Shareable ERC 721 contract", function() {
     TokenContract = await ethers.getContractFactory("ShareableERC721");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    shareableERC721 = await TokenContract.deploy("ShareableToken","ST");
+    shareableERC721 = await upgrades.deployProxy(TokenContract,["ShareableToken","ST", owner.address]);
+    await shareableERC721.deployed();
     deployed_address = shareableERC721.address;
 
     tokenURIBase = 'domain/metadata/';
@@ -52,16 +53,13 @@ describe("Shareable ERC 721 contract", function() {
   });
 
   describe("Distribution and sharing", function() {
-    //mint token, set URIcontent
-    //check that receiver gets it and uri content is what was expected
-    let baseAddress = "0x0000000000000000000000000000000000000000";
-    let tokenId     = "0x0000000000000000000000000000000000000000";    
-    let newTokenId  = "0x0000000000000000000000000000000000000001";
+    let baseAddress = ethers.constants.AddressZero
+    let tokenId     = ethers.constants.Zero    
+    let newTokenId  = ethers.constants.One
 
     it("Should mint a new token and transfer it to an account", async function() {
       const minting = await shareableERC721.mint(addr1.address)
       deployed_address = shareableERC721.address.toLowerCase();
-      //logEvents(minting)
       expect(minting).to.emit(shareableERC721, "Transfer").withArgs(baseAddress, addr1.address, tokenId)
       expect(await shareableERC721.ownerOf(tokenId)).to.equal(addr1.address);
       expect(await shareableERC721.tokenURI(tokenId)).to.equal(tokenURIBase+deployed_address+'/0');
@@ -69,13 +67,11 @@ describe("Shareable ERC 721 contract", function() {
 
     it("Should mint token and should share a new token", async function() {
       const minting = await shareableERC721.mint(addr1.address)
-      //logEvents(minting)
       deployed_address = shareableERC721.address.toLowerCase();
       expect(minting).to.emit(shareableERC721, "Mint").withArgs(owner.address, addr1.address, tokenId)
       expect(minting).to.emit(shareableERC721, "Transfer").withArgs(baseAddress, addr1.address, tokenId)
       
       const share = await shareableERC721.connect(addr1).share(addr2.address, tokenId);
-      //logEvents(share)
       expect(share).to.emit(shareableERC721, "Transfer").withArgs(baseAddress, addr2.address, newTokenId)
       expect(share).to.emit(shareableERC721, "Share").withArgs(addr1.address, addr2.address, newTokenId, tokenId)
       expect(await shareableERC721.ownerOf(newTokenId)).to.equal(addr2.address);
@@ -127,7 +123,5 @@ describe("Shareable ERC 721 contract", function() {
       await expect(shareableERC721.connect(addr1).addOperator(addr2.address)).to.be.reverted
       await expect(shareableERC721.connect(addr1).addAdmin(addr2.address)).to.be.reverted
     })
-    
-
   });
 })

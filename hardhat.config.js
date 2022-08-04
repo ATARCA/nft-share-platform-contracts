@@ -5,6 +5,8 @@ require('@typechain/hardhat')
 require('@nomiclabs/hardhat-ethers')
 require('@nomiclabs/hardhat-waffle')
 require("@nomiclabs/hardhat-etherscan")
+require('@openzeppelin/hardhat-upgrades')
+require('solidity-coverage')
 
 // Go to https://www.alchemyapi.io, sign up, create
 // a new App in its dashboard, and replace "KEY" with its key
@@ -41,5 +43,6 @@ module.exports = {
     gasPrice: 3,
     coinmarketcap: process.env.COINMARKETCAP_KEY,
     token: 'MATIC'
-  }
+  },
+  plugins: ["solidity-coverage"]
 };
