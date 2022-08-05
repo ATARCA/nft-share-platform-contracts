@@ -16,6 +16,8 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
   
+  const projectName = 'Streamr'
+
   let ShareableERC721;
   let _shareableERC721;
   let LikeERC721;
@@ -50,14 +52,14 @@ async function main() {
 
   console.log("Factory address: ", _factoryContract.address);
 
-  let shareableTokenDeployedProxyAddress = await _factoryContract.createSProxy("ShareableToken","ST",0, deployer.address);
+  let shareableTokenDeployedProxyAddress = await _factoryContract.createSProxy(projectName,"ST",0, deployer.address);
   let shareableTokenReceipt = await shareableTokenDeployedProxyAddress.wait()
   let shareableTokenEvent = findEvent('ShareableERC721ProxyCreated', shareableTokenReceipt)
   let shareableTokenDeployAddress = shareableTokenEvent[0]?.args[0]
 
   console.log("Shareable token address: ", shareableTokenDeployAddress);
 
-  let likeTokenDeployedProxyAddress = await _factoryContract.createLProxy("LikeERC721","LT",0, deployer.address);
+  let likeTokenDeployedProxyAddress = await _factoryContract.createLProxy(projectName,"LT",0, deployer.address);
   let likeTokenReceipt = await likeTokenDeployedProxyAddress.wait()
   let likeTokenEvent = findEvent('LikeERC721ProxyCreated', likeTokenReceipt)
   let likeTokenDeployAddress = likeTokenEvent[0]?.args[0]
@@ -66,7 +68,7 @@ async function main() {
 
   console.log("LikeERC721 token address: ", likeTokenDeployAddress);
 
-  let endorseTokenDeployedProxyAddress = await _factoryContract.createEProxy("EndorseERC721","ET",0, deployer.address);
+  let endorseTokenDeployedProxyAddress = await _factoryContract.createEProxy(projectName,"ET",0, deployer.address);
   let endorseTokenReceipt = await endorseTokenDeployedProxyAddress.wait()
   let endorseTokenEvent = findEvent('EndorseERC721ProxyCreated', endorseTokenReceipt)
   let endorseTokenDeployAddress = endorseTokenEvent[0]?.args[0]
