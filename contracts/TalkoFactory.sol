@@ -11,7 +11,7 @@ import "./LikeERC721.sol";
 import "./TokenBeacon.sol";
 
 
-contract TalkoFactory is AccessControl { //Todo: access control
+contract TalkoFactory is AccessControl {
 
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
