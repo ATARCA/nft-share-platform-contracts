@@ -21,9 +21,9 @@ contract TalkoFactory { //Todo: access control
   mapping(bytes32 => bool) private likeable_proxies_names;
   mapping(bytes32 => bool) private endorsable_proxies_names;
 
-  event ShareableERC721ProxyCreated(address indexed _sproxy, address indexed _owner, string indexed _name, string _symbol);
-  event LikeERC721ProxyCreated(address indexed _lproxy, address indexed _owner, string indexed _name, string _symbol);
-  event EndorseERC721ProxyCreated(address indexed _eproxy, address indexed _owner, string indexed _name, string _symbol);
+  event ShareableERC721ProxyCreated(address indexed _sproxy, address indexed _owner, string _name, string _symbol);
+  event LikeERC721ProxyCreated(address indexed _lproxy, address indexed _owner, string _name, string _symbol);
+  event EndorseERC721ProxyCreated(address indexed _eproxy, address indexed _owner, string _name, string _symbol);
 
   TokenBeacon immutable s_beacon;
   TokenBeacon immutable l_beacon;
