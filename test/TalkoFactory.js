@@ -67,6 +67,21 @@ describe("Talko Factory", function() {
   }); 
 
   describe("Deployment", function() {
+
+    it("Proxy contracts should not be deployable without user role", async function() {
+      await expect(_factoryContract.connect(addr1).createShareableERC721Proxy("ShareableToken", "ST", addr1.address)).to.be.reverted
+    })
+
+    it("Proxy contract can be deployed with given user rights", async function() {
+      await _factoryContract.addOperator(addr1.address)
+      let deployedProxyAddress = await _factoryContract.createShareableERC721Proxy("ShareableToken","ST",addr1.address);
+      let receipt = await deployedProxyAddress.wait()
+      let event = findEvent('ShareableERC721ProxyCreated', receipt)
+      let deployAddress = event[0]?.args[0]
+      expect(deployedProxyAddress).to.emit(_factoryContract, "ShareableERC721ProxyCreated").withArgs(deployAddress, addr1.address, "ShareableToken", "ST")
+      expect(await _factoryContract.getIndexForShareableERC721ProxyInstance()).to.be.equal(1)
+
+    })
  
     it("Proxy can be deployed and has correct arguments", async function() {
       expect(await _factoryContract.getIndexForShareableERC721ProxyInstance()).to.be.equal(0)
