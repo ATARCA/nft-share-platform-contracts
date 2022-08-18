@@ -56,13 +56,15 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
     event Share(address indexed from, address indexed to, uint256 indexed tokenId, uint256 derivedFromTokenId);
 
     // Event for 'original' tokens
-    event Mint(address indexed from, address indexed to, uint256 indexed tokenId);
+    event Mint(address indexed from, address indexed to, uint256 indexed tokenId, bytes32 categoryHash);
 
     function mint(
-        address account
+        address account,
+        string memory category
     ) external onlyRole(OPERATOR_ROLE) {
         _mint(account, _currentIndex);
-        emit Mint(msg.sender, account, _currentIndex);
+        bytes32 _categoryHash = keccak256(abi.encodePacked(category));
+        emit Mint(msg.sender, account, _currentIndex, _categoryHash);
         _currentIndex++;
     }
 

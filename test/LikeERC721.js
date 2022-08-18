@@ -3,6 +3,7 @@ const { Description } = require("@ethersproject/properties");
 const { expect } = require("chai");
 const exp = require("constants");
 const { ethers, upgrades } = require("hardhat");
+const { keccak256, toUtf8Bytes, formatBytes32String } = require("ethers/lib/utils");
 const hre = require("hardhat");
 
 const logEvents = async function(calledMethod) {
@@ -33,6 +34,8 @@ describe("Likeable ERC721 contract", function() {
   let tokenURIBase = 'domain/metadata/';
 
   let s_tokenId = ethers.constants.HashZero
+  let categoryName = 'Community hero of the month'
+  let hashedCategory = keccak256(toUtf8Bytes(categoryName))
 
   beforeEach(async function() {
     
@@ -57,8 +60,8 @@ describe("Likeable ERC721 contract", function() {
     await instanceEndorseTokenContract.setProjectAddress(instanceContributionTokenContract.address)
 
     //Mint a couple of contributions as contract author
-    await instanceContributionTokenContract.mint(addr1.address)
-    await instanceContributionTokenContract.mint(addr2.address)
+    await instanceContributionTokenContract.mint(addr1.address, categoryName)
+    await instanceContributionTokenContract.mint(addr2.address, categoryName)
   })
 
   describe("Deployment", function() {

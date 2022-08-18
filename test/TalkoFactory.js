@@ -39,6 +39,9 @@ describe("Talko Factory", function() {
   let tokenId     = ethers.constants.Zero    
   let operatorRole = keccak256(ethers.utils.toUtf8Bytes("OPERATOR_ROLE"));
   let adminRole = ethers.constants.HashZero
+  let categoryName = 'Community hero of the month'
+  let hashedCategory = keccak256(toUtf8Bytes(categoryName))
+  
 
   beforeEach(async function() {
 
@@ -99,8 +102,8 @@ describe("Talko Factory", function() {
       let event = findEvent('ShareableERC721ProxyCreated', receipt)
       let deployAddress = event[0]?.args[0]
       let proxiedST = await ShareableERC721.attach(deployAddress);
-      await proxiedST.mint(addr1.address)
-      await proxiedST.mint(addr2.address)
+      await proxiedST.mint(addr1.address, categoryName)
+      await proxiedST.mint(addr2.address, categoryName)
       expect(await proxiedST.ownerOf(tokenId)).to.equal(addr1.address);
     })
 
@@ -136,7 +139,7 @@ describe("Talko Factory", function() {
 
       let deployAddress = event[0]?.args[0]
       let proxiedST = await ShareableERC721.attach(deployAddress);
-      await expect(proxiedST.mint(addr1.address)).to.be.reverted
+      await expect(proxiedST.mint(addr1.address, categoryName)).to.be.reverted
 
       expect(await proxiedST.hasRole(adminRole, addr1.address)).to.be.true
       expect(await proxiedST.hasRole(operatorRole, addr1.address)).to.be.true
@@ -153,8 +156,8 @@ describe("Talko Factory", function() {
       let proxiedST = await ShareableERC721.attach(deployAddress);
       let beaconAddress = await _factoryContract.ShareableERC721BeaconAddress();
 
-      await proxiedST.mint(addr1.address)
-      await proxiedST.mint(addr2.address)
+      await proxiedST.mint(addr1.address, categoryName)
+      await proxiedST.mint(addr2.address, categoryName)
 
       let sBeacon = await BeaconShareableERC721.attach(beaconAddress)
       let sBeaconImplementation = await sBeacon.implementation()
