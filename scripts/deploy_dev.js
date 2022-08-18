@@ -1,4 +1,4 @@
-const tokenURIBase = 'domain/metadata/';
+const tokenURIBase = 'https://dev.talkoapp.io/token';
 const _ = require("lodash");
 
 
@@ -32,18 +32,21 @@ async function main() {
   ShareableERC721 = await ethers.getContractFactory("ShareableERC721");
   _shareableERC721 = await ShareableERC721.deploy();
   await _shareableERC721.deployed()
+  console.log('ShareableERC721 instance address', _shareableERC721.address)
   console.log("Deploying ShareableERC721-DONE");
 
   console.log("Deploying LikeERC721");
   LikeERC721 = await ethers.getContractFactory("LikeERC721");
   _likeERC721 = await LikeERC721.deploy();
   await _likeERC721.deployed()
+  console.log('LikeERC721 instance address', _likeERC721.address)
   console.log("Deploying LikeERC721-DONE");
 
   console.log("Deploying EndorseERC721");
   EndorseableERC721 = await ethers.getContractFactory("EndorseERC721");
   _endorseableERC721 = await EndorseableERC721.deploy();
   await _endorseableERC721.deployed()
+  console.log('EndorseERC721 instance address', _endorseableERC721.address)
   console.log("Deploying EndorseERC721-DONE");
 
   FactoryContract = await ethers.getContractFactory("TalkoFactory");
@@ -58,7 +61,7 @@ async function main() {
   let shareableTokenDeployAddress = shareableTokenEvent[0]?.args[0]
 
   const shareableTokenContract = ShareableERC721.attach(shareableTokenDeployAddress)
-  const transaction = await shareableTokenContract.setBaseURI("http://talkoapp.io/metadata/")
+  const transaction = await shareableTokenContract.setBaseURI(tokenURIBase)
 
   console.log("Shareable token address: ", shareableTokenDeployAddress);
 
@@ -78,7 +81,7 @@ async function main() {
   let proxiedEndorseToken = await EndorseableERC721.attach(endorseTokenDeployAddress)
   await proxiedEndorseToken.setProjectAddress(shareableTokenDeployAddress)
 
-  console.log("EndorseERC721 token address: ", likeTokenDeployAddress);
+  console.log("EndorseERC721 token address: ", endorseTokenDeployAddress);
 }
 
 main()
