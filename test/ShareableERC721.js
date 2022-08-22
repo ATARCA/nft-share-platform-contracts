@@ -28,7 +28,6 @@ describe("Shareable ERC 721 contract", function() {
   let tokenURIBase
 
   let categoryName = 'Community hero of the month'
-  let hashedCategory = keccak256(toUtf8Bytes(categoryName))
 
   beforeEach(async function() {
 
@@ -71,7 +70,7 @@ describe("Shareable ERC 721 contract", function() {
     it("Should mint token and should share a new token", async function() {
       const minting = await shareableERC721.mint(addr1.address, categoryName)
       deployed_address = shareableERC721.address.toLowerCase();
-      expect(minting).to.emit(shareableERC721, "Mint").withArgs(owner.address, addr1.address, tokenId, hashedCategory)
+      expect(minting).to.emit(shareableERC721, "Mint").withArgs(owner.address, addr1.address, tokenId, categoryName)
       expect(minting).to.emit(shareableERC721, "Transfer").withArgs(baseAddress, addr1.address, tokenId)
       
       const share = await shareableERC721.connect(addr1).share(addr2.address, tokenId);
