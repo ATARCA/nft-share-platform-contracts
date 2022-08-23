@@ -26,8 +26,8 @@ const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
 module.exports = {
   solidity: "0.8.12",
   networks: {
-    ropsten: {
-      url: `https://eth-ropsten.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+    goerli: {
+      url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
       accounts: [`${ROPSTEN_PRIVATE_KEY}`]
     }
   },
@@ -35,7 +35,7 @@ module.exports = {
     // Your API key for Etherscan
     // Obtain one at https://etherscan.io/
     apiKey: {
-      ropsten: ETHERSCAN_API_KEY
+      goerli: ETHERSCAN_API_KEY,
     }   
   },
   gasReporter: {

@@ -1,4 +1,4 @@
-const tokenURIBase = 'https://dev.talkoapp.io/token';
+const tokenURIBase = 'http://localhost:4000/';
 const _ = require("lodash");
 
 
@@ -62,6 +62,7 @@ async function main() {
 
   const shareableTokenContract = ShareableERC721.attach(shareableTokenDeployAddress)
   const transaction = await shareableTokenContract.setBaseURI(tokenURIBase)
+  await transaction.wait()
 
   console.log("Shareable token address: ", shareableTokenDeployAddress);
 
@@ -70,7 +71,8 @@ async function main() {
   let likeTokenEvent = findEvent('LikeERC721ProxyCreated', likeTokenReceipt)
   let likeTokenDeployAddress = likeTokenEvent[0]?.args[0]
   let proxiedLikeToken = await LikeERC721.attach(likeTokenDeployAddress);
-  await proxiedLikeToken.setProjectAddress(shareableTokenDeployAddress);
+  const setProjectAddressOnLikeTransaction = await proxiedLikeToken.setProjectAddress(shareableTokenDeployAddress);
+  await setProjectAddressOnLikeTransaction.wait()
 
   console.log("LikeERC721 token address: ", likeTokenDeployAddress);
 
@@ -79,7 +81,8 @@ async function main() {
   let endorseTokenEvent = findEvent('EndorseERC721ProxyCreated', endorseTokenReceipt)
   let endorseTokenDeployAddress = endorseTokenEvent[0]?.args[0]
   let proxiedEndorseToken = await EndorseableERC721.attach(endorseTokenDeployAddress)
-  await proxiedEndorseToken.setProjectAddress(shareableTokenDeployAddress)
+  const setProjectAddressOnEndorseTransaction = await proxiedEndorseToken.setProjectAddress(shareableTokenDeployAddress)
+  await setProjectAddressOnEndorseTransaction.wait()
 
   console.log("EndorseERC721 token address: ", endorseTokenDeployAddress);
 }
