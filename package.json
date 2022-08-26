@@ -8,7 +8,8 @@
     "clean": "hardhat clean",
     "compile": "hardhat compile",
     "build": "npm run clean && npm run compile",
-    "deploy-dev": "hardhat run scripts/deploy_dev.js --network goerli"
+    "deploy-dev": "hardhat run scripts/deploy_dev.js --network goerli",
+    "deploy-test": "hardhat run scripts/deploy_test.js --network mumbai"
   },
   "repository": {
     "type": "git",

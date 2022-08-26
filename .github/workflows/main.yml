@@ -24,10 +24,12 @@ jobs:
     - name: Compile contracts
       run: npx hardhat compile
       env:
-        ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
-        ROPSTEN_PRIVATE_KEY: ${{ secrets.ROPSTEN_PRIVATE_KEY }}
+        ALCHEMY_API_KEY_ETHEREUM: ${{ secrets.ALCHEMY_API_KEY_ETHEREUM }}
+        ALCHEMY_API_KEY_POLYGON: ${{ secrets.ALCHEMY_API_KEY_POLYGON }}
+        WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
     - name: Test contracts
       run: npx hardhat test
       env:
-        ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
-        ROPSTEN_PRIVATE_KEY: ${{ secrets.ROPSTEN_PRIVATE_KEY }}
+        ALCHEMY_API_KEY_ETHEREUM: ${{ secrets.ALCHEMY_API_KEY_ETHEREUM }}
+        ALCHEMY_API_KEY_POLYGON: ${{ secrets.ALCHEMY_API_KEY_POLYGON }}
+        WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}

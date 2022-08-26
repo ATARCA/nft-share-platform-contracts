@@ -10,13 +10,14 @@ require('solidity-coverage')
 
 // Go to https://www.alchemyapi.io, sign up, create
 // a new App in its dashboard, and replace "KEY" with its key
-const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY
+const ALCHEMY_API_KEY_ETHEREUM = process.env.ALCHEMY_API_KEY_ETHEREUM
+const ALCHEMY_API_KEY_POLYGON = process.env.ALCHEMY_API_KEY_POLYGON
 
 // Replace this private key with your Ropsten account private key
 // To export your private key from Metamask, open Metamask and
 // go to Account Details > Export Private Key
 // Be aware of NEVER putting real Ether into testing accounts
-const ROPSTEN_PRIVATE_KEY = process.env.ROPSTEN_PRIVATE_KEY
+const WALLET_PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY
 
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
 
@@ -27,8 +28,12 @@ module.exports = {
   solidity: "0.8.12",
   networks: {
     goerli: {
-      url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
-      accounts: [`${ROPSTEN_PRIVATE_KEY}`]
+      url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_API_KEY_ETHEREUM}`,
+      accounts: [`${WALLET_PRIVATE_KEY}`]
+    },
+    mumbai: {
+      url: `https://polygon-mumbai.g.alchemy.com/v2/${ALCHEMY_API_KEY_POLYGON}`,
+      accounts: [`${WALLET_PRIVATE_KEY}`]
     }
   },
   etherscan: {
