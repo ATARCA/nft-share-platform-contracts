@@ -1,4 +1,4 @@
-const tokenURIBase = 'http://localhost:4000/';
+const tokenURIBase = 'http://localhost:4000/metadata/';
 const _ = require("lodash");
 
 

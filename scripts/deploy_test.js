@@ -1,4 +1,4 @@
-const tokenURIBase = 'https://test.talkoapp.io/token';
+const tokenURIBase = 'https://test.talkoapp.io/metadata/';
 const _ = require("lodash");
 
 
