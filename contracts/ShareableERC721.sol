@@ -18,13 +18,18 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
     //Todo: consider mapping shares / mints, what came from where
 
+    //Naive coloration of tokens for composability
+    mapping(uint256 => bool) _isOriginalToken;
+    //token is original -> id is same, token is shared -> id is different
+    mapping(uint256 => uint256) _isDerivedFromTokenId;
+
     function getIndex() public view returns(uint256) {
         return _currentIndex;
     }
     
-    function initialize(string memory _name, string memory _symbol, address _owner) external initializer { //Todo: pass owner address
+    function initialize(string memory _name, string memory _symbol, address _owner) external initializer { 
         __ERC721_init(_name, _symbol);
-        _currentIndex = uint256(0); //Todo: consider moving to somewhere else, may clash with beacon proxy upgradeability
+        _currentIndex = uint256(0);
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
         _setupRole(OPERATOR_ROLE, _owner);
     }
@@ -50,6 +55,16 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
         return super.supportsInterface(interfaceId);
     }
 
+    function isOriginalToken(uint256 tokenId) public view returns(bool) {
+        require(_exists(tokenId), "ShareableERC721: token doesn't exist");
+        return _isOriginalToken[tokenId];
+    }
+
+    function isDerivedFrom(uint256 tokenId) public view returns(uint256) {
+        require(_exists(tokenId), "ShareableERC721: token doesn't exist");
+        return _isDerivedFromTokenId[tokenId];
+    }
+
     //Consider moving event definition to new Interfaces class with Share method
     //What got shared from whom, and from what was it derived from
     //Bob shares Token 1 to Alice which is derived from Token 0
@@ -64,6 +79,8 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
     ) external onlyRole(OPERATOR_ROLE) {
         _mint(account, _currentIndex);
         emit Mint(msg.sender, account, _currentIndex, category);
+        _isOriginalToken[_currentIndex] = true;
+        _isDerivedFromTokenId[_currentIndex] = _currentIndex;
         _currentIndex++;
     }
 
@@ -88,6 +105,7 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
       _mint(to, _currentIndex);
 
       emit Share(msg.sender, to, _currentIndex, tokenIdToBeShared);
+      _isDerivedFromTokenId[_currentIndex] = tokenIdToBeShared;
       
       _currentIndex++;
     }
