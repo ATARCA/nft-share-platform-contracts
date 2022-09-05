@@ -1,4 +1,4 @@
-const tokenURIBase = 'https://test.talkoapp.io/metadata/';
+const tokenURIBase = 'https://test.api.talkoapp.io/metadata/';
 const _ = require("lodash");
 
 
@@ -82,6 +82,16 @@ async function main() {
   await proxiedEndorseToken.setProjectAddress(shareableTokenDeployAddress)
 
   console.log("EndorseERC721 token proxy address: ", endorseTokenDeployAddress);
+
+  //Attempt verifying deployed factory contract
+  await hre.run("verify:verify", {
+    address: _factoryContract.address,
+    constructorArguments: [
+      _shareableERC721.address,
+      _likeERC721.address,
+      _endorseableERC721.address
+    ],
+  });   
 }
 
 main()

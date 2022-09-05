@@ -85,6 +85,16 @@ async function main() {
   await setProjectAddressOnEndorseTransaction.wait()
 
   console.log("EndorseERC721 token address: ", endorseTokenDeployAddress);
+
+  //Attempt verifying deployed factory contract
+  await hre.run("verify:verify", {
+    address: _factoryContract.address,
+    constructorArguments: [
+      _shareableERC721.address,
+      _likeERC721.address,
+      _endorseableERC721.address
+    ],
+  }); 
 }
 
 main()
