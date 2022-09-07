@@ -4,6 +4,7 @@ const { expect } = require("chai");
 const { keccak256, toUtf8Bytes, formatBytes32String } = require("ethers/lib/utils");
 const { ethers, upgrades } = require("hardhat");
 const hre = require("hardhat");
+const { isFunctionLike } = require("typescript");
 
 //Todo: check that events are fired correctly
 
@@ -66,6 +67,21 @@ describe("Shareable ERC 721 contract", function() {
       expect(await shareableERC721.ownerOf(tokenId)).to.equal(addr1.address);
       expect(await shareableERC721.tokenURI(tokenId)).to.equal(tokenURIBase+deployed_address+'/0');
     });
+
+    it("is original token and derived from token should work for minted and shared tokens", async function() {
+      const minting = await shareableERC721.mint(addr1.address, categoryName)
+      expect(await shareableERC721.isOriginalToken(tokenId)).to.equal(true)
+      expect(await shareableERC721.isDerivedFrom(tokenId)).to.equal(tokenId)
+
+      const share = await shareableERC721.connect(addr1).share(addr2.address, tokenId);
+      expect(await shareableERC721.isOriginalToken(newTokenId)).to.equal(false)
+      expect(await shareableERC721.isDerivedFrom(newTokenId)).to.equal(tokenId)
+    })
+
+    it("is original token and derived from token should revert if token doesn't exist", async function(){
+      await expect(shareableERC721.isOriginalToken(tokenId)).to.be.revertedWith("ShareableERC721: token doesn't exist")
+      await expect(shareableERC721.isDerivedFrom(tokenId)).to.be.revertedWith("ShareableERC721: token doesn't exist")
+    })
 
     it("Should mint token and should share a new token", async function() {
       const minting = await shareableERC721.mint(addr1.address, categoryName)
