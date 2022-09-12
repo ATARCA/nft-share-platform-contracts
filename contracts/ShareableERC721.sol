@@ -139,7 +139,11 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
         return _exists(tokenId);
     }
 
-    //Todo: Consider adding burn
+   
 
+    function burn(uint256 tokenId) public {
+        require(msg.sender == ownerOf(tokenId), "Must be owner of token to be able to burn it");
+        _burn(tokenId);
+    }
     //disable approve (delegated permissions to transfer)?
 }

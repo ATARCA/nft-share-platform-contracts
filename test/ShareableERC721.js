@@ -141,5 +141,12 @@ describe("Shareable ERC 721 contract", function() {
       await expect(shareableERC721.connect(addr1).addOperator(addr2.address)).to.be.reverted
       await expect(shareableERC721.connect(addr1).addAdmin(addr2.address)).to.be.reverted
     })
+
+    it("only owner should be able to burn his token", async function() {
+      await shareableERC721.mint(addr1.address, categoryName)
+      await expect(shareableERC721.connect(addr2).burn(0)).to.be.revertedWith("Must be owner of token to be able to burn it")
+      const burning = await shareableERC721.connect(addr1).burn(0)
+      expect(burning).to.emit(shareableERC721, "Transfer").withArgs(addr1.address, ethers.constants.AddressZero, 0)
+    })
   });
 })
