@@ -1,8 +1,13 @@
 const tokenURIBase = 'domain/metadata/';
 const _ = require("lodash");
 
-const contract_address = "0xbC22318AbFB3e3e064192D2e379B77C140AE827D"
-const wallet_address_of_new_operator = "0x7a0fE829609EB9AC80c5a60E46FFD5Cf3d57B902"
+//Mumbai Streamr contract address:  0xE4d28C36a1389BF85d5eD8242A2fC3F4e92aDC47
+//Mumbai Connecta contract address: 
+//Goerli Streamr contract address:  
+//Goerli Connecta contract address: 
+
+const contract_address = "0xE4d28C36a1389BF85d5eD8242A2fC3F4e92aDC47"
+const wallet_address_of_new_operator = "0xCEd46d1cd7aBBb5098585BD5b199474eAbB69243"
 
 async function main() {
 

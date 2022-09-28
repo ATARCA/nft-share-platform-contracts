@@ -5,8 +5,6 @@ import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-//Todo: make contract pausable
-
 contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
     // experiment operator
@@ -15,8 +13,6 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
     string baseURI;
 
     uint256 internal _currentIndex;
-
-    //Todo: consider mapping shares / mints, what came from where
 
     //Naive coloration of tokens for composability
     mapping(uint256 => bool) _isOriginalToken;
@@ -94,7 +90,6 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
         return baseURI;
     }
 
-    //Todo: rework to take into account latest development of nature of content on reshared tokens
     function share(address to, uint256 tokenIdToBeShared) external virtual {
       require(to != address(0), "ERC721: mint to the zero address");
       //token has to exist
@@ -139,11 +134,8 @@ contract ShareableERC721 is ERC721Upgradeable, AccessControlUpgradeable {
         return _exists(tokenId);
     }
 
-   
-
     function burn(uint256 tokenId) public {
         require(msg.sender == ownerOf(tokenId), "Must be owner of token to be able to burn it");
         _burn(tokenId);
     }
-    //disable approve (delegated permissions to transfer)?
 }

@@ -7,9 +7,6 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
 import "./Helpers.sol";
 
-//Todo: rename contracts
-//Todo: make contract pausable
-
 contract EndorseERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
   // experiment operator
@@ -19,7 +16,6 @@ contract EndorseERC721 is ERC721Upgradeable, AccessControlUpgradeable {
   event Endorse(address indexed endorser, address indexed endorsee, uint256 indexed endorsementTokenId, uint256 contributionTokenId);
 
   uint256 internal _currentIndex;
-  //Todo: consider upgradeable contracs, non-immutable address
   IShareableERC721 private contributions_contract;
 
   mapping(uint256 => mapping(address => bool)) private _contributionEndorsements;
@@ -29,7 +25,7 @@ contract EndorseERC721 is ERC721Upgradeable, AccessControlUpgradeable {
 
   function initialize(string memory _name, string memory _symbol, address _owner) public initializer {
     __ERC721_init(_name, _symbol);
-    _currentIndex = uint256(0); //Todo: consider moving to somewhere else, clashes with upgradeability
+    _currentIndex = uint256(0);
     _setupRole(DEFAULT_ADMIN_ROLE, _owner);
     _setupRole(OPERATOR_ROLE, _owner);
   }

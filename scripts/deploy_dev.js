@@ -86,6 +86,19 @@ async function main() {
 
   console.log("EndorseERC721 token address: ", endorseTokenDeployAddress);
 
+  //Attempt to verify template contracts
+  await hre.run("verify:verify", {
+    address: _shareableERC721.address
+  }); 
+
+  await hre.run("verify:verify", {
+    address: _likeERC721.address
+  });
+
+  await hre.run("verify:verify", {
+    address: _endorseableERC721.address
+  });
+
   //Attempt verifying deployed factory contract
   await hre.run("verify:verify", {
     address: _factoryContract.address,
