@@ -17,6 +17,7 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
   
   const projectName = 'Streamr'
+  const novactProjectName = 'Connecta'
 
   let ShareableERC721;
   let _shareableERC721;
@@ -55,6 +56,8 @@ async function main() {
 
   console.log("Factory address: ", _factoryContract.address);
 
+  // Streamr pilot specific instances
+
   let shareableTokenDeployedProxyAddress = await _factoryContract.createShareableERC721Proxy(projectName,"ST", deployer.address);
   let shareableTokenReceipt = await shareableTokenDeployedProxyAddress.wait()
   let shareableTokenEvent = findEvent('ShareableERC721ProxyCreated', shareableTokenReceipt)
@@ -82,6 +85,40 @@ async function main() {
   await proxiedEndorseToken.setProjectAddress(shareableTokenDeployAddress)
 
   console.log("EndorseERC721 token proxy address: ", endorseTokenDeployAddress);
+
+  // Novact pilot specific instances
+  
+  let novactShareTokenDeployedProxyAddress = await _factoryContract.createShareableERC721Proxy(novactProjectName,"SHARE", deployer.address);
+  let novactShareTokenReceipt = await novactShareTokenDeployedProxyAddress.wait()
+  let novactShareTokenEvent = findEvent('ShareableERC721ProxyCreated', novactShareTokenReceipt)
+  let novactShareTokenDeployAddress = novactShareTokenEvent[0]?.args[0]
+
+  const novactShareTokenContract = ShareableERC721.attach(novactShareTokenDeployAddress)
+  await novactShareTokenContract.setBaseURI(tokenURIBase)
+
+  console.log("Shareable token proxy address: ", novactShareTokenDeployAddress);
+
+  let novactLikeTokenDeployedProxyAddress = await _factoryContract.createLikeERC721Proxy(novactProjectName,"LIKE", deployer.address);
+  let novactLikeTokenReceipt = await novactLikeTokenDeployedProxyAddress.wait()
+  let novactLikeTokenEvent = findEvent('LikeERC721ProxyCreated', novactLikeTokenReceipt)
+  let novactLikeTokenDeployAddress = novactLikeTokenEvent[0]?.args[0]
+  await LikeERC721.attach(novactLikeTokenDeployAddress);
+  await proxiedLikeToken.setProjectAddress(novactShareTokenDeployAddress);
+
+  console.log("LikeERC721 token proxy address: ", novactLikeTokenDeployAddress);
+
+  //Attempt to verify template contracts
+  await hre.run("verify:verify", {
+    address: _shareableERC721.address
+  }); 
+
+  await hre.run("verify:verify", {
+    address: _likeERC721.address
+  });
+
+  await hre.run("verify:verify", {
+    address: _endorseableERC721.address
+  });
 
   //Attempt verifying deployed factory contract
   await hre.run("verify:verify", {

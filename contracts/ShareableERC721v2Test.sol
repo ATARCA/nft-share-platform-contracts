@@ -5,9 +5,9 @@ import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-//Todo: make contract pausable
-//Todo: add more complex governance tools than ownable
-
+//
+//This contract is only for testing proxy beacon upgradeability!
+//
 contract ShareableERC721v2Test is ERC721Upgradeable, AccessControlUpgradeable {
 
     // experiment operator
@@ -21,18 +21,12 @@ contract ShareableERC721v2Test is ERC721Upgradeable, AccessControlUpgradeable {
         return _currentIndex;
     }
     
-    function initialize(string memory _name, string memory _symbol, address _owner) external initializer { //Todo: pass owner address
+    function initialize(string memory _name, string memory _symbol, address _owner) external initializer {
         __ERC721_init(_name, _symbol);
-        _currentIndex = uint256(0); //Todo: consider moving to somewhere else, clashes with upgradeability
+        _currentIndex = uint256(0);
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
         _setupRole(OPERATOR_ROLE, _owner);
     }
-
-    /*constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
-        _currentIndex = uint256(0);
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(OPERATOR_ROLE, msg.sender);
-    }*/
 
     function addOperator(address newOperater) public onlyRole(DEFAULT_ADMIN_ROLE) {
         _grantRole(OPERATOR_ROLE, newOperater);
@@ -81,7 +75,6 @@ contract ShareableERC721v2Test is ERC721Upgradeable, AccessControlUpgradeable {
         return baseURI;
     }
 
-    //Todo: rework to take into account latest development of nature of content on reshared tokens
     function share(address to, uint256 tokenIdToBeShared) external virtual {
       require(to != address(0), "ERC721: mint to the zero address");
       //token has to exist
@@ -95,9 +88,6 @@ contract ShareableERC721v2Test is ERC721Upgradeable, AccessControlUpgradeable {
       
       _currentIndex++;
     }
-
-    //Todo: safeShare, similar to safe transfer, check that contract recipient is aware of ERC721 protocol
-    //Todo: do we want to enable sharing to contracts
 
     function transferFrom(
         address,
