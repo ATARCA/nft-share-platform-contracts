@@ -12,6 +12,7 @@ require('solidity-coverage')
 // a new App in its dashboard, and replace "KEY" with its key
 const ALCHEMY_API_KEY_ETHEREUM = process.env.ALCHEMY_API_KEY
 const ALCHEMY_API_KEY_POLYGON = process.env.ALCHEMY_API_KEY_POLYGON
+const ALCHEMY_API_KEY_POLYGON_MAINNET = process.env.ALCHEMY_API_KEY_POLYGON_MAINNET
 // Replace this private key with your Ropsten account private key
 // To export your private key from Metamask, open Metamask and
 // go to Account Details > Export Private Key
@@ -29,11 +30,18 @@ module.exports = {
   networks: {
     goerli: {
       url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_API_KEY_ETHEREUM}`,
-      accounts: [`0x${WALLET_PRIVATE_KEY}`]
+      accounts: [`0x${WALLET_PRIVATE_KEY}`],
+      gasMultiplier: 1.5,
     },
     mumbai: {
       url: `https://polygon-mumbai.g.alchemy.com/v2/${ALCHEMY_API_KEY_POLYGON}`,
-      accounts: [`0x${WALLET_PRIVATE_KEY}`]
+      accounts: [`0x${WALLET_PRIVATE_KEY}`],
+      gasMultiplier: 1.5,
+    },
+    polygon_mainnet: {
+      url: `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY_POLYGON_MAINNET}`,
+      accounts: [`0x${WALLET_PRIVATE_KEY}`],
+      gasMultiplier: 1.5,
     }
   },
   etherscan: {
@@ -41,12 +49,13 @@ module.exports = {
     // Obtain one at https://etherscan.io/
     apiKey: {
       goerli: ETHERSCAN_API_KEY,
-      polygonMumbai: POLYGONSCAN_API_KEY
+      polygonMumbai: POLYGONSCAN_API_KEY,
+      polygon: POLYGONSCAN_API_KEY
     }   
   },
   gasReporter: {
     currency: 'EUR',
-    gasPrice: 3,
+    gasPrice: 40,
     coinmarketcap: process.env.COINMARKETCAP_KEY,
     token: 'MATIC'
   },
