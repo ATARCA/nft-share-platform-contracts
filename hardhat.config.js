@@ -10,7 +10,7 @@ require('solidity-coverage')
 
 // Go to https://www.alchemyapi.io, sign up, create
 // a new App in its dashboard, and replace "KEY" with its key
-const ALCHEMY_API_KEY_ETHEREUM = process.env.ALCHEMY_API_KEY
+const ALCHEMY_API_KEY_ETHEREUM = process.env.ALCHEMY_API_KEY_ETHEREUM
 const ALCHEMY_API_KEY_POLYGON = process.env.ALCHEMY_API_KEY_POLYGON
 // Replace this private key with your Ropsten account private key
 // To export your private key from Metamask, open Metamask and
