@@ -43,5 +43,5 @@ npx hardhat verify --network ropsten <DeployedContractAddress> "Constructor Argu
 
 Todo:
 - [x] Skeleton setup for development
-- [ ] Specify license before publishing this repo. Contracts set to MIT licence, please change if not suitable.
-- [ ] Extend contract deployment to support xdai / networks used in experiments
+- [x] Specify license before publishing this repo. Contracts set to MIT licence, please change if not suitable.
+- [x] Extend contract deployment to support networks used in experiments
